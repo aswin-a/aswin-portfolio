@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "check:content": "node scripts/check-content.mjs",
     "evals": "node scripts/evals.mjs",
-    "evals:results": "node scripts/eval-results.mjs"
+    "evals:results": "node scripts/eval-results.mjs",
+    "test:e2e:update": "playwright test tests/e2e/screenshots.spec.ts --update-snapshots"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.103",
