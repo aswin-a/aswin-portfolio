@@ -123,17 +123,30 @@ test("home: Check fit is disabled until there is a job description", async ({ pa
   await expect(check).toBeEnabled();
 });
 
-test("home: 'How I built this' has no toggle and shows only in X-ray, as an X-ray panel", async ({ page }) => {
+test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-language lists (update 5)", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: /How I built this/ })).toHaveCount(0);
-  await expect(page.getByText("Honest note:")).toBeHidden();
+  await expect(page.getByRole("heading", { level: 3, name: "How I built this" })).toBeHidden();
   await page.goto("/?xray=1");
   const h = page.getByRole("heading", { level: 3, name: "How I built this" });
   await expect(h).toBeVisible();
-  await expect(h).toHaveCSS("font-size", "22px");
-  await expect(h.locator("xpath=..")).toHaveCSS("background-color", "rgb(16, 18, 20)");
-  await expect(h.locator("xpath=..")).toHaveCSS("display", "grid");
-  await expect(page.getByText("Honest note:")).toBeVisible();
+  await expect(h).toHaveCSS("font-size", "18px");
+  const panel = page.locator("#how-built");
+  await expect(panel).toHaveCSS("background-color", "rgb(16, 18, 20)");
+  await expect(panel).toHaveCSS("display", "flex");
+  await expect(panel).toHaveCSS("padding", "20px 22px");
+  await expect(panel.getByText("X-RAY", { exact: true })).toBeVisible();
+  await expect(page.getByText("Honest note:")).toHaveCount(0);
+  await expect(panel.getByText("The design behind the fit check. Numbers for a run and the current build appear in Build details after a check.")).toBeVisible();
+  const chips = ["JD or link", "fetch_url · links only", "jd.parse", "kb.search", "evidence.map", "guard.citations", "guard.honesty", "verdict.compose"];
+  for (const c of chips) await expect(panel.locator("span.rounded-md").getByText(c, { exact: true })).toBeVisible();
+  await expect(panel.getByText("fetch_url · links only", { exact: true })).toHaveCSS("border-top-style", "dashed");
+  await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
+  await expect(panel.getByText("[25] test JDs and questions, including bad-fit roles and red-team cases")).toBeVisible();
+  await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
+  await expect(panel.getByText("No vector DB in v1, on purpose: [your reason]")).toBeVisible();
+  await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
+  await expect(panel.getByText(/live usage/)).toHaveCount(0);
 });
 
 test("home: the hood header (update 3)", async ({ page }) => {

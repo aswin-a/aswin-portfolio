@@ -79,13 +79,12 @@ const HERO_STATES: [string, string | null, string | null][] = [
   ["error", `${HERO_SAMPLES[0].jd} ${FAKE.error}`, null],
   ["limited", `${HERO_SAMPLES[0].jd} ${FAKE.limited}`, null],
   ["budget", `${HERO_SAMPLES[0].jd} ${FAKE.budget}`, null],
-  ["drill-kb", null, "knowledge base offline"],
 ];
 for (const [name, width, height] of SIZES) {
   for (const xray of [false, true]) {
     for (const [state, jd, pick] of HERO_STATES) {
-      // Update 3: Break my AI and the drills live in the X-ray panel, so they need X-ray on.
-      if (!xray && (state === "break" || state === "drill-kb")) continue;
+      // Update 3: Break my AI lives in the X-ray panel, so it needs X-ray on. Update 5 hid the drill buttons.
+      if (!xray && state === "break") continue;
       const file = `hero-${state}-${name}${xray ? "-xray" : ""}`;
       test(`capture ${file}`, async ({ page }) => {
         await page.setViewportSize({ width, height });

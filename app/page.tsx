@@ -21,12 +21,9 @@ export default async function Home() {
         <Hero
           meta={{
             evalCaseCount: siteMeta.evalCaseCount,
-            evalPassRate: siteMeta.evalPassRate,
             evalFailedFirst: siteMeta.evalFailedFirst,
-            costPerRun: siteMeta.costPerRun,
-            liveResponseTime: siteMeta.liveResponseTime,
             whatBreaksFirstAtScale: siteMeta.whatBreaksFirstAtScale,
-            next: siteMeta.next,
+            noVectorDbReason: siteMeta.noVectorDbReason,
           }}
           buildMeta={{
             build: `${process.env.BUILD_SHA} · ${process.env.BUILD_DATE}`,
