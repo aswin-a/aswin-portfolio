@@ -1,0 +1,110 @@
+# The real eval run (SPEC §10): the Promptfoo set in /evals against the real models, billed to
+# ANTHROPIC_API_KEY. It turns the run into content/eval-results.json and opens (or updates) a pull
+# request with only that file, so every change to the site's eval numbers is reviewed.
+name: Evals
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "evals/**"
+      - "lib/ai/**"
+      - "lib/run/**"
+      - "lib/kb/**"
+      - "content/kb/**"
+      - "content/cv.ts"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: evals
+  cancel-in-progress: false
+
+env:
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  RESULTS_BRANCH: bot/eval-results
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      # Model IDs come from repository variables when set (SPEC §13 defaults otherwise).
+      FIT_CHECK_MODEL: ${{ vars.FIT_CHECK_MODEL || 'claude-sonnet-5-5' }}
+      CHAT_MODEL: ${{ vars.CHAT_MODEL || 'claude-haiku-5-5' }}
+    steps:
+      - name: Skip without an API key
+        if: ${{ env.ANTHROPIC_API_KEY == '' }}
+        run: echo "::notice::ANTHROPIC_API_KEY is not set, so no real eval run. Add it under Settings → Secrets and variables → Actions."
+
+      - uses: actions/checkout@v7
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+      - uses: pnpm/action-setup@v6
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        with:
+          version: 12.18.0
+      - uses: actions/setup-node@v7
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: pnpm install --frozen-lockfile
+
+      # Promptfoo exits 100 when a case fails; the results are still real and still published.
+      - name: Run the eval set
+        id: run
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: |
+          set +e
+          pnpm evals
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" != "0" ] && [ "$code" != "100" ]; then exit "$code"; fi
+
+      - name: Write content/eval-results.json
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: pnpm evals:results
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ env.ANTHROPIC_API_KEY != '' && !cancelled() }}
+        with:
+          name: eval-results
+          path: |
+            evals/output/results.json
+            content/eval-results.json
+          retention-days: 30
+
+      - name: Open or update the results pull request
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- content/eval-results.json; then
+            echo "No change to content/eval-results.json."
+            exit 0
+          fi
+          summary=$(node -e 'const r=require("./content/eval-results.json"); console.log(`${r.passed}/${r.cases} cases passed, red-team ${r.redTeam.held}/${r.redTeam.total} held`)')
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$RESULTS_BRANCH"
+          git add content/eval-results.json
+          git commit -m "Eval results: $summary"
+          git push --force origin "$RESULTS_BRANCH"
+          body="Real eval run of \`/evals\` on ${GITHUB_SHA::7} ($FIT_CHECK_MODEL, $CHAT_MODEL): $summary. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if gh pr view "$RESULTS_BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
+            gh pr edit "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
+          else
+            gh pr create --base main --head "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
+          fi
+
+      - name: Fail if any case failed
+        if: ${{ steps.run.outputs.code == '100' }}
+        run: |
+          echo "::error::Some eval cases failed. The results PR shows the numbers; the artifact has each case."
+          exit 1
