@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contact form — all states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 2800px; min-height: 2900px; box-sizing: border-box; padding: 80px; background: #EDE9E0; color: #1B1A17; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 96px 80px; align-items: start">
+<sc-for list="{{states}}" as="s" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 16px; color: #5C574E">{{s.num}} · STATE</p>
+<h2 style="margin: 0; font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: 44px">{{s.name}}</h2>
+<p style="margin: 0; max-width: 1100px; font-size: 20px; line-height: 1.45; color: #5C574E">{{s.note}}</p>
+</div>
+<div style="width: 1280px; border: 1px solid #D6D0C3; border-radius: 16px; overflow: hidden; background: #F6F3EC">
+<dc-import name="Footer" initial="{{s.id}}" still="{{ true }}" hint-size="1280px,760px"></dc-import>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2800,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      states: [
+        { id: 'idle', num: '01', name: 'Ready', note: 'Empty form, with WhatsApp and call beside it. On the home page the role arrives pre-filled from the fit check.' },
+        { id: 'invalid', num: '02', name: 'Invalid', note: 'Checked on send, not while typing. Each field says what to fix in one line, a summary line counts the fixes, and each fix clears as soon as it’s made.' },
+        { id: 'sending', num: '03', name: 'Sending', note: 'Fields lock and dim, the button reads “Sending…” and three dots step while it goes. Usually under two seconds.' },
+        { id: 'sent', num: '04', name: 'Sent', note: 'A plain confirmation and when to expect a reply. No auto-reply email pretending to be Aswin.' },
+        { id: 'error', num: '05', name: 'Error', note: 'The message is kept. One calm line, the button becomes “Try again”, and WhatsApp is offered with the same message.' },
+        { id: 'limited', num: '06', name: 'Rate-limited', note: 'After 3 messages an hour from one connection, sending pauses. It says why and when it reopens, keeps the message, and points to WhatsApp.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
