@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { ask } from "@/lib/ask/client";
 import type { AskStepEvent } from "@/lib/ask/types";
 import { postRun, readNdjson } from "@/lib/run-client";
@@ -10,11 +11,20 @@ import type { BreakResult, FitEvent, FitRequest } from "./types";
  */
 export async function* runFitCheck(req: FitRequest, signal?: AbortSignal): AsyncGenerator<FitEvent> {
   const res = await postRun({ mode: "fit", jd: req.jd, ...(req.drill ? { drill: req.drill } : {}) }, signal);
+  const branch = /^https?:\/\//i.test(req.jd.trim()) ? "link" : "text";
   if (!res.ok || !res.body) {
+    if (!req.drill) track("fit_check_run", { branch, outcome: "error" });
     yield { type: "fallback", reason: "error" };
     return;
   }
-  for await (const ev of readNdjson(res.body)) yield ev as FitEvent;
+  for await (const ev of readNdjson(res.body)) {
+    const e = ev as FitEvent;
+    if (!req.drill) {
+      if (e.type === "result") track("fit_check_run", { branch, outcome: e.verdict.startsWith("Not a strong fit") ? "badfit" : "result" });
+      else if (e.type === "fallback") track("fit_check_run", { branch, outcome: e.reason });
+    }
+    yield e;
+  }
 }
 
 /**

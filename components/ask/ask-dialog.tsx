@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
@@ -58,6 +59,7 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
         return { ...prev, steps: i === -1 ? [...prev.steps, ev] : prev.steps.map((s, j) => (j === i ? ev : s)) };
       });
     };
+    track("ask_question_sent", {});
     ask({ question, memory: sessionMemory.get() }, onStep, ac.signal)
       .catch((): AskResult => ({ status: "error" }))
       .then((result) => {
