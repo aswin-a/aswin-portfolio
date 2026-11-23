@@ -46,7 +46,8 @@ export const cvHeader = {
   summary:
     "I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM, and five as a founder across two startups. I own platforms end to end, from APIs and integrations to identity and workflow engines, and now I build AI agents on the same foundations.",
   downloadPdf: { label: "Download PDF", href: "#" }, // TODO(aswin): static PDF built from this file at build time (SPEC §5)
-  synced: { label: "Synced from my master resume", date: todo("[date]") }, // TODO(aswin)
+  /** Followed by siteMeta.resumeUpdated (Aswin, 2026-11-23). */
+  synced: { label: "Synced from my master resume" },
 };
 
 export const cvStats: CvStat[] = [

@@ -1,4 +1,4 @@
-import { cvHeader, cvItems, cvSkills, cvStats } from "@/content/cv";
+import { cvGeneral, cvHeader, cvItems, cvSkills, cvStats } from "@/content/cv";
 import { cvItem } from "@/lib/cv";
 
 export type Fact = { id: string; text: string; label: string; href: string };
@@ -6,9 +6,10 @@ export type Fact = { id: string; text: string; label: string; href: string };
 /**
  * Canonical bio facts used in Ask answers (SPEC §6), generated from content/cv.ts (design update 6):
  * the CV header, stats, skills and a few lines Ask cites often. Ids are stable (lib/ai/fake.ts cites them).
- * Labels are the source chips Ask my work shows (Ask.dc.html: "About · career", "Case studies").
+ * Labels are the source chips Ask my work shows: "CV · My experience" (the CV page's general Ask topic,
+ * Aswin 2026-11-23) and "Case studies".
  */
-const career = { label: "About · career", href: "/about" };
+const career = { label: `CV · ${cvGeneral.label}`, href: "/about" };
 const zelthy = cvItem("zelthy");
 const line = (group: string, starts: string) => {
   const hit = zelthy.groups?.find((g) => g.name === group)?.items.find((x) => x.startsWith(starts));

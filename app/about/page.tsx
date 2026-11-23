@@ -91,7 +91,7 @@ export default function About() {
                 </a>
                 <CopyCv text={cvPlainText()} />
                 <span className="text-center font-mono text-[12px] text-muted">
-                  {cvHeader.synced.label} · {cvHeader.synced.date}
+                  {cvHeader.synced.label} · {siteMeta.resumeUpdated}
                 </span>
               </div>
             </div>

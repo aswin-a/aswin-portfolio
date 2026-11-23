@@ -217,7 +217,7 @@ test.describe("answers", () => {
     await expect(status(page)).not.toContainText("compose · writing the answer");
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
     await expect(input(page)).toBeFocused();
-    await expect(status(page).getByRole("link", { name: "About · career →" })).toHaveAttribute("href", "/about");
+    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toHaveAttribute("href", "/about");
     await expect(status(page).getByRole("link", { name: /Platform & API work/ })).toHaveCount(0);
     await status(page).getByRole("button", { name: "← Ask another" }).click();
     await expect(dialog(page).getByText("Suggested for this page")).toBeVisible();
@@ -236,7 +236,7 @@ test.describe("answers", () => {
   test("no todo box once the cited content is supplied", async ({ page }) => {
     await open(page);
     await dialog(page).getByRole("button", { name: /What's his biggest platform win\?/ }).click();
-    await expect(status(page).getByRole("link", { name: "About · career →" })).toBeVisible();
+    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toBeVisible();
     await expect(status(page).getByText(/^\[.*\]$/)).toHaveCount(0);
   });
 

@@ -18,6 +18,7 @@ test("home: the production card turns X-ray on first, then scrolls to Break my A
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator("#break-my-ai")).toHaveCount(0);
+  await expect(hoodGrid(page).getByRole("link", { name: /^production/ })).toContainText("Try Break my AI →");
   await hoodGrid(page).getByRole("link", { name: /^production/ }).click();
   await expect(page).toHaveURL(/#break-my-ai$/);
   expect(await theme(page)).toBe("xray");
@@ -189,7 +190,7 @@ test("CV: header, stats, timeline lanes and links (update 6)", async ({ page }) 
   await expect(page.getByRole("heading", { level: 1, name: "Aswin A" })).toBeVisible();
   await expect(page.getByRole("link", { name: "LinkedIn", exact: true }).first()).toHaveAttribute("href", "https://linkedin.com/in/aswin-a-pm");
   await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "#");
-  await expect(page.getByText("Synced from my master resume · [date]")).toBeVisible();
+  await expect(page.getByText("Synced from my master resume · 13 Nov 2026")).toBeVisible();
   await expect(page.getByText("125% growth", { exact: true })).toHaveCSS("font-size", "26px");
   const items = page.getByRole("main").locator("ol > li");
   await expect(items).toHaveCount(8);

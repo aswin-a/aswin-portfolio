@@ -135,7 +135,7 @@ Everything the AI may say comes from typed content in `/content/kb/`, generated 
   fallback.ts       # the 3 precomputed role-type matches (HERO_FALLBACK shape)
 ```
 
-- Each entry has a stable `id`, a human `label` for source chips (e.g. "Case study · CloudEagle concept", "Role · About") and an `href`.
+- Each entry has a stable `id`, a human `label` for source chips (e.g. "Case study · CloudEagle concept", "CV · Senior Product Manager · Zelthy", "CV · My experience"; CV-based entries are labelled "CV · …" and link to the CV page, Aswin 2026-11-23) and an `href`.
 - **`kb.search`** is a deterministic server function, not the model: it scores entries by keyword/tag overlap with the requirements and returns the top entries from the scopes `roles`, `projects`, `not_done`. No embeddings. Optional `tags` on roles and projects are search words only, never claims.
 - `kb.search` reads a frozen, Zod-validated snapshot of `/content/kb` built into the server bundle (`lib/kb/snapshot.ts`). Production leaves out entries that still hold a `TODO(aswin)` placeholder. The last-good copy for the fallback drill is the precomputed `fallback.ts`.
 
@@ -163,7 +163,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 - **Matches and gaps render as tables at ≥ 640px** and as stacked rows below 640px, exactly as in `Hero.dc.html`.
 - **No result footer line.** It is replaced by the X-ray **"This run"** and **"Build details"** panels, shown with X-ray on and a result. "This run" is fed by the run log (§10); "Build details" by build metadata and `eval-results.json`. Eval numbers and live-usage numbers are always labelled separately and never combined.
 - **States:** empty, running, result, badfit, error and limited, with the exact copy. "break" is not a state: Break my AI is an X-ray panel below the fit check (see §8).
-- **Failure drills** are **out of v1 UI scope** (design update 5: the drill buttons are hidden, `showDrills` is false). Keep the server-side drill path, the fallback UI (error and limited states, precomputed matches, drill trace) and their tests; they serve real outages and rate limits. As built before update 5: the drills ("knowledge base offline", "hit the rate limit") lived in the X-ray Break my AI panel and put the fit check above into its error or limited fallback state. They are real requests with a `drill` flag that force that failure on the server, so the real fallback path runs and its trace is shown in an X-ray panel (`HERO_DRILL_TRACE` is the expected trace). Drills don't call the LLM for the failed step and don't count against the visitor's limit.
+- **Failure drills** are **out of v1 UI scope** (design update 5: the drill buttons are hidden, `showDrills` is false). Keep the server-side drill path, the fallback UI (error and limited states, precomputed matches, drill trace) and their tests; they serve real outages and rate limits. The home "production" card's CTA reads "Try Break my AI →" (Aswin, 2026-11-23). As built before update 5: the drills ("knowledge base offline", "hit the rate limit") lived in the X-ray Break my AI panel and put the fit check above into its error or limited fallback state. They are real requests with a `drill` flag that force that failure on the server, so the real fallback path runs and its trace is shown in an X-ray panel (`HERO_DRILL_TRACE` is the expected trace). Drills don't call the LLM for the failed step and don't count against the visitor's limit.
 - **"How I built this"**: no toggle. The panel shows only when X-ray is on, as an X-ray panel, content exactly as in the design (design update 5: plain-language lists in sans type, no "Honest note", no cost line). Its architecture chips match the step names the API streams (`JD or link` › `fetch_url · links only` › `jd.parse` › `kb.search` › `evidence.map` › `guard.citations` › `guard.honesty` › `verdict.compose`). Its `[placeholders]` come from `/content/site-meta.ts`.
 
 ## 8. Ask my work and Break my AI — `/api/run` with `mode: "ask"`
@@ -238,7 +238,7 @@ Create these files with `TODO(aswin)` values and a clear comment, and build a `p
 - `content/products.ts`: the 4 "Products I've built" items, typed `{ num, slug, status, name, pitch, built, flow: {text, human?: boolean}[], tags, primary: {label, href}, secondary: {label, href} }`. `status` is data only; no status pill renders on the desktop cards (design update 4)
 - `content/site-meta.ts` (years of experience, eval set link, GitHub, LinkedIn, domain, response time, posting cadence, "what breaks first at scale", "next", cost per run, 90-day plan line)
 - `content/posts/*.mdx` (3 designed posts)
-- `content/cv.ts` (design update 6): the CV, word for word from `About.dc.html`. Its `[date]` placeholders and `#` links stay as placeholders until Aswin fills them
+- `content/cv.ts` (design update 6): the CV, word for word from `About.dc.html`. Its `[date]` placeholder (the Dhee's website dates) and `#` links stay as placeholders until Aswin fills them; "Synced from my master resume" shows `siteMeta.resumeUpdated`
 - `content/certificates.ts`, `public/resume.pdf` (the CV page's "Download PDF" stays `#` until the build-time PDF exists)
 
 Under the hood rule from the design: "Anything without proof yet is left out." A card or case study whose proof isn't filled in is hidden in production, not shown with placeholders.

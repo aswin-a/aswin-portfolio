@@ -55,7 +55,7 @@ function build(): KbEntry[] {
     ...notDone.map((n) => ({
       id: n.id,
       scope: "not_done" as const,
-      label: "Not done · About",
+      label: "Not done · CV",
       href: "/about",
       text: `NOT DONE: ${n.topic}.${n.closest ? ` Closest: ${n.closest}` : ""}`,
       notDone: { closest: n.closest, note: n.note },

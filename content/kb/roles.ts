@@ -1,4 +1,5 @@
 import { cvItems, type CvItem } from "@/content/cv";
+import { topicFor } from "@/lib/cv";
 
 export type Role = {
   id: string;
@@ -34,7 +35,8 @@ const toRole = (it: CvItem): Role => ({
   years: it.dates,
   summary: it.scope,
   details: [...(it.ladder ? [it.ladder] : []), ...it.highlights],
-  label: "Role · About",
+  // "CV · {title} · {company}", like the CV page's Ask topic answers (Aswin, 2026-11-23).
+  label: `CV · ${topicFor(it).label}`,
   href: "/about",
   tags: ROLE_IDS[it.id]?.tags,
 });

@@ -1,7 +1,7 @@
 import type { CvItem } from "@/content/cv";
 import { products } from "@/content/products";
 import { todo } from "@/lib/content";
-import { cvItem, orgName } from "@/lib/cv";
+import { cvItem, orgName, topicFor } from "@/lib/cv";
 
 export type Project = {
   id: string;
@@ -43,7 +43,7 @@ const side = (it: CvItem, id: string, slug: string | null, label: string | null,
   status: (slug && statusOf(slug)) || it.dates,
   summary: `${it.org}. ${it.scope}`,
   evidence: it.highlights,
-  label: label ?? "Role · About",
+  label: label ?? `CV · ${it.title}`,
   href: slug ? `/work/${slug}` : "/about",
   tags,
 });
@@ -60,6 +60,8 @@ const ZELTHY_GROUPS: [string, string[]][] = [
 ];
 
 const zelthy = cvItem("zelthy");
+/** Source chip for Zelthy's lines: "CV · Senior Product Manager · Zelthy" (Aswin, 2026-11-23). */
+const zelthyLabel = `CV · ${topicFor(zelthy).label}`;
 const zelthyGroups = zelthy.groups ?? [];
 if (zelthyGroups.length !== ZELTHY_GROUPS.length) throw new Error("content/cv.ts: Zelthy's groups changed; update ZELTHY_GROUPS");
 
@@ -69,7 +71,7 @@ const zelthyProjects: Project[] = zelthyGroups.map((g, i) => ({
   status: zelthy.dates,
   summary: g.summary,
   evidence: g.items,
-  label: "Role · About",
+  label: zelthyLabel,
   href: "/about",
   tags: ZELTHY_GROUPS[i][1],
 }));
@@ -83,7 +85,7 @@ const healthcare: Project = {
   status: zelthy.dates,
   summary: zelthy.scope,
   evidence: zelthyGroups.flatMap((g) => g.items).filter((x) => HEALTHCARE.test(x)),
-  label: "Role · About",
+  label: zelthyLabel,
   href: "/about",
   tags: ["healthcare", "hospital", "integrations", "platform reliability", "pharma", "hipaa", "gdpr", "soc2", "compliance", "security", "privacy", "validated systems", "data residency", "data migration", "regulated"],
 };
