@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>About Aswin</title>
+<title>CV — Aswin A</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -17,146 +17,350 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </style>
 </helmet>
 <div style="min-height: 100vh; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
-<dc-import name="Nav" current="about" xray="{{xray}}" on-toggle-xray="{{toggleXray}}" on-ask="{{openAsk}}" hint-size="100%,73px"></dc-import>
+<dc-import name="Nav" current="about" xray="{{xray}}" on-toggle-xray="{{toggleXray}}" on-ask="{{openAskGeneral}}" hint-size="100%,73px"></dc-import>
 
-<main style="max-width: 1040px; margin: 0 auto; padding: 72px 24px 96px; display: flex; flex-direction: column; gap: 72px">
+<main style="max-width: 1040px; margin: 0 auto; padding: 64px 24px 96px; display: flex; flex-direction: column; gap: 56px">
 
-<header style="display: flex; flex-wrap: wrap; gap: 32px 56px; align-items: flex-start">
-<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.08em; color: {{t.muted}}">ABOUT</p>
-<h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(44px, 6vw, 68px); line-height: 1.04; letter-spacing: -0.02em">From platform plumbing to agents.</h1>
-<div style="display: flex; flex-direction: column; gap: 16px; font-family: {{t.serif}}; font-size: 21px; line-height: 1.55">
-<p style="margin: 0">I've spent <span style="font-family: {{t.mono}}; font-size: 16px; color: {{t.muted}}">[N]</span> years as a product manager on platforms, APIs and integrations, including in healthcare. Platforms taught me that the hard part of software is the seams between systems.</p>
-<p style="margin: 0">Now I build AI agents: a job-search agent, an Instagram competitor agent for Dhee's, the fresh dog-food brand I run, and this site. Agents live at those same seams.</p>
-<p style="margin: 0; color: {{t.muted}}">I don't claim years of professional LLM experience. I claim built and shipped, and every project here can be checked.</p>
+<header style="display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.08em; color: {{t.muted}}">CURRICULUM VITAE</p>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px 48px; flex-wrap: wrap">
+<div style="flex: 1 1 480px; display: flex; flex-direction: column; gap: 8px; max-width: 760px">
+<h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(40px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.015em">Aswin A</h1>
+<p style="margin: 0; font-size: 18px; font-weight: 500">Senior Product Manager · Platforms, integrations and agentic AI products</p>
+<p style="margin: 0; font-size: 15px; color: {{t.muted}}">Chennai, India · <a href="https://linkedin.com/in/aswin-a-pm" style="color: {{t.accent}}">LinkedIn</a></p>
+<p style="margin: 8px 0 0; max-width: 760px; font-family: {{t.serif}}; font-size: 21px; line-height: 1.5">I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM, and five as a founder across two startups. I own platforms end to end, from APIs and integrations to identity and workflow engines, and now I build AI agents on the same foundations.</p>
+</div>
+<div style="display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 260px; max-width: 100%">
+<a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 15px; font-weight: 600; text-decoration: none">Download PDF</a>
+<button type="button" onClick="{{copyText}}" style="min-height: 48px; padding: 10px 18px; border-radius: 10px; border: 1px solid {{t.rule}}; background: {{t.paper}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 15px; cursor: pointer">{{copyLabel}}</button>
+<span style="font-family: {{t.mono}}; font-size: 12px; text-align: center; color: {{t.muted}}">Synced from my master resume · [date]</span>
 </div>
 </div>
-<aside style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 12px; padding: 22px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">RESUME</p>
-<a href="#" style="display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 16px; font-weight: 600; text-decoration: none">Download resume (PDF)</a>
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; line-height: 1.6; color: {{t.muted}}">Built from the same master resume as the fit check, so the two never disagree. Updated [date].</p>
-</aside>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 12px">
+<span style="font-family: {{t.serif}}; font-size: 26px; line-height: 1.15">{{st.big}}</span>
+<span style="font-size: 14px; line-height: 1.4; color: {{t.muted}}">{{st.small}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; border: 1px solid {{t.accent}}; border-radius: 12px; background: {{t.accentTint}}">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 17px; font-weight: 600">Questions about my experience?</span>
+<span style="font-size: 14px; color: {{t.muted}}">Ask my work answers from this CV, with sources.</span>
+</div>
+<form onSubmit="{{askOwn}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; border: 1px solid {{t.rule}}; border-radius: 10px; background: {{t.paper}}">
+<input type="text" value="{{ownQ}}" onChange="{{onOwnQ}}" aria-label="Ask your own question about Aswin's experience" placeholder="Ask your own question, e.g. has he worked with healthcare data?" style="flex: 1; min-width: 0; min-height: 40px; border: 0; outline: none; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">⌘K</span>
+<button type="submit" style="min-height: 40px; padding: 6px 16px; border-radius: 8px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 14px; font-weight: 600; cursor: pointer">Ask</button>
+</form>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="font-size: 14px; color: {{t.muted}}">Or try one:</span>
+<sc-for list="{{generalQs}}" as="gq" hint-placeholder-count="3">
+<button type="button" onClick="{{gq.pick}}" style="min-height: 40px; padding: 6px 12px; border-radius: 999px; border: 1px solid {{t.accent}}; background: {{t.paper}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 14px; cursor: pointer">{{gq.text}}</button>
+</sc-for>
+</div>
+</div>
 </header>
 
-<section aria-labelledby="graph-h" style="display: flex; flex-direction: column; gap: 22px">
-<div style="display: flex; flex-direction: column; gap: 8px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.08em; color: {{t.muted}}">CAREER AS A DEPENDENCY GRAPH</p>
-<h2 id="graph-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 40px; line-height: 1.1">Integrations experience is agent experience.</h2>
-<p style="margin: 0; font-size: 16px; color: {{t.muted}}">Pick a project to see which earlier work it depends on.</p>
+<section aria-labelledby="exp-h" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap">
+<h2 id="exp-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 36px">Experience</h2>
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">solid: roles · dashed, indented: side projects</span>
 </div>
-<div style="display: flex; flex-wrap: wrap; gap: 20px 40px; align-items: stretch">
-<div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 10px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">BEFORE AI · DEPENDENCIES</p>
-<sc-for list="{{deps}}" as="d" hint-placeholder-count="4">
-<div style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 10px; background: {{d.bg}}; border: {{d.border}}; opacity: {{d.opacity}}">
-<span style="font-size: 16px; font-weight: 600">{{d.label}}</span>
-<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{d.meta}}</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="7">
+<li style="display: grid; grid-template-columns: {{cols}}; gap: 0 20px">
+<div style="display: {{wideDisplay}}; flex-direction: column; align-items: flex-end; padding-top: 22px; font-family: {{t.mono}}; font-size: 12px; line-height: 1.5; text-align: right; color: {{t.muted}}">{{it.dates}}</div>
+<div style="position: relative; padding: 10px 0 10px {{it.indent}}; border-left: 2px solid {{t.rule}}">
+<span aria-hidden="true" style="position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; border-radius: 999px; background: {{it.dotBg}}; border: 2px solid {{it.dotBorder}}"></span>
+<article style="display: flex; flex-direction: column; gap: 10px; margin-left: 22px; padding: 20px 22px; background: {{it.cardBg}}; border: {{it.cardBorder}}; border-radius: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<sc-if value="{{narrow}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{it.dates}}</span></sc-if>
+<sc-if value="{{it.isProject}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Side project</span></sc-if>
+<h3 style="margin: 0; font-size: {{it.titleSize}}; font-weight: 600; line-height: 1.3">{{it.title}}</h3>
+<p style="margin: 0; font-size: 15px; color: {{t.muted}}">{{it.org}}</p>
+<sc-if value="{{it.hasLadder}}" hint-placeholder-val="{{ false }}"><p style="margin: 4px 0 0; font-family: {{t.mono}}; font-size: 12px; line-height: 1.6; color: {{t.muted}}">{{it.ladder}}</p></sc-if>
 </div>
-</sc-for>
-</div>
-<div style="flex: 0 1 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">
-<span aria-hidden="true" style="font-size: 28px; color: {{t.accent}}">→</span>
-<span>feeds into</span>
-</div>
-<div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 10px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">AGENT PROJECTS</p>
-<sc-for list="{{projects}}" as="p" hint-placeholder-count="4">
-<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; border-radius: 10px; background: {{p.bg}}; border: {{p.border}}; color: {{t.ink}}; font-family: {{t.sans}}; text-align: left; cursor: pointer">
-<span style="font-size: 16px; font-weight: 600">{{p.label}}</span>
-<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{p.meta}}</span>
+<sc-if value="{{it.hasScope}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 15px; line-height: 1.55">{{it.scope}}</p></sc-if>
+<sc-if value="{{it.hasHighlights}}" hint-placeholder-val="{{ true }}">
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5">
+<sc-for list="{{it.highlights}}" as="h" hint-placeholder-count="3"><li>{{h}}</li></sc-for>
+</ul>
+</sc-if>
+<sc-if value="{{it.hasGroups}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 6px">
+<span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Pick an area to see everything I did</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px">
+<sc-for list="{{it.groups}}" as="g" hint-placeholder-count="7">
+<div style="grid-column: {{g.span}}; display: flex; flex-direction: column; border: 1px solid {{g.border}}; border-radius: 10px; background: {{t.bg}}">
+<button type="button" onClick="{{g.toggle}}" aria-expanded="{{g.open}}" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border: 0; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; text-align: left; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 15px; font-weight: 600">{{g.name}}</span>
+<span style="font-size: 14px; line-height: 1.5; color: {{t.muted}}">{{g.summary}}</span>
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">{{g.countLabel}}</span>
+</span>
+<span aria-hidden="true" style="font-family: {{t.mono}}; font-size: 16px; line-height: 1.2; color: {{t.muted}}">{{g.sign}}</span>
 </button>
+<sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0 16px 16px 36px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.55">
+<sc-for list="{{g.items}}" as="gi" hint-placeholder-count="4"><li>{{gi}}</li></sc-for>
+</ul>
+</sc-if>
+</div>
 </sc-for>
 </div>
 </div>
-<div role="status" aria-live="polite" style="display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; border: 1px dashed {{t.rule}}; border-radius: 12px; background: {{t.paper}}">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">{{selectedLabel}} DEPENDS ON</p>
-<sc-for list="{{edges}}" as="e" hint-placeholder-count="2">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 13px; line-height: 1.6"><span style="color: {{t.muted}}">← {{e.from}}: </span>{{e.why}}</p>
-</sc-for>
+</sc-if>
+<div style="display: flex; gap: 6px 20px; flex-wrap: wrap; align-items: center">
+
+<sc-if value="{{it.hasQa}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{it.ask}}" style="min-height: 40px; padding: 4px 0; border: 0; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">Ask about this role →</button></sc-if>
+<sc-if value="{{it.hasLink}}" hint-placeholder-val="{{ false }}"><a href="{{it.href}}" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{it.link}}</a></sc-if>
+<sc-if value="{{it.hasLink2}}" hint-placeholder-val="{{ false }}"><a href="{{it.href2}}" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{it.link2}}</a></sc-if>
 </div>
+</article>
+</div>
+</li>
+</sc-for>
+</ol>
 </section>
 
-<section aria-labelledby="roles-h" style="display: flex; flex-direction: column; gap: 14px">
-<h2 id="roles-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 34px">Roles</h2>
+<section aria-labelledby="skills-h" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="skills-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 36px">Skills</h2>
 <div style="display: flex; flex-direction: column; border-top: 1px solid {{t.rule}}">
-<sc-for list="{{roles}}" as="r" hint-placeholder-count="3">
-<div style="display: flex; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; padding: 18px 0; border-bottom: 1px solid {{t.rule}}">
-<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 17px; font-weight: 600">{{r.title}}</span><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{r.hint}}</span></div>
-<span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">[years]</span>
+<sc-for list="{{skills}}" as="sk" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 24px; padding: 14px 0; border-bottom: 1px solid {{t.rule}}">
+<span style="font-size: 15px; font-weight: 600">{{sk.name}}</span>
+<span style="grid-column: span 2; min-width: 0; font-size: 15px; line-height: 1.55; color: {{t.muted}}">{{sk.list}}</span>
 </div>
 </sc-for>
 </div>
 </section>
 
 <section aria-labelledby="cert-h" style="display: flex; flex-direction: column; gap: 12px">
-<h2 id="cert-h" style="margin: 0; font-family: {{t.mono}}; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; color: {{t.muted}}">CERTIFICATES</h2>
+<h2 id="cert-h" style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}; font-weight: 500">Certificates</h2>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.paper}}; text-decoration: none; font-size: 14px">[Professional AI certificate · once earned] <span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">verify ↗</span></a>
-<a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.paper}}; text-decoration: none; font-size: 14px">[Existing certificate that matters for senior PM roles] <span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">verify ↗</span></a>
 </div>
 </section>
 </main>
 
-<footer style="border-top: 1px solid {{t.rule}}; padding: 28px 24px">
-<div style="max-width: 1040px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">
-<span>This site is an AI product. Turn on X-ray to see how it works.</span>
-<span>Updated [date, set on deploy] · © 2026 Aswin · [domain]</span>
-</div>
-</footer>
+<dc-import name="Footer" hint-size="100%,640px"></dc-import>
 
-<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="about" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
+<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="about" topic="{{askTopic}}" auto-ask="{{autoAsk}}" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":4600}}'>
 var ABOUT_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function aboutTokens(x) {
-  var c = x
-    ? { bg: '#101214', paper: '#171A1D', ink: '#E9E6DF', muted: '#A3A9B0', rule: '#2B3036', accent: '#8DBBF2', accentTint: '#17283D', btnBg: '#E9E6DF', btnInk: '#101214' }
-    : { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
+  var c = { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
   c.serif = ABOUT_FONTS.serif; c.sans = ABOUT_FONTS.sans; c.mono = ABOUT_FONTS.mono;
   return c;
 }
-var ABOUT_DEPS = [
-  { id: 'api', label: 'APIs & integrations platform', meta: '[Role] · [Company]' },
-  { id: 'health', label: 'Healthcare integrations', meta: '[Role] · [Company]' },
-  { id: 'stake', label: 'Platform stakeholder work', meta: 'engineering, partners, business teams' },
-  { id: 'dhees', label: "Running Dhee's", meta: 'fresh dog-food brand, direct to consumer' }
+var CV_STATS = [
+  ['9 years', 'across product and technology; 2 startups founded'],
+  ['125% growth', 'in B2B product revenue over 3 years at Zelthy'],
+  ['17 packages', 'shipped in 8 months; 95% adoption, 80% faster to deploy'],
+  ['1M API calls a day', 'at peak, across 100+ tenants and 25,000 users']
 ];
-var ABOUT_PROJECTS = [
-  { id: 'ce', label: 'AI integration builder', meta: 'CloudEagle.ai take-home concept', edges: [['api', 'connectors, auth and scopes are the whole job'], ['health', 'safety-first design where mistakes are costly']] },
-  { id: 'js', label: 'Job-search agent', meta: 'multi-step, approval before applying', edges: [['api', 'workflows that span several tools'], ['stake', 'an approval gate before anything irreversible']] },
-  { id: 'ig', label: "Dhee's Instagram competitor agent", meta: 'research agent for a business I run', edges: [['dhees', 'a real business question to answer'], ['api', 'pulling structured data out of a platform']] },
-  { id: 'site', label: "This site's fit check", meta: 'one endpoint, one knowledge base', edges: [['api', 'one shared endpoint behind two features'], ['health', 'guardrails for claims that must be true'], ['stake', 'stating trade-offs and gaps plainly']] }
+var CV_GENERAL = { label: 'My experience', qa: [
+  { q: 'What did he own at Zelthy?', a: 'Core platform capabilities end to end: RBAC with attribute-based access, authentication including SAML SSO with Azure AD, the workflow engine, data models, app lifecycle management, audit trails and messaging, built as separate packages with their own pricing.' },
+  { q: 'Has he managed integrations at scale?', a: 'Yes. At Zelthy he led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, built a connector framework used across 50+ tenants, and ran a daily two-way batch sync over client SOAP APIs handling millions of rows.' },
+  { q: 'Has he led a team?', a: 'Yes. At Zelthy he led and mentored 5 product managers and 2 interns, hired 3 of the PMs and ran the 1:1s and reviews behind 4 promotions. At The Solar Labs he led a team of 8 developers.' }
+] };
+var CV_ITEMS = [
+  { id: 'site', lane: 'project', dates: 'Nov 2026', title: 'Job-fit AI on this site', org: 'Side project · live on the home page',
+    scope: 'Paste a job description and get a cited verdict: what fits, with proof, and what doesn’t. A fixed pipeline over a knowledge base built from this CV.',
+    highlights: [], link: 'Try it on the home page →', href: 'Main.dc.html' },
+  { id: 'jsa', lane: 'project', dates: 'Oct 2026', title: 'AI job-search agent', org: 'Side project · Claude',
+    scope: 'An agent workflow that searches and scores LinkedIn jobs, maps my resume to each role and tracks applications, with an approval gate before anything is submitted.',
+    highlights: ['Orchestrated four agents: fit scoring, ideal resume, tailored resume, and applying after approval', 'Connected Drive and Chrome through MCP connectors and wrote a custom Claude Skill for job-fit scoring', 'Used to prepare 20+ applications; fit scores checked against LinkedIn’s match score'],
+    link: 'View recorded run →', href: '#'  },
+  { id: 'ig', lane: 'project', dates: 'Sep 2026', title: 'Instagram content intelligence agent', org: 'Side project · for Dhee’s',
+    scope: 'Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.', highlights: [], link: 'View recorded run →', href: '#' },
+  { id: 'web', lane: 'project', dates: '[date]', title: 'Dhee’s website', org: 'Side project · for Dhee’s · Astro, TypeScript, Cloudflare',
+    scope: 'Designed and built the company’s single-page site with Cursor and v0: recipes, prices, delivery areas and free-sample requests, with ordering over WhatsApp.',
+    highlights: ['Built on Astro and TypeScript, set up for Cloudflare Workers; 23 commits on GitHub', 'Local SEO with geo tags, neighbourhood-level descriptions and social cards; first page of search results for fresh dog food in Chennai', 'Five recipes with ingredients, calories, macros and per-kg prices; about 22 Chennai areas served'],
+    link: 'Visit dhees.com ↗', href: 'https://dhees.com', link2: 'View the code on GitHub ↗', href2: 'https://github.com/aswin-dhees/dpc-website' },
+  { id: 'dhees', lane: 'work', dates: 'Oct 2024 – Sep 2026', title: 'Founder and Product Lead', org: 'Dhee’s Pet Company · Chennai',
+    scope: 'Founded and ran a made-to-order fresh dog food business; built its product, operating systems and go-to-market from zero.',
+    highlights: [
+      'Owned 5 SKUs, recipes, marketing and sales; about 20 customers and 20 orders a month',
+      'Ran customer interviews, worked out margin per pack and changed pricing twice',
+      'Sized the Chennai market and wrote the market requirements document',
+      'Extended ERPNext with custom records for pets, owners and pack sizes',
+      'Generated production plans from sales orders automatically, saving about 1 hour a day',
+      'Got a label printer working on Linux with no vendor driver',
+      'Ran purchasing, inventory, delivery routing and invoicing in ERPNext',
+      'Built the website with Cursor and v0; first page of search results for fresh dog food in Chennai',
+      'Ran Google and Meta ads; narrower targeting improved lead quality'
+    ],
+    qa: [
+      { q: 'What did he build to run the business?', a: 'He set up ERPNext with custom records for pets, owners and pack sizes, scripted it so production plans come straight from sales orders (saving about an hour a day), got a label printer working on Linux without a vendor driver, and ran purchasing, inventory and delivery scheduling in it.' },
+      { q: 'How did he find customers?', a: 'Local SEO took the website, built with Cursor and v0 on Astro, to the first page of results for fresh dog food in Chennai. He ran Google Search and Meta ads, and narrowing targeting by locality and gender improved lead quality. It served about 20 customers and 20 orders a month.' },
+      { q: 'How did he decide pricing?', a: 'He calculated margin per pack and iterated pricing twice, using margin, competitor pricing and input from customer interviews.' }
+    ] },
+  { id: 'zelthy', lane: 'work', dates: 'Sep 2020 – Sep 2024', title: 'Senior Product Manager', org: 'Zelthy · Bangalore (remote)',
+    ladder: 'Senior PM, Oct 2022 – Sep 2024 · PM, Dec 2020 – Sep 2022 · Associate PM, Sep – Nov 2020',
+    scope: 'Multi-tenant B2B SaaS low-code platform at a 50-person startup: 100+ tenants, 25,000 users, 1M API calls a day at peak. Healthcare and pharma clients in Singapore, Malaysia, Vietnam, Hong Kong and Australia.',
+    highlights: [],
+    groups: [
+      { name: 'Core platform and integrations', summary: 'Owned RBAC/ABAC, SSO, the workflow engine and app lifecycle. 10+ integrations and a connector framework across 50+ tenants.', items: [
+        'Owned the product lifecycle and defined vision, strategy and roadmap for core platform capabilities: RBAC, authentication, workflow engine, data models, app lifecycle management, audit trails and messaging, designed as independent, customizable packages with pricing for each.',
+        'Decomposed platform components into reusable modules and contributed to multi-tenancy design; wrote technical requirements and data models for modules such as the workflow engine; owned app lifecycle management (versioning, promotion from dev to staging to production, and rollback).',
+        'Resolved a multi-tenant trade-off (data duplication versus per-app field flexibility) by proposing a shared directory app and persuading the CEO and CTO to build it; it now powers about 15 apps.',
+        'Delivered RBAC with attribute-based access control (row and column filters) so tenant admins across 100+ tenants self-manage users, roles and permissions; built an approval-based user provisioning workflow.',
+        'Delivered SAML SSO with Azure AD for 10+ enterprise clients; specified OTP login, MFA, password policies, session timeout and single-session login; audit trails logged every login, action and view.',
+        'Enabled tenants and app builders to define custom fields, foreign keys and one-to-many child tables, each extending a base model with built-in workflow, RBAC/ABAC, export and API support.',
+        'Ran API design reviews with engineers on REST endpoints, webhooks, authentication (API keys, OAuth) and request and response formats; tested APIs hands-on in Postman.',
+        'Led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, including inbound webhooks.',
+        'Built a connector framework of reusable connectors enabled and configured from one dashboard, replacing one-off per-app integrations; used across 50+ tenants.',
+        'Led a daily two-way batch data sync over client SOAP APIs handling millions of rows, with reconciliation and alerts for failed transfers.',
+        'Evaluated HL7 and FHIR for interoperability and chose a FHIR converter per package (design stage).',
+        'Migrated client master data (HCPs, hospitals, clinics) from Excel into apps, with cleaning, mapping, de-duplication and validation rules.'
+      ] },
+      { name: 'Product delivery, roadmap and metrics', summary: '17 packages in 8 months with 95% adoption. 80% of roadmap commitments on time. 30+ customer interviews.', items: [
+        'Delivered 17 software packages in 8 months (CRM, Appointment Scheduling, Messaging, CMS for Patient Education Programs); 95% of new apps adopted them and time to deploy fell 80%.',
+        'Updated the product vision and new-features roadmap, contributing to 125% growth in B2B product revenue over 3 years.',
+        'Wrote 150+ user stories per quarter with business requirements and acceptance criteria; managed roadmap, backlog and releases in Jira with traceability to test cases.',
+        'Prioritized with RICE, client input and adoption, defect and time-to-deploy metrics across 3 teams; delivered 80% of roadmap commitments on time.',
+        'Ran 30+ customer interviews, 5+ competitor analyses and 10+ vendor evaluations; discovery drove the move to code-based development (platform v3).',
+        'Split a D2C app into two phases to resolve a scope-versus-schedule trade-off; phase 1 launched on time while coordinating with the client’s SAP team.',
+        'Largest program: 4 engineers, 2 countries, 2 years, delivered on the committed date; launched a client program in 3 countries and rolled out a template in 5.',
+        'Worked with design to deliver 70+ designs on a shared UI component library and design system.'
+      ] },
+      { name: 'Releases, reliability and compliance', summary: 'Release gates and staged releases. 99.5% uptime commitment met. GDPR, HIPAA and SOC2.', items: [
+        'Defined the path to production: release criteria, release gates and staged releases across dev, staging and production with client UAT sign-off.',
+        'Defined support SLAs (4-hour first response, 6-hour triage) with a 99.5% uptime commitment, measured and met; monitored API errors in Sentry and wrote incident post-mortems.',
+        'Owned bug triage, integration alerts and incident handling; coordinated Play Store and App Store releases.',
+        'Specified security, privacy and regulatory requirements to meet GDPR, HIPAA and SOC2 with 100% compliance; wrote IQ, OQ and PQ validation documents; met data residency by hosting in Singapore and Australia.'
+      ] },
+      { name: 'Data, ML and AI', summary: 'ML OCR in production at 95% accuracy with human review. LLM prototypes. 10+ Power BI dashboards.', items: [
+        'Wrote requirements for ML-based OCR of patient prescriptions and bills, shipped to production: vendors evaluated on about 100 labelled documents; results under 90% confidence go to human review (about 10%); accuracy held at 95%, saving about 5 minutes per document.',
+        'Ideated and launched platform v3, moving to code-based development built for AI coding, cutting internal development time from 2 months to as little as 2 weeks.',
+        'Prototyped LLM features (not shipped): GPT-generated app configurations as JSON (about 70% worked without fixes), a chat-to-app proof of concept with LangChain, and a RAG assistant over product documentation.',
+        'Built batch pipelines into a data lake and delivered 10+ Power BI dashboards over millions of records.',
+        'Advised against sending patient data to LLMs because of security and privacy risks.'
+      ] },
+      { name: 'Commercial and go-to-market', summary: 'Moved pricing to usage-based. 2 RFP wins of about USD 100K each. Templates beta added USD 200K+ in revenue.', items: [
+        'Initiated the shift from seat-based to usage-based pricing and persuaded sales leadership to adopt it; used in 2 key enterprise deals and multiple RFPs.',
+        'Supported CEO-led sales with presales, pricing and RFP preparation; contributed to 2 enterprise RFP wins averaging about USD 100K.',
+        'Piloted configurable app templates as a beta with about 20 client business users; 6 apps deployed, saving clients USD 150K+ and adding USD 200K+ in revenue.',
+        'Managed 20+ enterprise solution projects valued at USD 500K+ across India and Southeast Asia.',
+        'Built an open-source developer community on Discord (50+ members) after the platform core was open-sourced as Zango; authored product documentation that saved 500 hours of developer time.'
+      ] },
+      { name: 'Client engagement and delivery', summary: '8+ enterprise clients, up to VP level. Teams of 20+. Scope creep down 80%+.', items: [
+        'Engagement manager for 8+ global enterprise clients, working with executives up to VP level; ran up to 5 client projects in parallel.',
+        'Established Agile Scrum delivery in Jira, reducing scope creep by 80%+, cutting turnaround time by 30% and increasing development efficiency by 40%.',
+        'Headed project teams of 20+ and tracked project financials; 80% of projects completed on time and within budget.',
+        'Delivered native Android and iOS apps for 100+ field staff and 1,000+ SMS notifications a day; most apps were multi-language.',
+        'Recovered an unhappy client engagement by working through the issues on site in Thailand.'
+      ] },
+      { name: 'Team leadership', summary: 'Led 5 PMs and 2 interns. Hired 3, drove 4 promotions. Utilization up 20%.', items: [
+        'Led and mentored 5 product managers and 2 interns; hired 3 of the PMs and drove 4 promotions; coached the PMs to use ChatGPT for PRDs and documentation.',
+        'Ran the PM operating rhythm (weekly product reviews, PRD reviews, quarterly roadmap reviews) and quarterly resource planning, improving utilization by 20%.'
+      ] }
+    ],
+    qa: [
+      { q: 'What did he own on the platform?', a: 'Core platform capabilities end to end: RBAC with attribute-based access, authentication including SAML SSO with Azure AD, the workflow engine, data models, app lifecycle management, audit trails and messaging, built as separate packages with their own pricing.' },
+      { q: 'How big was the integration work?', a: 'He led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, built a connector framework used across 50+ tenants, and ran a daily two-way batch sync over client SOAP APIs handling millions of rows.' },
+      { q: 'What did he ship with ML or AI?', a: 'ML-based OCR for prescriptions and bills, in production: 95% accuracy, with results under 90% confidence (about 10%) sent to human review, saving about 5 minutes per document. LLM features were prototyped but not shipped.' }
+    ] },
+  { id: 'solar', lane: 'work', dates: 'May 2017 – Jun 2020', title: 'Co-Founder, Product and Technology', org: 'The Solar Labs · Delhi',
+    scope: 'B2B SaaS solar design software for solar installers and EPC firms.',
+    highlights: [
+      'Co-founded the company and led product and technology from day one; INR 50L+ in revenue',
+      'Built 3D solar design software from satellite imagery; wrote frontend and Python backend code',
+      'Shipped 50+ ease-of-use features, cutting proposal creation time by 90%',
+      'Onboarded and supported 400+ customers',
+      'Hired and led 8 developers, interviewing 100+ candidates'
+    ],
+    qa: [
+      { q: 'What did he build?', a: '3D modelling software that used satellite imagery to model roofs, place and optimise solar panels and estimate generation, with breakeven analysis in customer proposals. He wrote production frontend and Python backend code for about 3 years.' },
+      { q: 'What was the impact?', a: 'INR 50L+ in revenue, 400+ customers onboarded and supported, and proposal creation time cut by 90% through 50+ ease-of-use features. He also led a team of 8 developers.' }
+    ] },
+  { id: 'edu', lane: 'edu', dates: 'Jun 2013 – May 2017', title: 'B.Tech, Computer Science and Engineering', org: 'IIT Mandi',
+    scope: '', highlights: [] }
 ];
+var CV_SKILLS = [
+  ['Product management', 'Vision and strategy, discovery to launch, 0-to-1, platform PM, roadmaps, RICE, PRDs, success metrics, customer interviews, market sizing, usage-based pricing, go-to-market, staged releases'],
+  ['Platform, APIs and integrations', 'Multi-tenant SaaS, REST and SOAP APIs, webhooks, API keys and OAuth, connector frameworks, batch sync and reconciliation, workflow engines, data models, app lifecycle, data migration, EHR integrations, HL7 and FHIR'],
+  ['Identity, security and compliance', 'IAM, RBAC, ABAC, SAML SSO (Azure AD), MFA, audit trails, GDPR, HIPAA, SOC2, IQ/OQ/PQ validation, data residency'],
+  ['Release and reliability', 'Release gates, UAT, SLAs, 99.5% uptime, Sentry, incident post-mortems, Scrum and Kanban, risk and dependency management, project financials'],
+  ['Data and AI', 'ML OCR, human-in-the-loop review, LLMs, LangChain, RAG (prototype), AI agents, prompt and output schema design, model evaluation, responsible AI, data lakes, Power BI, SQL'],
+  ['Leadership', 'Hiring, mentoring, performance reviews, stakeholder management, steering committees, presales and RFPs, distributed teams'],
+  ['Tools', 'Jira, Confluence, Postman, Figma, Claude, Claude Code, Cursor, v0, ChatGPT, Python, JavaScript, SQL, Django, Vue.js, React, ERPNext']
+];
+
+function cvPlainText() {
+  var out = ['Aswin A', 'Senior Product Manager · Platforms, integrations and agentic AI products', 'Chennai, India · linkedin.com/in/aswin-a-pm', '', 'EXPERIENCE'];
+  CV_ITEMS.forEach((it) => {
+    out.push('', it.title + ' — ' + it.org + ' (' + it.dates + ')');
+    if (it.scope) out.push(it.scope);
+    (it.groups || []).forEach((g) => g.items.forEach((x) => out.push('- ' + x)));
+    if (!it.groups) (it.highlights || []).forEach((x) => out.push('- ' + x));
+  });
+  out.push('', 'SKILLS');
+  CV_SKILLS.forEach((s) => out.push(s[0] + ': ' + s[1]));
+  return out.join('\n');
+}
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { xray: !!props.startInXray, askOpen: false, sel: 'ce' }; }
+  constructor(props) { super(props); this.state = { xray: !!props.startInXray, askOpen: false, askTopic: null, open: {}, copied: false, ownQ: '', autoAsk: '', narrow: typeof window !== 'undefined' && window.innerWidth < 640 }; }
+  componentDidMount() {
+    this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
+    if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() { if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
   componentDidUpdate(prev) {
     if (prev.startInXray !== this.props.startInXray) this.setState({ xray: !!this.props.startInXray });
   }
+  openTopic(topic, q) { this.setState({ askOpen: true, askTopic: topic, autoAsk: q || '' }); }
   renderVals() {
     var s = this.state, x = s.xray, t = aboutTokens(false);
-    var proj = ABOUT_PROJECTS.find((p) => p.id === s.sel) || ABOUT_PROJECTS[0];
-    var used = proj.edges.map((e) => e[0]);
-    var depLabel = (id) => (ABOUT_DEPS.find((d) => d.id === id) || {}).label;
+    var narrow = s.narrow;
     return {
-      t: t, xray: x, askOpen: s.askOpen,
-      deps: ABOUT_DEPS.map((d) => {
-        var on = used.indexOf(d.id) >= 0;
-        return { label: d.label, meta: d.meta, bg: on ? t.accentTint : t.paper, border: on ? '1px solid ' + t.accent : '1px solid ' + t.rule, opacity: on ? 1 : 0.55 };
+      t: t, xray: x, narrow: narrow, cols: narrow ? 'minmax(0, 1fr)' : '132px minmax(0, 1fr)', wideDisplay: narrow ? 'none' : 'flex', askOpen: s.askOpen, askTopic: s.askTopic, autoAsk: s.autoAsk,
+      copyLabel: s.copied ? 'Copied ✓' : 'Copy as plain text',
+      stats: CV_STATS.map((st) => ({ big: st[0], small: st[1] })),
+      generalQs: CV_GENERAL.qa.map((q) => ({ text: q.q, pick: () => this.openTopic(CV_GENERAL, q.q) })),
+      ownQ: s.ownQ,
+      onOwnQ: (e) => this.setState({ ownQ: e.target.value }),
+      askOwn: (e) => { if (e && e.preventDefault) e.preventDefault(); var q = this.state.ownQ.trim(); this.setState({ ownQ: '' }); this.openTopic(CV_GENERAL, q); },
+      items: CV_ITEMS.map((it) => {
+        var project = it.lane === 'project', edu = it.lane === 'edu';
+        return {
+          dates: it.dates, title: it.title, org: it.org, scope: it.scope, hasScope: !!it.scope,
+          ladder: it.ladder || '', hasLadder: !!it.ladder,
+          highlights: it.highlights || [], hasHighlights: !!(it.highlights && it.highlights.length),
+          hasGroups: !!it.groups,
+          groups: (it.groups || []).map((g, gi) => {
+            var key = it.id + ':' + gi, gOpen = !!s.open[key];
+            return { name: g.name, summary: g.summary || '', items: g.items, open: gOpen,
+              sign: gOpen ? '−' : '+', span: gOpen ? '1 / -1' : 'auto', border: gOpen ? t.accent : t.rule,
+              countLabel: gOpen ? 'Hide ' + g.items.length + ' points ↑' : 'See all ' + g.items.length + ' points ↓',
+              toggle: () => { var o = Object.assign({}, this.state.open); o[key] = !o[key]; this.setState({ open: o }); } };
+          }),
+          hasQa: !!it.qa, ask: () => this.openTopic({ label: it.title + ' · ' + it.org.split(' · ')[0], qa: it.qa || [] }),
+          hasLink: !!it.href, link: it.link || '', href: it.href || '#', hasLink2: !!it.href2, link2: it.link2 || '', href2: it.href2 || '#',
+          isProject: project,
+          indent: project ? (narrow ? '16px' : '40px') : '0px',
+          titleSize: project || edu ? '17px' : '20px',
+          cardBg: project ? 'transparent' : t.paper,
+          cardBorder: project ? '1.5px dashed ' + t.rule : '1px solid ' + t.rule,
+          dotBg: project ? t.bg : (edu ? t.paper : t.ink),
+          dotBorder: project ? t.muted : t.ink
+        };
       }),
-      projects: ABOUT_PROJECTS.map((p) => {
-        var on = p.id === s.sel;
-        return { label: p.label, meta: p.meta, on: on, bg: on ? t.paper : 'transparent', border: on ? '1.5px solid ' + t.ink : '1px solid ' + t.rule, pick: () => this.setState({ sel: p.id }) };
-      }),
-      selectedLabel: proj.label.toUpperCase(),
-      edges: proj.edges.map((e) => ({ from: depLabel(e[0]), why: e[1] })),
-      roles: [
-        { title: '[Role] · [Company]', hint: '[What you owned, one line: platform, APIs, integrations]' },
-        { title: '[Role] · [Company]', hint: '[Healthcare integrations: systems and outcome]' },
-        { title: "[Your title] · Dhee's", hint: 'Runs a fresh dog-food brand, direct to consumer' }
-      ],
+      skills: CV_SKILLS.map((sk) => ({ name: sk[0], list: sk[1] })),
+      copyText: () => {
+        try { if (navigator.clipboard) navigator.clipboard.writeText(cvPlainText()); } catch (e) {}
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 2000);
+      },
       toggleXray: () => this.setState({ xray: !this.state.xray }),
-      openAsk: () => this.setState({ askOpen: true }),
+      openAskGeneral: () => this.openTopic(CV_GENERAL, ''),
       closeAsk: () => this.setState({ askOpen: false })
     };
   }
