@@ -134,21 +134,31 @@ for (const [name, width, height] of SIZES) {
   });
 }
 
-// Contact (Footer.dc.html): the form, the designed "✓ SENT" state and the approved error line (M6).
+// Contact (FooterStates.dc.html, design update 7): the 6 states. Error and 429 are mocked; sending is held.
 for (const [name, width, height] of SIZES) {
-  for (const state of ["form", "sent", "error"] as const) {
+  for (const state of ["idle", "invalid", "sending", "sent", "error", "limited"] as const) {
     test(`capture contact-${state}-${name}`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto("/about");
       const section = page.locator("section#contact");
-      if (state !== "form") {
-        await section.getByLabel("Name").fill("Sam Doe");
-        await section.getByLabel("Work email").fill("sam@company.example");
-        await section.getByLabel("Message").fill(state === "error" ? `Hello ${FAKE.error}` : "Hello");
+      if (state === "error") await page.route("**/api/contact", (r) => r.fulfill({ status: 502, contentType: "application/json", body: '{"ok":false,"code":"error"}' }));
+      if (state === "limited")
+        await page.route("**/api/contact", (r) => r.fulfill({ status: 429, contentType: "application/json", body: '{"ok":false,"code":"rate_limited","retryAfterSec":1380}' }));
+      if (state === "sending") await page.route("**/api/contact", () => new Promise(() => {}));
+      if (state !== "idle") {
+        // FooterStates' sample: invalid has a bad email and no message.
+        await section.getByLabel("Name").fill("Priya Raman");
+        await section.getByLabel("Work email").fill(state === "invalid" ? "priya@acme" : "priya@acme.com");
+        await section.getByLabel("Role", { exact: true }).fill("Senior Platform PM");
+        if (state !== "invalid") await section.getByLabel("Message").fill("We’re hiring a Senior Platform PM for our integrations team. Open to a call this week?");
         await section.getByRole("button", { name: "Send to Aswin" }).click();
-        await (state === "sent" ? section.getByRole("status") : section.getByTestId("contact-line")).getByText(/\w/).first().waitFor();
+        if (state === "sent") await section.getByText("✓ SENT").waitFor();
+        else if (state === "sending") await section.getByText("Sending to Aswin’s inbox").waitFor();
+        else await section.getByTestId("contact-line").waitFor();
       }
       await page.evaluate(() => document.fonts.ready);
+      // Hide the sticky nav so it doesn't sit over the section in the crop.
+      await page.addStyleTag({ content: "header { visibility: hidden !important; }" });
       await section.screenshot({ path: `test-results/screens/contact-${state}-${name}.png` });
     });
   }

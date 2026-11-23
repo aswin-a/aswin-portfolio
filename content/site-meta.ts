@@ -6,8 +6,6 @@ export const siteMeta = {
   github: "https://github.com/aswin-a", // GitHub profile (Aswin, 2026-11-23)
   linkedin: "https://www.linkedin.com/in/aswin-a-pm", // From the public CV
   domain: "aswin-a.com", // Production domain (Aswin, 2026-11-20)
-  contactEmail: todo("[email]"), // TODO(aswin): public address for the contact form's mailto fallback
-  responseTime: todo("[response time]"), // TODO(aswin): "usually within …" on the contact success state
   postingCadence: todo("[2–3]"), // TODO(aswin): build log cadence, in weeks
   whatBreaksFirstAtScale: todo("[what breaks first at scale]"), // TODO(aswin)
   ninetyDayPlan: todo("[Your 90-day ramp-up plan.]"), // TODO(aswin)

@@ -19,6 +19,11 @@ export default defineConfig({
       SUPABASE_URL: "",
       SUPABASE_SERVICE_ROLE_KEY: "",
       VERCEL_ENV: "",
+      // The contact config shows the design's placeholders in e2e (design update 7).
+      CONTACT_PHONE: "",
+      CONTACT_PHONE_DISPLAY: "",
+      CONTACT_HOURS: "",
+      CONTACT_RESPONSE_TIME: "",
     },
     url: "http://localhost:3100",
     reuseExistingServer: false,

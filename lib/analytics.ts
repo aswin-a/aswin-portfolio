@@ -10,7 +10,9 @@ export type AnalyticsEvents = {
   ask_opened: { page: "home" | "work" | "log" | "about" };
   ask_question_sent: Record<string, never>;
   xray_toggled: { on: boolean };
-  contact_sent: Record<string, never>;
+  contact_whatsapp_click: Record<string, never>;
+  contact_call_click: Record<string, never>;
+  contact_submit: { outcome: "sent" | "invalid" | "error" | "limited"; contact_prefilled_role: boolean };
 };
 
 export const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "";

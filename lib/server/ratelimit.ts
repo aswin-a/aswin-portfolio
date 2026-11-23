@@ -29,21 +29,26 @@ export function resetMemoryLimits() {
 }
 
 export async function checkLimit(bucket: Bucket, visitor: string, env: ServerEnv): Promise<boolean> {
+  return (await takeToken(bucket, visitor, env)).success;
+}
+
+/** Like checkLimit, plus the seconds until the window frees a slot (0 on success). The contact form shows it (SPEC §9). */
+export async function takeToken(bucket: Bucket, visitor: string, env: ServerEnv): Promise<{ success: boolean; retryAfterSec: number }> {
   const { tokens, windowMs, window } = rule(bucket, env);
   const redis = redisOrNull(env);
+  const now = Date.now();
   if (!redis) {
     const key = `${bucket}:${visitor}`;
-    const now = Date.now();
     const hits = (memory.get(key) ?? []).filter((t) => now - t < windowMs);
     if (hits.length >= tokens) {
       memory.set(key, hits);
-      return false;
+      return { success: false, retryAfterSec: Math.max(1, Math.ceil((hits[0] + windowMs - now) / 1000)) };
     }
     hits.push(now);
     memory.set(key, hits);
-    return true;
+    return { success: true, retryAfterSec: 0 };
   }
   const limiter = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(tokens, window), prefix: `rl:${bucket}`, analytics: false });
-  const { success } = await limiter.limit(visitor);
-  return success;
+  const { success, reset } = await limiter.limit(visitor);
+  return { success, retryAfterSec: success ? 0 : Math.max(1, Math.ceil((reset - now) / 1000)) };
 }
