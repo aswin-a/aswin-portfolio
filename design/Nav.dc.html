@@ -18,8 +18,8 @@
 <span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">pm · builds for agents</span>
 </a>
 <div style="display: flex; align-items: center; gap: 4px 18px; flex-wrap: wrap">
-<sc-for list="{{links}}" as="l" hint-placeholder-count="3">
-<a href="{{l.href}}" aria-current="{{l.current}}" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; color: {{l.color}}; text-decoration: none; border-bottom: {{l.underline}}">{{l.label}}</a>
+<sc-for list="{{links}}" as="l" hint-placeholder-count="4">
+<a href="{{l.href}}" onClick="{{l.click}}" aria-current="{{l.current}}" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; color: {{l.color}}; text-decoration: none; border-bottom: {{l.underline}}">{{l.label}}</a>
 </sc-for>
 <button type="button" onClick="{{toggle}}" aria-pressed="{{xray}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px; border-radius: 999px; border: 1px solid {{toggleBorder}}; background: {{toggleBg}}; color: {{toggleInk}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">
 <span style="display: inline-block; width: 30px; height: 18px; border-radius: 999px; background: {{trackBg}}; position: relative"><span style="position: absolute; top: 2px; left: {{knobLeft}}; width: 14px; height: 14px; border-radius: 999px; background: {{knobBg}}"></span></span>
@@ -50,13 +50,21 @@ class Component extends DCLogic {
     var items = [
       { id: 'work', label: 'Case studies', href: 'Work.dc.html' },
       { id: 'log', label: 'Build log', href: 'BuildLog.dc.html' },
-      { id: 'about', label: 'CV', href: 'About.dc.html' }
+      { id: 'about', label: 'CV', href: 'About.dc.html' },
+      { id: 'contact', label: 'Contact', href: '#contact' }
     ];
     return {
       t: t, xray: x,
       showNew: !!this.props.isNew && !x,
       links: items.map((l) => ({
         label: l.label, href: l.href,
+        click: (e) => {
+          if (l.id !== 'contact' || typeof document === 'undefined') return;
+          var el = document.getElementById('contact');
+          if (!el) return;
+          if (e && e.preventDefault) e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
         current: l.id === cur ? 'page' : undefined,
         color: l.id === cur ? t.ink : t.muted,
         underline: l.id === cur ? '2px solid ' + t.ink : '2px solid transparent'

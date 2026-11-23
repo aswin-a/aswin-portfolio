@@ -12,6 +12,18 @@ const LINKS: { id: NavCurrent; label: string; href: string }[] = [
   { id: "about", label: "CV", href: "/about" },
 ];
 
+/**
+ * "Contact" (Nav.dc.html, design update 7): smooth-scrolls to the shared Footer's #contact on the
+ * current page; a jump under prefers-reduced-motion. Without the element it falls back to the link.
+ */
+function scrollToContact(e: React.MouseEvent<HTMLAnchorElement>) {
+  const el = document.getElementById("contact");
+  if (!el) return;
+  e.preventDefault();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+
 /** Header from Nav.dc.html. */
 export function Nav({ current }: { current: NavCurrent }) {
   const { xray, toggleXray, openAsk } = useSite();
@@ -65,6 +77,13 @@ export function Nav({ current }: { current: NavCurrent }) {
               </Link>
             );
           })}
+          <a
+            href="#contact"
+            onClick={scrollToContact}
+            className="inline-flex min-h-11 items-center border-b-2 border-transparent text-[15px] text-muted no-underline"
+          >
+            Contact
+          </a>
           <button
             type="button"
             onClick={toggleXray}

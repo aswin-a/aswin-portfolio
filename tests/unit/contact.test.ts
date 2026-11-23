@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { composeEmail, handleContact, type ResendEmail } from "@/lib/contact/handle";
-import { ContactRequestSchema } from "@/lib/contact/schema";
+import { contactConfig, telHref, waGreeting, waHref } from "@/lib/contact/config";
+import { minutesText } from "@/lib/contact/copy";
+import { ContactRequestSchema, invalidFields } from "@/lib/contact/schema";
 import type { ServerEnv } from "@/lib/server/env";
 import { resetMemoryLimits } from "@/lib/server/ratelimit";
 
@@ -24,16 +26,22 @@ function post(body: unknown, ip = "198.51.100.4") {
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
-const status = async (r: Response) => ((await r.json()) as { status: string }).status;
+type Reply = { ok: boolean; code?: string; fields?: string[]; retryAfterSec?: number };
+const json = async (r: Response) => (await r.json()) as Reply;
+/** "sent" for ok, else the code. */
+const status = async (r: Response) => {
+  const j = await json(r);
+  return j.ok ? "sent" : j.code === "rate_limited" ? "limited" : j.code!;
+};
 
 beforeEach(() => resetMemoryLimits());
 
 describe("/api/contact", () => {
-  it("sends through Resend with reply-to set to the sender", async () => {
+  it("sends one notification through Resend with reply-to set to the sender (no auto-reply)", async () => {
     const sent: ResendEmail[] = [];
     const res = await handleContact(post(BODY), { env: ENV, verify: ok, send: async (m) => (sent.push(m), true) });
     expect(res.status).toBe(200);
-    expect(await status(res)).toBe("sent");
+    expect(await json(res)).toEqual({ ok: true });
     expect(sent).toHaveLength(1);
     expect(sent[0]).toMatchObject({ to: ["inbox@example.com"], from: "Site <contact@example.com>", reply_to: "sam@company.example" });
     expect(sent[0].text).toContain("Hello there");
@@ -55,23 +63,29 @@ describe("/api/contact", () => {
   });
 
   it.each([
-    ["no name", { ...BODY, name: "  " }],
-    ["bad email", { ...BODY, email: "not-an-email" }],
-    ["no message", { ...BODY, msg: "" }],
-    ["too long", { ...BODY, msg: "x".repeat(5001) }],
-  ])("rejects %s as invalid without sending", async (_, body) => {
+    ["no name", { ...BODY, name: "  " }, ["name"]],
+    ["bad email", { ...BODY, email: "priya@acme" }, ["email"]],
+    ["no message", { ...BODY, msg: "" }, ["msg"]],
+    ["name and message", { ...BODY, name: "", msg: " " }, ["name", "msg"]],
+    ["too long", { ...BODY, msg: "x".repeat(5001) }, ["msg"]],
+    ["role too long", { ...BODY, role: "x".repeat(161) }, ["role"]],
+  ])("rejects %s as invalid with its fields, without sending", async (_, body, fields) => {
     const send = vi.fn(async () => true);
     const res = await handleContact(post(body), { env: ENV, verify: ok, send });
     expect(res.status).toBe(400);
-    expect(await status(res)).toBe("invalid");
+    expect(await json(res)).toEqual({ ok: false, code: "invalid", fields });
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("rejects a body that isn't JSON", async () => {
-    expect(await status(await handleContact(post("{nope"), { env: ENV, verify: ok }))).toBe("invalid");
+  it("role is optional", async () => {
+    expect(await status(await handleContact(post({ ...BODY, role: "" }), { env: ENV, verify: ok, send: async () => true }))).toBe("sent");
   });
 
-  it("refuses a failed Turnstile check before sending", async () => {
+  it("a body that isn't JSON is an error", async () => {
+    expect(await status(await handleContact(post("{nope"), { env: ENV, verify: ok }))).toBe("error");
+  });
+
+  it("refuses a failed Turnstile check before sending, as error (never invalid)", async () => {
     const send = vi.fn(async () => true);
     const res = await handleContact(post(BODY), { env: ENV, verify: async () => ({ ok: false, reason: "invalid" }), send });
     expect(res.status).toBe(403);
@@ -89,7 +103,11 @@ describe("/api/contact", () => {
     for (let i = 0; i < 3; i++) expect(await status(await handleContact(post(BODY), { env: ENV, verify: ok, send }))).toBe("sent");
     const res = await handleContact(post(BODY), { env: ENV, verify: ok, send });
     expect(res.status).toBe(429);
-    expect(await status(res)).toBe("limited");
+    const j = await json(res);
+    expect(j.code).toBe("rate_limited");
+    expect(j.retryAfterSec).toBeGreaterThan(3500);
+    expect(j.retryAfterSec).toBeLessThanOrEqual(3600);
+    expect(res.headers.get("retry-after")).toBe(String(j.retryAfterSec));
     expect(send).toHaveBeenCalledTimes(3);
     // Another visitor is unaffected.
     expect(await status(await handleContact(post(BODY, "198.51.100.99"), { env: ENV, verify: ok, send }))).toBe("sent");
@@ -127,5 +145,41 @@ describe("composeEmail", () => {
   it("keeps the subject on one line", () => {
     const req = ContactRequestSchema.parse({ ...BODY, name: "Sam\r\nBcc: x@y.z" });
     expect(composeEmail(req, ENV).subject).not.toMatch(/[\r\n]/);
+  });
+});
+
+describe("contact config (design update 7)", () => {
+  it("reads phone, hours and response time from env", () => {
+    const c = contactConfig({ CONTACT_PHONE: "+91 98765 43210", CONTACT_PHONE_DISPLAY: "+91 98765 43210", CONTACT_HOURS: "Mon–Fri", CONTACT_RESPONSE_TIME: "a day" });
+    expect(c).toEqual({ digits: "919876543210", phoneDisplay: "+91 98765 43210", hours: "Mon–Fri", responseTime: "a day" });
+    expect(telHref(c.digits)).toBe("tel:+919876543210");
+  });
+  it("falls back to the design placeholders and # links when unset or not E.164", () => {
+    for (const env of [{}, { CONTACT_PHONE: "98765" }]) {
+      const c = contactConfig(env);
+      expect(c).toEqual({ digits: "", phoneDisplay: "+91 [number]", hours: "[Mon–Fri, 10am–7pm IST]", responseTime: "[response time]" });
+      expect(waHref(c.digits, "")).toBe("#");
+      expect(telHref(c.digits)).toBe("#");
+    }
+  });
+  it("wa.me text: greeting with the role, plus the typed message when asked", () => {
+    expect(waGreeting("")).toBe("Hi Aswin, I found your portfolio.");
+    expect(waGreeting("Senior Platform PM")).toBe("Hi Aswin, I found your portfolio. I’m hiring for a Senior Platform PM role.");
+    const u = new URL(waHref("919876543210", "Senior Platform PM", "Open to a call?"));
+    expect(u.origin + u.pathname).toBe("https://wa.me/919876543210");
+    expect(u.searchParams.get("text")).toBe("Hi Aswin, I found your portfolio. I’m hiring for a Senior Platform PM role.\n\nOpen to a call?");
+  });
+});
+
+describe("form checks", () => {
+  it("matches the design: name and message required, email shaped, role optional", () => {
+    expect(invalidFields({ name: "Priya Raman", email: "priya@acme", role: "", msg: "" })).toEqual(["email", "msg"]);
+    expect(invalidFields({ name: "a", email: "a@b.c", role: "", msg: "m" })).toEqual([]);
+  });
+  it("[time] is whole minutes, rounded up", () => {
+    expect(minutesText(1)).toBe("1 minute");
+    expect(minutesText(60)).toBe("1 minute");
+    expect(minutesText(61)).toBe("2 minutes");
+    expect(minutesText(1380)).toBe("23 minutes");
   });
 });

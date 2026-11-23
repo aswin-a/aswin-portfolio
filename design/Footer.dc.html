@@ -17,7 +17,14 @@
 <div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 14px">
 <h2 id="contact-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(36px, 6vw, 48px); line-height: 1.05; letter-spacing: -0.01em">Talk to Aswin.</h2>
 <p style="margin: 0; font-family: {{t.serif}}; font-size: 20px; line-height: 1.45; color: {{t.muted}}">If the fit check sent you here, the role is already filled in. I read every message myself.</p>
-<div style="display: flex; gap: 8px 18px; flex-wrap: wrap; margin-top: 8px">
+<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px">
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<a href="{{waHref}}" target="_blank" rel="noopener" style="flex: 1 1 170px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 10px 18px; border-radius: 10px; border: 1px solid {{t.rule}}; background: {{t.paper}}; color: {{t.ink}}; font-size: 15px; font-weight: 600; text-decoration: none"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 999px; background: #25A35A"></span>WhatsApp me</a>
+<a href="{{telHref}}" style="flex: 1 1 170px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 10px 18px; border-radius: 10px; border: 1px solid {{t.rule}}; background: {{t.paper}}; color: {{t.ink}}; font-size: 15px; font-weight: 600; text-decoration: none"><span aria-hidden="true" style="font-family: {{t.mono}}; font-size: 14px; color: {{t.accent}}">☎</span>Call me</a>
+</div>
+<span style="font-family: {{t.mono}}; font-size: 12px; line-height: 1.6; color: {{t.muted}}">{{phone}} · calls {{hours}} · WhatsApp anytime{{waNote}}</span>
+</div>
+<div style="display: flex; gap: 8px 18px; flex-wrap: wrap">
 <a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">LinkedIn [link]</a>
 <a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">GitHub [link]</a>
 <a href="About.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">CV</a>
@@ -25,29 +32,43 @@
 </div>
 <div style="flex: 1 1 420px">
 <sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
-<form onSubmit="{{send}}" style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
+<form onSubmit="{{send}}" noValidate aria-busy="{{busy}}" style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <label for="c-name" style="font-size: 14px; font-weight: 500">Name</label>
-<input id="c-name" type="text" value="{{form.name}}" onChange="{{onName}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+<input id="c-name" type="text" value="{{form.name}}" onChange="{{onName}}" disabled="{{busy}}" aria-invalid="{{e.name.bad}}" aria-describedby="c-name-err" style="min-height: 44px; padding: 8px 12px; border-radius: 8px; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; opacity: {{fieldOpacity}}; border: 1px solid {{e.name.border}}; background: {{e.name.bg}}">
+<sc-if value="{{e.name.bad}}" hint-placeholder-val="{{ false }}"><span id="c-name-err" style="font-size: 13px; color: {{t.amberText}}">Add your name.</span></sc-if>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <label for="c-email" style="font-size: 14px; font-weight: 500">Work email</label>
-<input id="c-email" type="email" value="{{form.email}}" onChange="{{onEmail}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+<input id="c-email" type="email" value="{{form.email}}" onChange="{{onEmail}}" disabled="{{busy}}" aria-invalid="{{e.email.bad}}" aria-describedby="c-email-err" style="min-height: 44px; padding: 8px 12px; border-radius: 8px; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; opacity: {{fieldOpacity}}; border: 1px solid {{e.email.border}}; background: {{e.email.bg}}">
+<sc-if value="{{e.email.bad}}" hint-placeholder-val="{{ false }}"><span id="c-email-err" style="font-size: 13px; color: {{t.amberText}}">Enter an email like name@company.com.</span></sc-if>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <label for="c-role" style="font-size: 14px; font-weight: 500">Role</label>
-<input id="c-role" type="text" value="{{form.role}}" onChange="{{onRoleField}}" placeholder="e.g. Senior Platform PM" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{roleBorder}}; border-radius: 8px; background: {{roleBg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
-<sc-if value="{{rolePrefilled}}" hint-placeholder-val="{{ false }}">
-<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">pre-filled from your fit check</span>
-</sc-if>
+<input id="c-role" type="text" value="{{form.role}}" onChange="{{onRoleField}}" disabled="{{busy}}" aria-invalid="{{e.role.bad}}" aria-describedby="c-role-err" placeholder="e.g. Senior Platform PM" style="min-height: 44px; padding: 8px 12px; border-radius: 8px; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; opacity: {{fieldOpacity}}; border: 1px solid {{e.role.border}}; background: {{e.role.bg}}">
+<sc-if value="{{e.role.bad}}" hint-placeholder-val="{{ false }}"><span id="c-role-err" style="font-size: 13px; color: {{t.amberText}}"></span></sc-if>
+<sc-if value="{{rolePrefilled}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">pre-filled from your fit check</span></sc-if>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <label for="c-msg" style="font-size: 14px; font-weight: 500">Message</label>
-<textarea id="c-msg" rows="4" value="{{form.msg}}" onChange="{{onMsg}}" style="padding: 10px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; resize: vertical"></textarea>
+<textarea id="c-msg" rows="4" value="{{form.msg}}" onChange="{{onMsg}}" disabled="{{busy}}" aria-invalid="{{e.msg.bad}}" aria-describedby="c-msg-err" style="padding: 10px 12px; border: 1px solid {{e.msg.border}}; border-radius: 8px; background: {{e.msg.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; resize: vertical; opacity: {{fieldOpacity}}"></textarea>
+<sc-if value="{{e.msg.bad}}" hint-placeholder-val="{{ false }}"><span id="c-msg-err" style="font-size: 13px; color: {{t.amberText}}">Add a line or two about the role.</span></sc-if>
 </div>
-<button type="submit" style="align-self: flex-start; min-height: 48px; padding: 12px 22px; border-radius: 10px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 16px; font-weight: 600; cursor: pointer">Send to Aswin</button>
+<sc-if value="{{hasLine}}" hint-placeholder-val="{{ false }}">
+<div role="{{lineRole}}" style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; border: 1px {{lineBorderStyle}} {{lineBorder}}; background: {{lineBg}}">
+<span aria-hidden="true" style="flex: none; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.06em; color: {{lineInk}}; padding-top: 2px">{{lineTag}}</span>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; line-height: 1.5; color: {{t.ink}}">{{lineText}}</span>
+<sc-if value="{{lineWa}}" hint-placeholder-val="{{ false }}"><a href="{{waHref}}" target="_blank" rel="noopener" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">Send it on WhatsApp instead →</a></sc-if>
+</div>
+</div>
+</sc-if>
+<div style="display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap">
+<button type="submit" disabled="{{btnDisabled}}" style="min-height: 48px; padding: 12px 22px; border-radius: 10px; border: 0; background: {{btnBg}}; color: {{btnInk}}; font-family: {{t.sans}}; font-size: 16px; font-weight: 600; cursor: {{btnCursor}}">{{btnLabel}}</button>
+<sc-if value="{{sending}}" hint-placeholder-val="{{ false }}"><span role="status" style="display: inline-flex; align-items: center; gap: 8px; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}"><span aria-hidden="true" style="display: inline-flex; gap: 4px"><sc-for list="{{dots}}" as="d" hint-placeholder-count="3"><span style="width: 6px; height: 6px; border-radius: 999px; background: {{d}}"></span></sc-for></span>Sending to Aswin’s inbox</span></sc-if>
+</div>
 </form>
 </sc-if>
 <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
@@ -68,19 +89,39 @@
 </footer>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"$preview":{"width":1280,"height":640}}'>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"initial":{"editor":"enum","options":["idle","invalid","sending","sent","error","limited"],"default":"idle"},"still":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":640}}'>
+var FOOT_PHONE = '+91 [number]';
+var FOOT_PHONE_DIGITS = '91XXXXXXXXXX';
+var FOOT_HOURS = '[Mon–Fri, 10am–7pm IST]';
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { sent: false, prefilled: !!props.role, narrow: typeof window !== 'undefined' && window.innerWidth < 640, form: { name: '', email: '', role: props.role || '', msg: '' } };
+    var init = props.initial || 'idle';
+    var sample = { name: 'Priya Raman', email: 'priya@acme.com', role: props.role || 'Senior Platform PM', msg: 'We’re hiring a Senior Platform PM for our integrations team. Open to a call this week?' };
+    var form = init === 'idle' ? { name: '', email: '', role: props.role || '', msg: '' } : (init === 'invalid' ? { name: 'Priya Raman', email: 'priya@acme', role: props.role || '', msg: '' } : sample);
+    this.state = { status: init, prefilled: !!props.role, tick: 0, narrow: typeof window !== 'undefined' && window.innerWidth < 640, form: form };
     this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
   }
-  componentDidMount() { if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize); }
-  componentWillUnmount() { if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  componentDidMount() { if (this.state.status === 'sending' && !this.props.still) this.startSending(); if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize); }
+  componentWillUnmount() { this.stop(); if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  errors(f) {
+    return { name: !f.name.trim(), email: !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim()), role: false, msg: !f.msg.trim() };
+  }
+  startSending() {
+    this.stop();
+    this.setState({ status: 'sending', tick: 0 });
+    if (this.props.still) return;
+    this.timer = setInterval(() => {
+      var n = this.state.tick + 1;
+      if (n >= 6) { this.stop(); this.setState({ status: 'sent', tick: 0 }); }
+      else this.setState({ tick: n });
+    }, 300);
+  }
   componentDidUpdate(prev) {
     if (prev.role !== this.props.role && this.props.role) {
       var f = Object.assign({}, this.state.form, { role: this.props.role });
-      this.setState({ form: f, prefilled: true, sent: false });
+      this.setState({ form: f, prefilled: true, status: 'idle' });
     }
   }
   setField(k, v) { var f = Object.assign({}, this.state.form); f[k] = v; this.setState({ form: f }); }
@@ -89,15 +130,44 @@ class Component extends DCLogic {
     var t = { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8',
       serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
     var pre = s.prefilled && !!s.form.role;
+    var st = s.status, err = st === 'invalid' ? this.errors(s.form) : { name: false, email: false, role: false, msg: false };
+    var nBad = ['name', 'email', 'msg'].filter((k) => err[k]).length;
+    var amber = { text: '#8A5510', border: '#C08A2E', bg: '#FBF2E2' };
+    t.amberText = amber.text;
+    var fieldVal = (k) => ({ bad: !!err[k], border: err[k] ? amber.border : (k === 'role' && pre ? t.accent : t.rule), bg: err[k] ? amber.bg : (k === 'role' && pre ? t.accentTint : t.bg) });
+    var lines = {
+      invalid: { tag: 'CHECK', text: nBad === 1 ? 'One field needs a fix before this can go.' : nBad + ' fields need a fix before this can go.', ink: amber.text, border: amber.border, bg: amber.bg, style: 'solid', role: 'alert', wa: false },
+      error: { tag: 'NOT SENT', text: 'That didn’t go through, but your message is still here. Try again, or reach me another way.', ink: amber.text, border: amber.border, bg: amber.bg, style: 'solid', role: 'alert', wa: true },
+      limited: { tag: 'PAUSED', text: 'This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in [time], or right now on WhatsApp.', ink: t.muted, border: t.rule, bg: t.bg, style: 'dashed', role: 'status', wa: true }
+    };
+    var line = lines[st] && !(st === 'invalid' && nBad === 0) ? lines[st] : null;
+    var sending = st === 'sending', limited = st === 'limited';
     return {
+      phone: FOOT_PHONE, hours: FOOT_HOURS,
+      telHref: 'tel:+' + FOOT_PHONE_DIGITS,
+      waHref: 'https://wa.me/' + FOOT_PHONE_DIGITS + '?text=' + encodeURIComponent(s.form.role ? 'Hi Aswin, I found your portfolio. I’m hiring for a ' + s.form.role + ' role.' : 'Hi Aswin, I found your portfolio.'),
+      waNote: pre ? ' · role added to the message' : '',
       t: t, pad: s.narrow ? '48px 20px 56px' : '72px 24px 88px',
-      notSent: !s.sent, sent: s.sent, form: s.form, rolePrefilled: pre,
-      roleBorder: pre ? t.accent : t.rule, roleBg: pre ? t.accentTint : t.bg,
+      notSent: st !== 'sent', sent: st === 'sent', form: s.form, rolePrefilled: pre,
+      e: { name: fieldVal('name'), email: fieldVal('email'), role: fieldVal('role'), msg: fieldVal('msg') },
+      busy: sending, sending: sending, fieldOpacity: sending ? 0.6 : 1,
+      dots: [0, 1, 2].map((i) => (s.tick % 3 === i ? t.ink : t.rule)),
+      hasLine: !!line, lineTag: line ? line.tag : '', lineText: line ? line.text : '', lineInk: line ? line.ink : t.muted,
+      lineBorder: line ? line.border : t.rule, lineBg: line ? line.bg : t.bg, lineBorderStyle: line ? line.style : 'solid', lineRole: line ? line.role : 'status', lineWa: !!(line && line.wa),
+      btnLabel: sending ? 'Sending…' : (st === 'error' ? 'Try again' : 'Send to Aswin'),
+      btnDisabled: sending || limited, btnBg: sending || limited ? t.rule : t.btnBg, btnInk: sending || limited ? t.muted : t.btnInk, btnCursor: sending || limited ? 'not-allowed' : 'pointer',
       onName: (e) => this.setField('name', e.target.value),
       onEmail: (e) => this.setField('email', e.target.value),
       onRoleField: (e) => { this.setField('role', e.target.value); this.setState({ prefilled: false }); },
       onMsg: (e) => this.setField('msg', e.target.value),
-      send: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ sent: true }); }
+      send: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        var cur = this.state.status;
+        if (cur === 'sending' || cur === 'limited') return;
+        var er = this.errors(this.state.form);
+        if (er.name || er.email || er.msg) { this.setState({ status: 'invalid' }); return; }
+        this.startSending();
+      }
     };
   }
 }

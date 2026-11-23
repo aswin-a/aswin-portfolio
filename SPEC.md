@@ -16,8 +16,9 @@ Scope: **v1 only.** No vector database, no embeddings.
 | `Main.dc.html` | Home page, 1440 wide | `/` |
 | `Hero.dc.html` | Fit-check hero component (all logic + copy) | `components/fit-check/*` |
 | `HeroStates.dc.html` | The hero's states side by side: empty, running, result, badfit, error, limited, plus "X-ray on: Break my AI" (the empty fit check with the X-ray red-team panel below it) | Acceptance reference for the hero |
-| `Nav.dc.html` | Header with Case studies / Build log / CV, X-ray toggle, Ask my work ⌘K | `components/nav.tsx` |
-| `Footer.dc.html` | Shared "Talk to Aswin" contact section + site footer bar, on every page (design update 6) | `components/footer.tsx` |
+| `Nav.dc.html` | Header with Case studies / Build log / CV / Contact (design update 7), X-ray toggle, Ask my work ⌘K | `components/nav.tsx` |
+| `Footer.dc.html` | Shared "Talk to Aswin" contact section + site footer bar, on every page (design update 6); WhatsApp and call buttons and the contact form's states (design update 7; props `initial` and `still`) | `components/footer.tsx` |
+| `FooterStates.dc.html` | The contact form's 6 states side by side: Ready, Invalid, Sending, Sent, Error, Rate-limited (design update 7) | Acceptance reference for the contact form |
 | `Ask.dc.html` | "Ask my work" command bar (desktop modal; `sheet` prop = mobile bottom sheet; optional `topic` and `autoAsk`, design update 6) | `components/ask/*` |
 | `Work.dc.html` | CloudEagle case study, the PRD template for every product's case study | `/work/[slug]` |
 | `BuildLog.dc.html` | Build log index with category filters | `/log` |
@@ -106,7 +107,7 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 - It persists across page navigation and reloads within the session (sessionStorage), and can be set by `?xray=1`.
 - Intro banner on home: "New here? Try X-ray." with "Turn on X-ray" and "Got it". Shown until dismissed or X-ray is turned on; the Nav shows a "NEW" pill while the banner is showing. Remember dismissal in localStorage.
 - "How I build agentic products, with proof" cards marked "live here" turn X-ray on and scroll to their anchor: the hero (`#top`) or the Break my AI panel (`#break-my-ai`). That panel only exists while X-ray is on, so X-ray turns on first, then the page scrolls. The "planned" card has no link.
-- **Shared Footer on every page** (`Footer.dc.html`, design update 6): one component, rendered at the end of every page. It holds the "Talk to Aswin." contact section (`section#contact`, padding `72px 24px 88px`, or `48px 20px 56px` below 640px; links LinkedIn, GitHub, CV; the contact form, §9) and then the footer bar: "This site is an AI product. Turn on X-ray to see how it works." and "Updated {date} · © 2026 Aswin · {domain}", the same on phones (the one-line phone footer is gone). The `#contact` anchor works from every page. `{date}` is filled at build time (the build's date, `BUILD_DATE`, formatted like "20 Nov 2026"), never hard-coded. There is no per-page contact or footer code.
+- **Shared Footer on every page** (`Footer.dc.html`, design update 6): one component, rendered at the end of every page. It holds the "Talk to Aswin." contact section (`section#contact`, padding `72px 24px 88px`, or `48px 20px 56px` below 640px; links LinkedIn, GitHub, CV; the contact form, §9) and then the footer bar: "This site is an AI product. Turn on X-ray to see how it works." and "Updated {date} · © 2026 Aswin · {domain}", the same on phones (the one-line phone footer is gone). The `#contact` anchor works from every page. Above the LinkedIn / GitHub / CV links sit the direct contact options (design update 7): "WhatsApp me" (opens `https://wa.me/{digits}?text=…` in a new tab; the text is "Hi Aswin, I found your portfolio. I’m hiring for a {role} role." when the form has a role, else "Hi Aswin, I found your portfolio."), "Call me" (`tel:+{digits}`) and the line "{phone} · calls {hours} · WhatsApp anytime", plus " · role added to the message" when the role was pre-filled from the fit check. Phone, hours and response time come from config (§13), never code; the phone number is shown only on the page, never in JSON-LD, `llms*.txt` or the markdown twins unless Aswin says yes. `{date}` is filled at build time (the build's date, `BUILD_DATE`, formatted like "20 Nov 2026"), never hard-coded. There is no per-page contact or footer code.
 
 **Ask my work** (`Ask.dc.html`, `MobileAsk.dc.html`)
 - Opens from the Nav button, the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it. Focus is trapped while open and returns to the trigger on close.
@@ -115,6 +116,8 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 - "Jump to" links as designed. **No "Break my AI" chips in Ask** (Aswin, 2026-11-23, overriding `Ask.dc.html`): Break my AI lives on the hero only. The attack questions still get their guarded answers when typed.
 - **Topic mode (design update 6):** Ask accepts an optional `topic` (`{label, questions}`) and an initial question (`autoAsk`). With a topic, a box "ASKING ABOUT · {label}" lists the topic's questions as tappable rows. An initial question is asked as soon as Ask opens. The CV page opens Ask this way: "Ask about this role →" (the item's questions, label "{title} · {company}"), the Ask box's own question and its 3 chips (topic "My experience"). Topic questions are **suggested prompts only**: they go to the live endpoint like any other question; the prototype's canned `a` answers are never shown.
 - **Session memory:** after a fit check, its context (role, match count, gaps) is carried into Ask and shown in the "CONTINUING FROM YOUR FIT CHECK · SESSION MEMORY" box with "Forget this". It lives in sessionStorage only and is sent with Ask requests. Nothing is stored server-side.
+
+**Contact in the nav (design update 7):** a 4th link "Contact" after CV, `href="#contact"`. It smooth-scrolls to `#contact` on the current page (every page has the Footer); if the element isn't there it falls back to the normal link. `prefers-reduced-motion` makes the scroll a jump.
 
 **Contact pre-fill:** "Talk to Aswin about this role" in the hero scrolls to `#contact` (the shared Footer) and pre-fills the Role field, showing "pre-filled from your fit check". Only the fit check sets the role; other pages leave it empty.
 
@@ -187,7 +190,28 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 
 ## 9. Contact form — `/api/contact`
 
-The form lives in the shared Footer (`Footer.dc.html`), so it is on every page; the API and Turnstile protection are the same everywhere. Fields exactly as designed: Name, Work email, Role, Message; button "Send to Aswin". Validate with Zod, verify Turnstile, rate-limit 3/hour per visitor, send via Resend to `CONTACT_TO_EMAIL` with reply-to set to the sender. Success state exactly as designed ("✓ SENT", "Thanks. Your note is with Aswin.", response-time line from content). On failure, show an inline error and a mailto link.
+The form lives in the shared Footer (`Footer.dc.html`), so it is on every page; the API and Turnstile protection are the same everywhere. Fields exactly as designed: Name, Work email, Role, Message; button "Send to Aswin". The 6 states are exactly as `Footer.dc.html` / `FooterStates.dc.html` show them (design update 7):
+
+| State | Behaviour |
+| --- | --- |
+| Ready (`idle`) | Empty form; the role is pre-filled on home after a fit check |
+| Invalid | Checked **on send, not while typing**. Required: Name, Work email (looks like `a@b.c`), Message; **Role is optional**. A bad field gets the amber border and background, `aria-invalid`, and its one line via `aria-describedby`: "Add your name." / "Enter an email like name@company.com." / "Add a line or two about the role.". Summary line (`role="alert"`, tag `CHECK`): "One field needs a fix before this can go." / "{n} fields need a fix before this can go.". While invalid, errors are re-checked on every keystroke, so each fix clears at once and the summary goes when nothing is wrong |
+| Sending | Only while the real request is in flight: fields `disabled` at 0.6 opacity, button "Sending…" disabled and greyed, three stepping dots and "Sending to Aswin’s inbox" (`role="status"`). The form is `noValidate` and `aria-busy` |
+| Sent | "✓ SENT", "Thanks. Your note is with Aswin.", "He replies from his own inbox, usually within {response time}." (`CONTACT_RESPONSE_TIME`). **No auto-reply** to the sender |
+| Error | Input kept. Summary line (`role="alert"`, tag `NOT SENT`): "That didn’t go through, but your message is still here. Try again, or reach me another way." with "Send it on WhatsApp instead →". Button "Try again" |
+| Rate-limited | Summary line (dashed rule on bg, muted tag `PAUSED`, `role="status"`): "This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in {time}, or right now on WhatsApp." with the WhatsApp link; button disabled and greyed |
+
+Approved where the design is silent (Aswin, 2026-11-23):
+- `{time}` is the whole minutes until the window resets, rounded up, from `retryAfterSec`: "1 minute" / "23 minutes". When the window ends, the PAUSED line goes and the button re-enables, with the message still there.
+- "Send it on WhatsApp instead →" pre-fills the greeting, a blank line, then the visitor's typed message. The "WhatsApp me" button stays greeting-only.
+- The inputs carry `maxLength` equal to the server limits (name 120, role 160, message 5,000), so the limits can't be hit from the form; no new copy.
+- The Sending dots keep stepping under `prefers-reduced-motion`.
+
+**API** (`POST /api/contact`): Zod on the server with the same rules (name and message required, valid email, role optional). Turnstile stays; a Turnstile failure is `error`, never `invalid`. Rate limit **3 per hour per connection** (hashed IP, Upstash). Replies: `{ ok: true }`, or `{ ok: false, code: "invalid", fields }`, `{ ok: false, code: "rate_limited", retryAfterSec }` (HTTP 429), `{ ok: false, code: "error" }`. Resend sends only the notification to `CONTACT_TO_EMAIL` from `CONTACT_FROM_EMAIL`, with Reply-To set to the sender. The message is never stored or logged.
+
+**Client:** on any failure the typed message stays in the form and is also kept in `sessionStorage`, so it survives a reload; a successful send clears it.
+
+**Analytics (PostHog):** `contact_whatsapp_click`, `contact_call_click`, `contact_submit` with `outcome` (sent | invalid | error | limited) and `contact_prefilled_role` (boolean). Never the message text.
 
 ## 10. Limits, cost, logging, evals
 
@@ -236,7 +260,7 @@ Create these files with `TODO(aswin)` values and a clear comment, and build a `p
 - `content/case-studies/*.mdx` (PRD template fields for every product's study: what I built, time spent, last updated, users/problem, 3 decisions, 4 safeguards, success metrics, before/after steps and times, v2, lessons, links, video)
 - `content/hood.ts`: the 12 "How I build agentic products, with proof" items, typed `{ name, status: 'live here'|'case study'|'GitHub'|'shipped'|'prototype'|'planned', proof, cta, href?, live? }` (design update 4)
 - `content/products.ts`: the 4 "Products I've built" items, typed `{ num, slug, status, name, pitch, built, flow: {text, human?: boolean}[], tags, primary: {label, href}, secondary: {label, href} }`. `status` is data only; no status pill renders on the desktop cards (design update 4)
-- `content/site-meta.ts` (years of experience, eval set link, GitHub, LinkedIn, domain, response time, posting cadence, "what breaks first at scale", "next", cost per run, 90-day plan line)
+- `content/site-meta.ts` (years of experience, eval set link, GitHub, LinkedIn, domain, posting cadence, "what breaks first at scale", "next", cost per run, 90-day plan line)
 - `content/posts/*.mdx` (3 designed posts)
 - `content/cv.ts` (design update 6): the CV, word for word from `About.dc.html`. Its `[date]` placeholder (the Dhee's website dates) and `#` links stay as placeholders until Aswin fills them; "Synced from my master resume" shows `siteMeta.resumeUpdated`
 - `content/certificates.ts`, `public/resume.pdf` (the CV page's "Download PDF" stays `#` until the build-time PDF exists)
@@ -261,6 +285,12 @@ SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 RESEND_API_KEY=
 CONTACT_TO_EMAIL=
+CONTACT_FROM_EMAIL=
+# Contact config (design update 7): non-secret but personal, so .env.example keeps them empty.
+CONTACT_PHONE=            # E.164, e.g. +91XXXXXXXXXX (wa.me and tel: links)
+CONTACT_PHONE_DISPLAY=    # as shown, e.g. +91 …
+CONTACT_HOURS=            # e.g. Mon–Fri, 10am–7pm IST
+CONTACT_RESPONSE_TIME=    # "usually within …" on the Sent state
 NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=
 IP_HASH_SALT=
@@ -277,7 +307,7 @@ Provide `.env.example`. Verify model IDs against Anthropic's current model list 
 4. **Fit-check hero UI:** all states driven by a typed event stream from a local mock that matches §7, so the UI is done before the backend.
 5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask, sandbox), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.
 6. **Contact form + analytics + SEO/GEO.**
-7. **Quality:** Vitest (guards, verdict template, kb.search, rate-limit helpers), Playwright (each hero state, X-ray toggle, Ask, contact; plus screenshot comparison against the artboards at 1440 and 390), Promptfoo evals + CI writing `eval-results.json`, `check:content`.
+7. **Quality:** Vitest (guards, verdict template, kb.search, rate-limit helpers), Playwright (each hero state, X-ray toggle, Ask, each of the 6 contact states with the API mocked for error and 429; plus screenshot comparison against the artboards at 1440 and 390), Promptfoo evals + CI writing `eval-results.json`, `check:content`.
 8. **Launch checks:** Lighthouse 95+ mobile, accessibility pass (keyboard, focus trap, `aria-live` on streamed output, contrast AA in both themes, reduced motion), README.
 
 ## 15. Out of scope for v1

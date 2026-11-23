@@ -2,6 +2,55 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-23 (update 7): Contact form gets real states, WhatsApp and call; "Contact" in the nav
+
+Changed: `Footer.dc.html`, `Nav.dc.html`, plus `canvas.json`. **New** artboard: `FooterStates.dc.html` (2800×2900), which shows the contact form in all 6 states. No other artboard changed.
+
+### 1. Nav.dc.html: new "Contact" link
+- A 4th nav link `Contact` → `#contact`, after `CV`.
+- Clicking it smooth-scrolls to `#contact` on the current page; every page has the Footer, so the target always exists. If the element isn't found, it falls back to the normal link.
+- `prefers-reduced-motion` should turn the smooth scroll into a jump (the global rule already covers this).
+
+### 2. Footer.dc.html: direct contact options
+- Under the "Talk to Aswin." intro, before the LinkedIn / GitHub / CV links, there's a new block (column, gap 10px):
+  - **Two equal buttons** (each `flex: 1 1 170px`, min-height 48px, paper, `1px solid rule`, radius 10px, 15px 600):
+    - `WhatsApp me`, with a 10px green dot `#25A35A`. It opens `https://wa.me/{digits}?text=…` in a new tab (`rel="noopener"`).
+      - Pre-filled text: "Hi Aswin, I found your portfolio. I’m hiring for a {role} role." when the form has a role, otherwise "Hi Aswin, I found your portfolio."
+    - `Call me`, with an accent `☎`, linking to `tel:+{digits}`.
+  - A mono 12px muted line: `{phone} · calls {hours} · WhatsApp anytime`, plus ` · role added to the message` when the role was pre-filled from the fit check.
+  - Placeholders: phone `+91 [number]`, digits `91XXXXXXXXXX`, hours `[Mon–Fri, 10am–7pm IST]`. Put them in **env or content config** (e.g. `CONTACT_PHONE`, `CONTACT_HOURS`); don't hard-code them. The phone number is personal: show it only on the page, and keep it out of JSON-LD, llms.txt and the markdown twins unless Aswin says yes.
+
+### 3. Footer.dc.html: contact form states
+New props:
+- `initial` (`idle | invalid | sending | sent | error | limited`)
+- `still` (freezes animation, used only by FooterStates)
+
+The form uses `noValidate` and `aria-busy`. Behaviour, matching `FooterStates.dc.html`:
+
+| State | What the user sees |
+|---|---|
+| **01 Ready** (`idle`) | Empty form; role pre-filled on home after a fit check. |
+| **02 Invalid** | Checked **on send, not while typing**. Required fields: Name, Work email (must look like `a@b.c`), Message. **Role is optional.** A bad field gets an amber border `#C08A2E` and amber bg `#FBF2E2`, `aria-invalid`, and a one-line message below it in amberText `#8A5510` (13px), linked with `aria-describedby`: "Add your name." / "Enter an email like name@company.com." / "Add a line or two about the role." A summary line (`role="alert"`) appears above the button: tag `CHECK`, "One field needs a fix before this can go." or "{n} fields need a fix before this can go." While the form is in this state, errors are re-checked on every keystroke, so **each fix clears as soon as it's made**, and the summary goes away once nothing is wrong. |
+| **03 Sending** | Fields are `disabled` at 0.6 opacity. The button reads `Sending…`, is disabled and greyed (rule bg, muted ink, `not-allowed` cursor). Next to it, three 6px dots step one at a time (ink/rule), with "Sending to Aswin’s inbox" (mono 12px, `role="status"`). The prototype fakes about 1.8s; the build shows this state **only while the real request is in flight**. |
+| **04 Sent** | The same confirmation as before: "✓ SENT · Thanks. Your note is with Aswin." and "He replies from his own inbox, usually within [response time]." **No auto-reply email** pretending to be Aswin. |
+| **05 Error** | All input is kept. Amber summary line (`role="alert"`), tag `NOT SENT`: "That didn’t go through, but your message is still here. Try again, or reach me another way." with a link "Send it on WhatsApp instead →" (the wa.me link). The button reads `Try again`. |
+| **06 Rate-limited** (`limited`) | After **3 messages an hour from one connection**. The summary line is dashed rule on bg with muted tag `PAUSED`, `role="status"`: "This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in [time], or right now on WhatsApp." It also has the WhatsApp link. The button is disabled and greyed. `[time]` = minutes until the window resets, taken from the API response. |
+
+- Summary line layout: flex, gap 12px, padding 12px 14px, radius 10px, the tag in mono 12px 0.06em, text 15px.
+- The submit button is no longer `align-self: flex-start` by itself; it now sits in a row (flex, gap 12px 16px, wrap) with the sending indicator.
+
+### Spec impact
+- **Contact API** (`POST /api/contact`):
+  - Validate with Zod on the server, using the same rules (name and message required, valid email, role optional).
+  - Return `{ ok: true }`, or `{ ok: false, code: 'invalid', fields }` / `code: 'rate_limited', retryAfterSec` / `code: 'error'`.
+  - Rate limit: **3 per hour per IP** (Upstash), returning HTTP 429 with `retryAfterSec`.
+  - Keep Turnstile. A Turnstile failure counts as `error`, never `invalid`.
+  - On failure the client must **keep the typed message**, and should also hold it in `sessionStorage` so it survives a reload.
+- **No auto-reply** to the sender. Resend sends only the notification to Aswin, with Reply-To set to the sender.
+- **Config:** add `CONTACT_PHONE` (E.164), `CONTACT_PHONE_DISPLAY`, `CONTACT_HOURS` and `CONTACT_RESPONSE_TIME`. They're non-secret but personal, so keep them out of the repo's committed `.env.example` values.
+- **Analytics (PostHog):** track `contact_whatsapp_click`, `contact_call_click`, `contact_submit` with the outcome (sent/invalid/error/limited) and `contact_prefilled_role` (boolean). Never send the message text.
+- **Tests:** a Playwright test for each of the 6 states; mock the API for error and 429.
+
 ## 2026-11-23 (update 6): About becomes a full CV page; contact moves into a shared Footer; Ask gets topic questions
 
 Changed artboards: `About.dc.html` (rewritten), `Ask.dc.html`, `Main.dc.html`, `Mobile.dc.html`, `Work.dc.html`, `BuildLog.dc.html`, `Nav.dc.html`, plus a **new** component, `Footer.dc.html`. `canvas.json` is now the full canvas file (About h 4600, Mobile h 4600, new Footer board 1280×640). `Hero`, `HeroStates` and `MobileAsk` are unchanged.

@@ -81,6 +81,18 @@ describe("llms.txt and llms-full.txt", () => {
   });
 });
 
+describe("the phone number stays on the page only (design update 7)", () => {
+  it("is never in llms.txt, llms-full.txt, the RSS feed or JSON-LD", async () => {
+    process.env.CONTACT_PHONE = "+919876543210";
+    try {
+      const all = [await llmsTxt(), await llmsFullTxt(), await rssXml(), JSON.stringify(profilePageJsonLd("/about", true))].join("\n");
+      expect(all).not.toContain("9876543210");
+    } finally {
+      delete process.env.CONTACT_PHONE;
+    }
+  });
+});
+
 describe("rss.xml", () => {
   it("is RSS 2.0 with escaped titles and a date only when one is set", async () => {
     const x = await rssXml();

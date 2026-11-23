@@ -24,6 +24,8 @@
   --video-btn-border: #5c574e;
   --video-icon: #f6f3ec;
   --video-caption: #c9c3b8;
+  /* Footer.dc.html (design update 7): the dot on "WhatsApp me". */
+  --whatsapp: #25a35a;
 }
 
 :root {
@@ -81,6 +83,7 @@
   --color-video-btn-border: var(--video-btn-border);
   --color-video-icon: var(--video-icon);
   --color-video-caption: var(--video-caption);
+  --color-whatsapp: var(--whatsapp);
   --shadow-ask: var(--ask-shadow);
   --font-serif: var(--font-newsreader), Georgia, serif;
   --font-sans: var(--font-plex-sans), system-ui, sans-serif;

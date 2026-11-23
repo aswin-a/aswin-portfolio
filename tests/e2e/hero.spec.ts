@@ -282,7 +282,10 @@ test.describe("fit check", () => {
     await expect(page).toHaveURL(/#contact$/);
     await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Head of Hardware Product · consumer electronics");
     await expect(page.getByText("pre-filled from your fit check")).toBeVisible();
+    // Design update 7: the WhatsApp line notes the role.
+    await expect(page.locator("#contact").getByText(/ · WhatsApp anytime · role added to the message$/)).toBeVisible();
     await page.getByLabel("Role", { exact: true }).fill("Something else");
+    await expect(page.locator("#contact").getByText(/ · WhatsApp anytime$/)).toBeVisible();
     await expect(page.getByText("pre-filled from your fit check")).toHaveCount(0);
   });
 

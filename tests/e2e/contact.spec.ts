@@ -1,31 +1,78 @@
 import { CONTACT_COPY } from "@/lib/contact/copy";
 import { expect, FAKE, test, type Page } from "./fixtures";
 
-/** The shared Footer's contact form (Footer.dc.html, SPEC §9) against the real /api/contact under AI_FAKE. */
+/**
+ * The shared Footer's contact area (Footer.dc.html, FooterStates.dc.html, design update 7; SPEC §9)
+ * against the real /api/contact under AI_FAKE. Error and 429 are mocked, as the spec asks.
+ */
 const contact = (page: Page) => page.locator("section#contact");
+const form = (page: Page) => contact(page).locator("form");
+const button = (page: Page) => form(page).getByRole("button");
+const line = (page: Page) => contact(page).getByTestId("contact-line");
+const SAMPLE = { name: "Priya Raman", email: "priya@acme.com", msg: "We’re hiring a Senior Platform PM for our integrations team. Open to a call this week?" };
 
-async function fill(page: Page, msg = "Hi Aswin, can we talk about a platform PM role?") {
-  await contact(page).getByLabel("Name").fill("Sam Doe");
-  await contact(page).getByLabel("Work email").fill("sam@company.example");
-  await contact(page).getByLabel("Message").fill(msg);
+async function fill(page: Page, f: Partial<typeof SAMPLE> = SAMPLE) {
+  if (f.name !== undefined) await contact(page).getByLabel("Name").fill(f.name);
+  if (f.email !== undefined) await contact(page).getByLabel("Work email").fill(f.email);
+  if (f.msg !== undefined) await contact(page).getByLabel("Message").fill(f.msg);
 }
+const mock = (page: Page, status: number, body: unknown) =>
+  page.route("**/api/contact", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) }));
 
-test.describe("contact form", () => {
-  test("sends and shows the designed success state", async ({ page }) => {
+test.describe("contact form: the 6 states (FooterStates.dc.html)", () => {
+  test("01 Ready: empty form, WhatsApp and call beside it", async ({ page }) => {
     await page.goto("/about");
-    await fill(page);
-    const req = page.waitForRequest("**/api/contact");
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    const body = (await req).postDataJSON() as Record<string, string>;
-    expect(body).toMatchObject({ name: "Sam Doe", email: "sam@company.example", role: "" });
-    const sent = contact(page).getByRole("status");
-    await expect(sent.getByText("✓ SENT")).toBeVisible();
-    await expect(sent.getByText("Thanks. Your note is with Aswin.")).toBeVisible();
-    await expect(sent.getByText(/^He replies from his own inbox, usually within /)).toBeVisible();
-    await expect(contact(page).locator("form")).toHaveCount(0);
+    for (const label of ["Name", "Work email", "Role", "Message"]) await expect(contact(page).getByLabel(label, { exact: true })).toHaveValue("");
+    await expect(button(page)).toHaveText("Send to Aswin");
+    await expect(button(page)).toBeEnabled();
+    await expect(form(page)).toHaveAttribute("novalidate", "");
+    await expect(form(page)).toHaveAttribute("aria-busy", "false");
+    await expect(line(page)).toHaveCount(0);
+    const wa = contact(page).getByRole("link", { name: "WhatsApp me" });
+    await expect(wa).toHaveAttribute("target", "_blank");
+    await expect(wa).toHaveAttribute("rel", "noopener");
+    await expect(contact(page).getByRole("link", { name: "Call me" })).toBeVisible();
+    // Config unset in e2e: the design's placeholders.
+    await expect(contact(page).getByText("+91 [number] · calls [Mon–Fri, 10am–7pm IST] · WhatsApp anytime", { exact: true })).toBeVisible();
+    await expect(contact(page).getByLabel("Name")).toHaveAttribute("maxlength", "120");
+    await expect(contact(page).getByLabel("Message")).toHaveAttribute("maxlength", "5000");
   });
 
-  test("shows Sending… while the request runs", async ({ page }) => {
+  test("02 Invalid: checked on send, each fix clears as it's made", async ({ page }) => {
+    await page.goto("/about");
+    let posted = 0;
+    page.on("request", (r) => void (r.url().endsWith("/api/contact") && posted++));
+    // Typing doesn't check.
+    await fill(page, { name: "Priya Raman", email: "priya@acme" });
+    await expect(contact(page).getByLabel("Work email")).not.toHaveAttribute("aria-invalid", "true");
+    await button(page).click();
+    await expect(line(page)).toHaveAttribute("role", "alert");
+    await expect(line(page)).toContainText("CHECK");
+    await expect(line(page)).toContainText("2 fields need a fix before this can go.");
+    const email = contact(page).getByLabel("Work email");
+    const msg = contact(page).getByLabel("Message");
+    await expect(email).toHaveAttribute("aria-invalid", "true");
+    await expect(email).toHaveAttribute("aria-describedby", "c-email-err");
+    await expect(page.locator("#c-email-err")).toHaveText("Enter an email like name@company.com.");
+    await expect(page.locator("#c-msg-err")).toHaveText("Add a line or two about the role.");
+    await expect(email).toHaveClass(/border-amber-border/);
+    await expect(contact(page).getByLabel("Name")).not.toHaveAttribute("aria-invalid", "true");
+    // Role is optional.
+    await expect(contact(page).getByLabel("Role", { exact: true })).not.toHaveAttribute("aria-invalid", "true");
+    await email.fill("priya@acme.com");
+    await expect(line(page)).toContainText("One field needs a fix before this can go.");
+    await expect(page.locator("#c-email-err")).toHaveCount(0);
+    await msg.fill("Hi");
+    await expect(line(page)).toHaveCount(0);
+    await expect(page.locator("#c-msg-err")).toHaveCount(0);
+    // Name cleared: "Add your name."
+    await contact(page).getByLabel("Name").fill("");
+    await button(page).click();
+    await expect(page.locator("#c-name-err")).toHaveText("Add your name.");
+    expect(posted).toBe(0);
+  });
+
+  test("03 Sending: only while the request is in flight", async ({ page }) => {
     await page.goto("/");
     await fill(page);
     let release!: () => void;
@@ -34,63 +81,129 @@ test.describe("contact form", () => {
       await held;
       await route.continue();
     });
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    await expect(contact(page).getByRole("button", { name: CONTACT_COPY.sending })).toBeDisabled();
+    await button(page).click();
+    await expect(button(page)).toHaveText("Sending…");
+    await expect(button(page)).toBeDisabled();
+    await expect(button(page)).toHaveClass(/cursor-not-allowed/);
+    await expect(form(page)).toHaveAttribute("aria-busy", "true");
+    for (const label of ["Name", "Work email", "Role", "Message"]) {
+      await expect(contact(page).getByLabel(label, { exact: true })).toBeDisabled();
+      await expect(contact(page).getByLabel(label, { exact: true })).toHaveCSS("opacity", "0.6");
+    }
+    await expect(form(page).getByRole("status")).toHaveText(CONTACT_COPY.sendingStatus);
     release();
     await expect(contact(page).getByText("Thanks. Your note is with Aswin.")).toBeVisible();
   });
 
-  test("a failed send shows the inline error with a mailto link and keeps the form", async ({ page }) => {
+  test("04 Sent: the confirmation, from the real endpoint", async ({ page }) => {
+    await page.goto("/about");
+    await contact(page).getByLabel("Role", { exact: true }).fill("Senior Platform PM");
+    await fill(page);
+    const req = page.waitForRequest("**/api/contact");
+    await button(page).click();
+    expect((await req).postDataJSON()).toMatchObject({ name: SAMPLE.name, email: SAMPLE.email, role: "Senior Platform PM", msg: SAMPLE.msg });
+    const sent = contact(page).getByRole("status");
+    await expect(sent.getByText("✓ SENT")).toBeVisible();
+    await expect(sent.getByText("Thanks. Your note is with Aswin.")).toBeVisible();
+    await expect(sent.getByText("He replies from his own inbox, usually within [response time].")).toBeVisible();
+    await expect(form(page)).toHaveCount(0);
+    expect(await page.evaluate(() => sessionStorage.getItem("contact-draft"))).toBeNull();
+  });
+
+  test("05 Error: message kept (also across a reload), Try again, WhatsApp offered", async ({ page }) => {
     await page.goto("/log");
-    await fill(page, `Hello ${FAKE.error}`);
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    const line = contact(page).getByTestId("contact-line");
-    await expect(line).toContainText(CONTACT_COPY.error.before.trim());
-    await expect(line).toContainText(CONTACT_COPY.error.after.trim());
-    await expect(line.getByRole("link")).toBeVisible();
-    await expect(line).toHaveAttribute("aria-live", "polite");
-    await expect(contact(page).getByLabel("Message")).toHaveValue(`Hello ${FAKE.error}`);
-    await expect(contact(page).getByRole("button", { name: "Send to Aswin" })).toBeEnabled();
+    await mock(page, 502, { ok: false, code: "error" });
+    await fill(page);
+    await button(page).click();
+    await expect(line(page)).toHaveAttribute("role", "alert");
+    await expect(line(page)).toContainText("NOT SENT");
+    await expect(line(page)).toContainText("That didn’t go through, but your message is still here. Try again, or reach me another way.");
+    await expect(line(page).getByRole("link", { name: "Send it on WhatsApp instead →" })).toHaveAttribute("target", "_blank");
+    await expect(button(page)).toHaveText("Try again");
+    await expect(button(page)).toBeEnabled();
+    await expect(contact(page).getByLabel("Message")).toHaveValue(SAMPLE.msg);
+    await page.reload();
+    await expect(contact(page).getByLabel("Message")).toHaveValue(SAMPLE.msg);
+    await expect(contact(page).getByLabel("Name")).toHaveValue(SAMPLE.name);
   });
 
-  test("over the limit shows the limit line", async ({ page }) => {
+  test("05 Error: a Turnstile failure is an error, never invalid", async ({ page }) => {
     await page.goto("/");
-    await fill(page, `Hello ${FAKE.limited}`);
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    await expect(contact(page).getByTestId("contact-line")).toContainText(CONTACT_COPY.limited.before.trim());
+    await mock(page, 403, { ok: false, code: "error" });
+    await fill(page);
+    await button(page).click();
+    await expect(line(page)).toContainText("NOT SENT");
   });
 
-  test("the 4th message in an hour is limited by the real bucket", async ({ page }) => {
+  test("06 Rate-limited: says why and when, keeps the message, points to WhatsApp", async ({ page }) => {
+    await page.goto("/");
+    await mock(page, 429, { ok: false, code: "rate_limited", retryAfterSec: 1380 });
+    await fill(page);
+    await button(page).click();
+    await expect(line(page)).toHaveAttribute("role", "status");
+    await expect(line(page)).toContainText("PAUSED");
+    await expect(line(page)).toContainText(
+      "This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in 23 minutes, or right now on WhatsApp.",
+    );
+    await expect(line(page)).toHaveClass(/border-dashed/);
+    await expect(line(page).getByRole("link", { name: "Send it on WhatsApp instead →" })).toBeVisible();
+    await expect(button(page)).toHaveText("Send to Aswin");
+    await expect(button(page)).toBeDisabled();
+    await expect(contact(page).getByLabel("Message")).toHaveValue(SAMPLE.msg);
+  });
+
+  test("06 Rate-limited: reopens when the window ends", async ({ page }) => {
+    await page.goto("/");
+    await mock(page, 429, { ok: false, code: "rate_limited", retryAfterSec: 1 });
+    await fill(page);
+    await button(page).click();
+    await expect(line(page)).toContainText("send it again in 1 minute,");
+    await expect(button(page)).toBeDisabled();
+    await expect(button(page)).toBeEnabled({ timeout: 5000 });
+    await expect(line(page)).toHaveCount(0);
+    await expect(contact(page).getByLabel("Message")).toHaveValue(SAMPLE.msg);
+  });
+
+  test("06 Rate-limited: the 4th message in an hour, from the real bucket", async ({ page }) => {
     await page.goto("/");
     // From the page, so the requests carry this test's visitor header (fixtures.ts).
-    const statuses = await page.evaluate(async () => {
-      const out: string[] = [];
+    const codes = await page.evaluate(async () => {
+      const out: number[] = [];
       for (let i = 0; i < 3; i++) {
         const res = await fetch("/api/contact", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ name: "Sam", email: "sam@company.example", msg: "hi", turnstileToken: "" }),
         });
-        out.push(((await res.json()) as { status: string }).status);
+        out.push(res.status);
       }
       return out;
     });
-    expect(statuses).toEqual(["sent", "sent", "sent"]);
+    expect(codes).toEqual([200, 200, 200]);
     await fill(page);
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    await expect(contact(page).getByTestId("contact-line")).toContainText(CONTACT_COPY.limited.before.trim());
+    await button(page).click();
+    await expect(line(page)).toContainText(/send it again in (59|60) minutes/);
   });
 
-  test("an invalid email is refused with the invalid line", async ({ page }) => {
+  test("fake marker: the server's own 429 reaches the PAUSED line", async ({ page }) => {
     await page.goto("/");
-    const res = await page.request.post("/api/contact", { data: { name: "Sam", email: "nope", msg: "hi" } });
-    expect(res.status()).toBe(400);
-    expect((await res.json()).status).toBe("invalid");
-    // The form's own type="email" would block "nope" in the browser, so test an empty message instead.
-    await contact(page).getByLabel("Name").fill("Sam");
-    await contact(page).getByLabel("Work email").fill("sam@company.example");
-    await contact(page).getByRole("button", { name: "Send to Aswin" }).click();
-    await expect(contact(page).getByTestId("contact-line")).toHaveText(CONTACT_COPY.invalid);
+    await fill(page, { ...SAMPLE, msg: `Hello ${FAKE.limited}` });
+    await button(page).click();
+    await expect(line(page)).toContainText("send it again in 23 minutes");
+  });
+});
+
+test.describe("nav Contact link (Nav.dc.html update 7)", () => {
+  test("is the 4th link and scrolls to #contact on the current page", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/log");
+    const nav = page.getByRole("navigation", { name: "Main" });
+    const links = nav.getByRole("link");
+    await expect(links).toHaveText(["Aswinpm · builds for agents", "Case studies", "Build log", "CV", "Contact"]);
+    await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "#contact");
+    await nav.getByRole("link", { name: "Contact" }).click();
+    await expect(page.locator("#contact")).toBeInViewport();
+    expect(new URL(page.url()).pathname).toBe("/log");
   });
 });
 

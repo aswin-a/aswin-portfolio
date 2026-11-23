@@ -92,6 +92,14 @@
       "w": 1280,
       "x": 7040,
       "y": 8020
+    },
+    "FooterStates.dc.html": {
+      "h": 2900,
+      "is_interactive": true,
+      "title": "Contact form \u2014 all states",
+      "w": 2800,
+      "x": 8520,
+      "y": 8020
     }
   },
   "createdOnFiles": {
@@ -131,7 +139,8 @@
     "Hero.dc.html",
     "Nav.dc.html",
     "Ask.dc.html",
-    "Footer.dc.html"
+    "Footer.dc.html",
+    "FooterStates.dc.html"
   ],
   "pages": [],
   "title": "Aswin \u2014 Portfolio Website Design & Prototype"
