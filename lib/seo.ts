@@ -10,6 +10,8 @@ export const SITE_URL = `https://${siteMeta.domain}`;
 export const SITE_NAME = "Aswin A";
 export const absolute = (path: string) => new URL(path, SITE_URL).toString();
 
+export const RSS_ALTERNATE = { "application/rss+xml": [{ url: "/rss.xml", title: "Build log" }] };
+
 /** Descriptions are the pages' own copy (no new marketing text). */
 export const DESCRIPTIONS = {
   home: "I build platforms, AI-powered products, and systems that turn emerging technology into real-world capability.",
@@ -23,7 +25,8 @@ export function pageMetadata({ title, description, path, type = "website" }: { t
   return {
     ...(title ? { title } : {}),
     description,
-    alternates: { canonical: path },
+    // Child `alternates` replace the layout's, so the RSS link is repeated on every page.
+    alternates: { canonical: path, types: RSS_ALTERNATE },
     openGraph: { type, url: path, siteName: SITE_NAME, description, ...(title ? { title } : {}) },
     twitter: { card: "summary_large_image", description, ...(title ? { title } : {}) },
   };

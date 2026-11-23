@@ -133,3 +133,23 @@ for (const [name, width, height] of SIZES) {
     await page.screenshot({ path: `test-results/screens/ask-topic-${name}.png` });
   });
 }
+
+// Contact (Footer.dc.html): the form, the designed "✓ SENT" state and the approved error line (M6).
+for (const [name, width, height] of SIZES) {
+  for (const state of ["form", "sent", "error"] as const) {
+    test(`capture contact-${state}-${name}`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto("/about");
+      const section = page.locator("section#contact");
+      if (state !== "form") {
+        await section.getByLabel("Name").fill("Sam Doe");
+        await section.getByLabel("Work email").fill("sam@company.example");
+        await section.getByLabel("Message").fill(state === "error" ? `Hello ${FAKE.error}` : "Hello");
+        await section.getByRole("button", { name: "Send to Aswin" }).click();
+        await (state === "sent" ? section.getByRole("status") : section.getByTestId("contact-line")).getByText(/\w/).first().waitFor();
+      }
+      await page.evaluate(() => document.fonts.ready);
+      await section.screenshot({ path: `test-results/screens/contact-${state}-${name}.png` });
+    });
+  }
+}

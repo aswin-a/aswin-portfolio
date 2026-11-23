@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { XrayProvider } from "@/components/xray-provider";
-import { DESCRIPTIONS, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { DESCRIPTIONS, RSS_ALTERNATE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { THEME_INIT_SCRIPT } from "@/lib/xray";
 import "./globals.css";
 
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   description: DESCRIPTIONS.home,
   openGraph: { siteName: SITE_NAME, type: "website", locale: "en" },
   twitter: { card: "summary_large_image" },
-  alternates: { types: { "application/rss+xml": [{ url: "/rss.xml", title: "Build log" }] } },
+  alternates: { types: RSS_ALTERNATE },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
