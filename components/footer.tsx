@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ContactForm } from "@/components/contact-form";
 import { siteMeta } from "@/content/site-meta";
-import { hrefOf, withTodo } from "@/lib/content";
+import { hrefOf, isTodo, withTodo } from "@/lib/content";
 
 /** The deploy date, filled at build time (next.config `BUILD_DATE`, e.g. "20 Nov 2026"). Never hard-coded. */
 const updated = `Updated ${process.env.BUILD_DATE}`;
@@ -43,7 +43,11 @@ export function Footer() {
             </div>
           </div>
           <div className="flex-[1_1_420px]">
-            <ContactForm responseTime={siteMeta.responseTime} />
+            <ContactForm
+              responseTime={siteMeta.responseTime}
+              contactEmail={siteMeta.contactEmail}
+              contactHref={isTodo(siteMeta.contactEmail) ? "#" : `mailto:${siteMeta.contactEmail}`}
+            />
           </div>
         </div>
       </section>

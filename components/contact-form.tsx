@@ -1,19 +1,53 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { track } from "@/lib/analytics";
+import { CONTACT_COPY } from "@/lib/contact/copy";
+import { ContactResponseSchema, type ContactStatus } from "@/lib/contact/schema";
 import { rolePrefill } from "@/lib/fit-check/role-prefill";
+import { turnstileToken } from "@/lib/turnstile/client";
 
 const field =
   "min-h-11 rounded-lg border px-3 py-2 font-sans text-[16px] text-ink";
 
+type Phase = "idle" | "sending" | Exclude<ContactStatus, "sent">;
+
+async function sendContact(form: { name: string; email: string; role: string; msg: string }): Promise<ContactStatus> {
+  try {
+    const token = await turnstileToken();
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...form, turnstileToken: token }),
+    });
+    const parsed = ContactResponseSchema.safeParse(await res.json());
+    return parsed.success ? parsed.data.status : "error";
+  } catch {
+    return "error";
+  }
+}
+
 /**
- * Contact form from Footer.dc.html (design update 6). Sending is wired to /api/contact in Milestone 6; until then
- * submit does nothing (no fake "sent"). "Talk to Aswin about this role" in the hero pre-fills Role.
+ * Contact form from Footer.dc.html (design update 6), sent through /api/contact (SPEC §9).
+ * "Talk to Aswin about this role" in the hero pre-fills Role. The sending, invalid, limited and
+ * error lines aren't in the design; their copy was approved in Milestone 6 (lib/contact/copy.ts).
  */
-export function ContactForm({ responseTime, prefilledRole }: { responseTime: string; prefilledRole?: string }) {
+export function ContactForm({
+  responseTime,
+  contactEmail,
+  contactHref,
+  prefilledRole,
+}: {
+  responseTime: string;
+  /** siteMeta.contactEmail as shown, and its mailto: href ("#" while it's a placeholder). */
+  contactEmail: string;
+  contactHref: string;
+  prefilledRole?: string;
+}) {
   const [form, setForm] = useState({ name: "", email: "", role: prefilledRole ?? "", msg: "" });
   const [prefilled, setPrefilled] = useState(!!prefilledRole);
-  const sent = false;
+  const [sent, setSent] = useState(false);
+  const [phase, setPhase] = useState<Phase>("idle");
   // Main.dc.html `setRole`: the fit check's role fills the field and marks it pre-filled.
   useEffect(
     () =>
@@ -25,9 +59,39 @@ export function ContactForm({ responseTime, prefilledRole }: { responseTime: str
   );
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value });
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (phase === "sending") return;
+    setPhase("sending");
+    const status = await sendContact(form);
+    if (status === "sent") {
+      track("contact_sent", {});
+      setSent(true);
+      setPhase("idle");
+    } else setPhase(status);
   };
+  const sending = phase === "sending";
+  const mail = (
+    <a href={contactHref} className="text-accent">
+      {contactEmail}
+    </a>
+  );
+  const line =
+    phase === "invalid" ? (
+      CONTACT_COPY.invalid
+    ) : phase === "limited" ? (
+      <>
+        {CONTACT_COPY.limited.before}
+        {mail}
+        {CONTACT_COPY.limited.after}
+      </>
+    ) : phase === "error" ? (
+      <>
+        {CONTACT_COPY.error.before}
+        {mail}
+        {CONTACT_COPY.error.after}
+      </>
+    ) : null;
 
   if (sent) {
     return (
@@ -69,7 +133,7 @@ export function ContactForm({ responseTime, prefilledRole }: { responseTime: str
             setPrefilled(false);
           }}
           placeholder="e.g. Senior Platform PM"
-          className={`${field} ${prefilled ? "border-accent bg-accent-tint" : "border-rule bg-bg"}`}
+          className={`${field} ${rolePrefilled ? "border-accent bg-accent-tint" : "border-rule bg-bg"}`}
         />
         {rolePrefilled && <span className="font-mono text-[12px] text-accent">pre-filled from your fit check</span>}
       </div>
@@ -87,10 +151,14 @@ export function ContactForm({ responseTime, prefilledRole }: { responseTime: str
       </div>
       <button
         type="submit"
-        className="min-h-12 cursor-pointer self-start rounded-[10px] border-0 bg-btn-bg px-[22px] py-3 font-sans text-[16px] font-semibold text-btn-ink"
+        disabled={sending}
+        className="min-h-12 cursor-pointer self-start rounded-[10px] border-0 bg-btn-bg px-[22px] py-3 font-sans text-[16px] font-semibold text-btn-ink disabled:cursor-default"
       >
-        Send to Aswin
+        {sending ? CONTACT_COPY.sending : CONTACT_COPY.button}
       </button>
+      <p aria-live="polite" data-testid="contact-line" className={line ? "m-0 font-mono text-[12px] text-amber-text" : "sr-only"}>
+        {line}
+      </p>
     </form>
   );
 }

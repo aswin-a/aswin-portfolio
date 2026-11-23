@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AskAboutRole, CopyCv, CvAskBox, CvGroups } from "@/components/about/cv-actions";
 import { Footer } from "@/components/footer";
+import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { certificates } from "@/content/certificates";
 import { cvHeader, cvItems, cvSkills, cvStats, type CvItem } from "@/content/cv";
 import { siteMeta } from "@/content/site-meta";
-import { hrefOf, isTodo } from "@/lib/content";
-import { cvItem, cvPlainText, orgName, topicFor } from "@/lib/cv";
+import { hrefOf } from "@/lib/content";
+import { cvPlainText, topicFor } from "@/lib/cv";
+import { DESCRIPTIONS, pageMetadata, profilePageJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "CV — Aswin A" };
+export const metadata: Metadata = pageMetadata({ title: "CV — Aswin A", description: DESCRIPTIONS.about, path: "/about", type: "profile" });
 
 /** Site routes go through next/link; "#" placeholders and other sites stay plain anchors. */
 function CvLink({ href, children }: { href: string; children: string }) {
@@ -38,31 +40,10 @@ function lane(it: CvItem) {
   };
 }
 
-/** JSON-LD `Person` for the CV page (SPEC §11), from content/cv.ts. */
-function personJsonLd() {
-  const edu = cvItem("edu");
-  const current = cvItems.find((it) => it.lane === "work" && /–\s*$|Present/i.test(it.dates));
-  return {
-    "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    mainEntity: {
-      "@type": "Person",
-      name: cvHeader.name,
-      jobTitle: cvHeader.role.split(" · ")[0],
-      description: cvHeader.summary,
-      address: { "@type": "PostalAddress", addressLocality: "Chennai", addressCountry: "IN" },
-      alumniOf: { "@type": "CollegeOrUniversity", name: edu.org },
-      hasOccupation: { "@type": "Occupation", name: cvHeader.role.split(" · ")[0] },
-      ...(current ? { worksFor: { "@type": "Organization", name: orgName(current) } } : {}),
-      sameAs: [cvHeader.linkedin.href, ...(isTodo(siteMeta.github) ? [] : [siteMeta.github])],
-    },
-  };
-}
-
 export default function About() {
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }} />
+      <JsonLd data={profilePageJsonLd("/about", true)} />
       <Nav current="about" />
       <main className="mx-auto flex max-w-[1040px] flex-col gap-14 px-6 pt-16 pb-24">
         <header className="flex flex-col gap-6">

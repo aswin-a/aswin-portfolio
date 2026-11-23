@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
+import { JsonLd } from "@/components/json-ld";
 import { Hero } from "@/components/fit-check/hero";
 import { FromTheLog } from "@/components/home/from-the-log";
 import { ProductsSection } from "@/components/home/products";
@@ -9,11 +11,15 @@ import { siteMeta } from "@/content/site-meta";
 import { PROMPT_VERSION } from "@/lib/ai/prompts";
 import { hrefOf, isTodo } from "@/lib/content";
 import { posts } from "@/lib/posts";
+import { DESCRIPTIONS, pageMetadata, profilePageJsonLd } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({ description: DESCRIPTIONS.home, path: "/" });
 
 export default async function Home() {
   const logPosts = await posts();
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
+      <JsonLd data={profilePageJsonLd("/")} />
       <Nav current="home" />
       <IntroBanner />
       <main>

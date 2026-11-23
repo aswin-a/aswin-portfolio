@@ -18,6 +18,9 @@ const EnvSchema = z.object({
   SUPABASE_URL: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   IP_HASH_SALT: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  CONTACT_TO_EMAIL: z.string().optional(),
+  CONTACT_FROM_EMAIL: z.string().optional(),
 });
 export type ServerEnv = z.infer<typeof EnvSchema>;
 

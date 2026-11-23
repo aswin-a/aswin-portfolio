@@ -37,6 +37,12 @@ export function visibleText(html) {
 // "[N]", "[link]", "[e.g. …]": a short bracketed run of text without quotes.
 export const PLACEHOLDER = /TODO\(aswin\)|\[[^\]"&<>\n]{1,120}\]/g;
 
+/** Text of a static route body (/about.md, /llms.txt, /llms-full.txt, /rss.xml): markdown link text isn't a placeholder. */
+export function bodyText(text) {
+  return text.replace(/\[([^\]\n]+)\]\(/g, "$1(");
+}
+const TEXT_ROUTES = ["about.md.body", "llms.txt.body", "llms-full.txt.body", "rss.xml.body"];
+
 const hits = [];
 if (args.includes("--html")) {
   const root = ".next/server/app";
@@ -46,6 +52,10 @@ if (args.includes("--html")) {
   }
   for (const file of walk(root, (n) => n.endsWith(".html") && !n.startsWith("_"))) {
     const found = new Set(visibleText(readFileSync(file, "utf8")).match(PLACEHOLDER) ?? []);
+    for (const f of found) hits.push(`${file}: ${f}`);
+  }
+  for (const file of walk(root, (n) => TEXT_ROUTES.includes(n))) {
+    const found = new Set(bodyText(readFileSync(file, "utf8")).match(PLACEHOLDER) ?? []);
     for (const f of found) hits.push(`${file}: ${f}`);
   }
   if (!existsSync("public/resume.pdf")) hits.push("public/resume.pdf: missing (linked from About)");

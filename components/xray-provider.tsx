@@ -1,5 +1,7 @@
 "use client";
 
+import { track } from "@/lib/analytics";
+import { askPageFor } from "@/lib/ask/copy";
 import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { AskDialog, type AskOpenOptions } from "@/components/ask/ask-dialog";
@@ -32,6 +34,7 @@ export function XrayProvider({ children }: { children: ReactNode }) {
   const introSeen = useSyncExternalStore(introStore.subscribe, introStore.get, () => true);
 
   const setXray = useCallback((on: boolean) => {
+    if (on !== xrayStore.get()) track("xray_toggled", { on });
     xrayStore.set(on);
     introStore.set(true);
     applyXray(on);
@@ -43,7 +46,13 @@ export function XrayProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [ask, setAsk] = useState<{ path: string; options: AskOpenOptions } | null>(null);
   const askOpen = ask !== null && ask.path === pathname;
-  const openAsk = useCallback((options: AskOpenOptions = {}) => setAsk({ path: pathname, options }), [pathname]);
+  const openAsk = useCallback(
+    (options: AskOpenOptions = {}) => {
+      track("ask_opened", { page: askPageFor(pathname) });
+      setAsk({ path: pathname, options });
+    },
+    [pathname],
+  );
   const closeAsk = useCallback(() => setAsk(null), []);
 
   // ⌘K / Ctrl+K opens Ask from anywhere; Esc closes it.

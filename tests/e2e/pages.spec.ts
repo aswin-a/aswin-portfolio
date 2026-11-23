@@ -260,7 +260,7 @@ test("CV: JSON-LD Person with alumniOf and sameAs", async ({ page }) => {
   await page.goto("/about");
   const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
   expect(ld.mainEntity["@type"]).toBe("Person");
-  expect(ld.mainEntity.alumniOf.name).toBe("IIT Mandi");
+  expect(ld.mainEntity.alumniOf[0].name).toBe("IIT Mandi");
   expect(ld.mainEntity.sameAs).toContain("https://linkedin.com/in/aswin-a-pm");
   expect(ld.mainEntity.sameAs).toContain("https://github.com/aswin-a");
 });

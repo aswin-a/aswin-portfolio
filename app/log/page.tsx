@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { PostList } from "@/components/log/post-list";
 import { Nav } from "@/components/nav";
+import { DESCRIPTIONS, pageMetadata } from "@/lib/seo";
 import { siteMeta } from "@/content/site-meta";
 import { hrefOf, withTodo } from "@/lib/content";
 import { posts } from "@/lib/posts";
 
-export const metadata: Metadata = { title: "Build log" };
+export const metadata: Metadata = pageMetadata({ title: "Build log", description: DESCRIPTIONS.log, path: "/log" });
 
 export default async function BuildLog() {
   const all = await posts();

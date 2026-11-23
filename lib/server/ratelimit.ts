@@ -7,15 +7,18 @@ import { redisOrNull } from "./redis";
  * - fit: FIT_DAILY_LIMIT fit checks per visitor per day
  * - ask: 30 per visitor per hour, shared by Ask my work, Break my AI and the sandbox
  * - drill: FIT_DAILY_LIMIT failure drills per visitor per day, apart from fit checks
+ * - contact: 3 contact-form messages per visitor per hour (SPEC §9)
  */
-export type Bucket = "fit" | "ask" | "drill";
+export type Bucket = "fit" | "ask" | "drill" | "contact";
 export const ASK_HOURLY_LIMIT = 30;
+export const CONTACT_HOURLY_LIMIT = 3;
 
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 
 function rule(bucket: Bucket, env: ServerEnv): { tokens: number; windowMs: number; window: "1 d" | "1 h" } {
   if (bucket === "ask") return { tokens: ASK_HOURLY_LIMIT, windowMs: HOUR_MS, window: "1 h" };
+  if (bucket === "contact") return { tokens: CONTACT_HOURLY_LIMIT, windowMs: HOUR_MS, window: "1 h" };
   return { tokens: env.FIT_DAILY_LIMIT, windowMs: DAY_MS, window: "1 d" };
 }
 
