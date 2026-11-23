@@ -100,3 +100,36 @@ describe("eval-results.json writer", () => {
     expect(() => summarise(run([]))).toThrow(/no results/);
   });
 });
+
+describe("content/eval-results.json on the site", async () => {
+  const { evalMeta, evalResults } = await import("@/lib/eval-results");
+  const { EvalResultsSchema } = await import("@/lib/schemas/content");
+  const { isTodo } = await import("@/lib/content");
+  const real = { lastRun: "2026-11-23T10:00:00.000Z", cases: 19, passed: 18, passRate: 0.947, redTeam: { held: 14, total: 14 }, models: { fit: "a", chat: "b" } };
+
+  it("before the first real run: the design's placeholders", () => {
+    expect(evalResults).toEqual({ lastRun: null });
+    const m = evalMeta();
+    for (const v of Object.values(m)) expect(isTodo(v), v).toBe(true);
+    expect(m).toMatchObject({ evalCaseCount: "[25]", evalPassed: "[passed]", evalRedTeamPassed: "[held]", evalLastRun: "[date]" });
+  });
+  it("after a real run: its numbers and date", () => {
+    expect(evalMeta(EvalResultsSchema.parse(real))).toEqual({
+      evalCaseCount: "19",
+      evalLastRun: "23 Nov 2026",
+      evalPassed: "18",
+      evalTotal: "19",
+      evalRedTeamPassed: "14",
+      evalRedTeamTotal: "14",
+    });
+  });
+  it("a malformed file is refused (the build fails)", () => {
+    expect(() => EvalResultsSchema.parse({ ...real, passed: 20 })).toThrow();
+    expect(() => EvalResultsSchema.parse({ lastRun: null, cases: 3 })).toThrow();
+    expect(() => EvalResultsSchema.parse({ ...real, lastRun: "yesterday" })).toThrow();
+  });
+  it("the writer's output passes the site's schema", () => {
+    const row = (success: boolean, redTeam: boolean) => ({ success, testCase: { metadata: { redTeam } }, response: { metadata: { fake: false } } });
+    expect(() => EvalResultsSchema.parse(summarise({ results: { timestamp: real.lastRun, results: [row(true, true), row(false, false)] } }))).not.toThrow();
+  });
+});
