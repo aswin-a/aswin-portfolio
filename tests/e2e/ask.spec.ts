@@ -340,3 +340,47 @@ test.describe("layout", () => {
     await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toHaveCount(0);
   });
 });
+
+test.describe("topic mode on the CV page (update 6)", () => {
+  const topicBox = (page: Page) => dialog(page).getByText(/^ASKING ABOUT · /).locator("xpath=..");
+
+  test("the Nav button opens on the general topic; other pages have none", async ({ page }) => {
+    await open(page, "/about");
+    await expect(dialog(page).getByText("ASKING ABOUT · My experience", { exact: true })).toBeVisible();
+    await expect(topicBox(page).getByRole("button")).toHaveText([
+      "What did he own at Zelthy?ask ↵",
+      "Has he managed integrations at scale?ask ↵",
+      "Has he led a team?ask ↵",
+    ]);
+    await expect(topicBox(page)).toHaveCSS("border-top-color", "rgb(31, 76, 134)");
+    await expect(topicBox(page).getByRole("button").first()).toHaveCSS("min-height", "44px");
+    await page.keyboard.press("Escape");
+    await open(page, "/");
+    await expect(dialog(page).getByText(/^ASKING ABOUT/)).toHaveCount(0);
+  });
+
+  test("'Ask about this role →' opens the role's questions, which go to the live endpoint", async ({ page }) => {
+    await page.goto("/about");
+    const zelthy = page.getByRole("main").locator("ol > li").nth(5);
+    await zelthy.getByRole("button", { name: "Ask about this role →" }).click();
+    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy", { exact: true })).toBeVisible();
+    await dialog(page).getByRole("button", { name: /^What did he ship with ML or AI\?/ }).click();
+    await expect(status(page)).toContainText("› What did he ship with ML or AI?");
+    // Not the prototype's canned answer: the fake model doesn't know this question, so the live path says so.
+    await expect(status(page)).not.toContainText("ML-based OCR for prescriptions and bills, in production");
+    await expect(status(page)).toContainText("The knowledge base doesn't cover that");
+  });
+
+  test("the Ask box asks its own question, or a chip, as soon as Ask opens", async ({ page }) => {
+    await page.goto("/about");
+    await page.getByRole("textbox", { name: "Ask your own question about Aswin's experience" }).fill("Has he worked on APIs?");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(status(page)).toContainText("› Has he worked on APIs?");
+    await expect(status(page)).toContainText("Yes.");
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Has he led a team?", exact: true }).click();
+    await expect(status(page)).toContainText("› Has he led a team?");
+    await dialog(page).getByRole("button", { name: "← Ask another" }).click();
+    await expect(dialog(page).getByText("ASKING ABOUT · My experience", { exact: true })).toBeVisible();
+  });
+});

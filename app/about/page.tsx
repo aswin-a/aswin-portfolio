@@ -145,7 +145,7 @@ export default function About() {
                       </div>
                       {it.scope && <p className="m-0 text-[15px] leading-[1.55]">{it.scope}</p>}
                       {it.highlights.length > 0 && (
-                        <ul className="m-0 flex flex-col gap-[6px] pl-5 text-[15px] leading-[1.5]">
+                        <ul className="m-0 flex list-disc flex-col gap-[6px] pl-5 text-[15px] leading-[1.5]">
                           {it.highlights.map((h) => (
                             <li key={h}>{h}</li>
                           ))}

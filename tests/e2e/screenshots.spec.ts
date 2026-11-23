@@ -115,3 +115,22 @@ for (const [name, width, height] of SIZES) {
     }
   }
 }
+
+// Design update 6: the CV page with an area card open, and Ask in topic mode.
+for (const [name, width, height] of SIZES) {
+  test(`capture about-group-open-${name}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/about");
+    await page.getByRole("button", { name: /^Core platform and integrations/ }).click();
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `test-results/screens/about-group-open-${name}.png`, fullPage: true });
+  });
+  test(`capture ask-topic-${name}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/about");
+    await page.getByRole("main").locator("ol > li").nth(5).getByRole("button", { name: "Ask about this role →" }).click();
+    await page.getByRole("dialog", { name: "Ask my work" }).getByText(/^ASKING ABOUT/).waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `test-results/screens/ask-topic-${name}.png` });
+  });
+}

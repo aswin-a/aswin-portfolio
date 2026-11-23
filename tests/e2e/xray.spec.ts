@@ -53,7 +53,7 @@ test("current page link is marked, including case studies", async ({ page }) => 
   await page.goto("/work/integration-builder");
   const main = page.getByRole("navigation", { name: "Main" });
   await expect(main.getByRole("link", { name: "Case studies" })).toHaveAttribute("aria-current", "page");
-  await expect(main.getByRole("link", { name: "About" })).not.toHaveAttribute("aria-current", "page");
+  await expect(main.getByRole("link", { name: "CV", exact: true })).not.toHaveAttribute("aria-current", "page");
 });
 
 test("unknown case study slug is a 404", async ({ page }) => {

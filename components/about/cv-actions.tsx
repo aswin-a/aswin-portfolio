@@ -129,7 +129,7 @@ export function CvGroups({ groups }: { groups: CvGroup[] }) {
                 </span>
               </button>
               {isOpen && (
-                <ul className="m-0 flex flex-col gap-[6px] pt-0 pr-4 pb-4 pl-9 text-[14px] leading-[1.55]">
+                <ul className="m-0 flex list-disc flex-col gap-[6px] pt-0 pr-4 pb-4 pl-9 text-[14px] leading-[1.55]">
                   {g.items.map((x) => (
                     <li key={x}>{x}</li>
                   ))}
