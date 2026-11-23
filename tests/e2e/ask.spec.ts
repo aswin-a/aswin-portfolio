@@ -1,3 +1,4 @@
+import { ASK_ATTACKS, ASK_QUESTIONS } from "@/lib/ask/copy";
 import { expect, FAKE, test, type Page } from "./fixtures";
 
 // Session memory in the shape the hero writes (Milestone 4). Uses the design's HERO_BAD sample.
@@ -94,22 +95,12 @@ test.describe("before a question", () => {
     });
   }
 
-  test("Break my AI chips show only in X-ray, in an X-ray panel; Jump to links always", async ({ page }) => {
-    await open(page);
-    await expect(dialog(page).getByRole("button", { name: "prompt injection", exact: true })).toBeHidden();
-    await expect(dialog(page).getByText("Break my AI", { exact: true })).toBeHidden();
-    await expect(dialog(page).getByRole("link", { name: "Build log" })).toBeVisible();
-    await page.keyboard.press("Escape");
+  test("no Break my AI in Ask, even in X-ray (Aswin, 2026-11-23); Jump to links always", async ({ page }) => {
     await open(page, "/?xray=1");
+    await expect(dialog(page).getByText("Break my AI", { exact: true })).toHaveCount(0);
     for (const chip of ["prompt injection", "something he hasn't done", "conflicting info", "ambiguous ask"]) {
-      await expect(dialog(page).getByRole("button", { name: chip, exact: true })).toBeVisible();
+      await expect(dialog(page).getByRole("button", { name: chip, exact: true })).toHaveCount(0);
     }
-    const label = dialog(page).getByText("Break my AI", { exact: true });
-    await expect(label).toHaveCSS("color", "rgb(163, 169, 176)");
-    const panel = label.locator("xpath=..");
-    await expect(panel).toHaveCSS("background-color", "rgb(16, 18, 20)");
-    await expect(panel).toHaveCSS("border-top-left-radius", "10px");
-    await expect(panel.getByText("X-RAY", { exact: true })).toBeVisible();
     // The dialog itself stays light; only the scrim darkens.
     await expect(dialog(page)).toHaveCSS("background-color", "rgb(255, 253, 248)");
     await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveAttribute("href", "/work/integration-builder");
@@ -247,9 +238,11 @@ test.describe("answers", () => {
     ["ambiguous ask", "NEEDS CLARIFYING", "solid", "1px"],
   ];
   for (const [chip, label, style, width] of TONES) {
-    test(`Break my AI: ${chip}`, async ({ page }) => {
+    test(`a typed attack still gets its guarded answer: ${chip}`, async ({ page }) => {
       await open(page, "/?xray=1");
-      await dialog(page).getByRole("button", { name: chip, exact: true }).click();
+      const attack = ASK_ATTACKS.find(([, c]) => c === chip)!;
+      await input(page).fill(ASK_QUESTIONS[attack[0]]);
+      await page.keyboard.press("Enter");
       const labelEl = status(page).getByText(label, { exact: true });
       await expect(labelEl).toBeVisible();
       const card = labelEl.locator("..");

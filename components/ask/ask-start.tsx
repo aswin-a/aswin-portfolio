@@ -1,7 +1,5 @@
 import { AskLink } from "@/components/ask/ask-link";
-import { XrayPanel } from "@/components/xray-panel";
 import {
-  ASK_ATTACKS,
   ASK_BY_PAGE,
   ASK_JUMP_TO,
   ASK_QUESTIONS,
@@ -17,7 +15,7 @@ const ROW =
   "-mx-[10px] flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[8px] border-0 bg-transparent px-[10px] py-2 text-left font-sans text-ink";
 const HINT = "font-mono text-[12px] text-muted";
 
-/** Ask.dc.html before a question is asked: topic, session memory, suggestions, Break my AI, Jump to. */
+/** Ask.dc.html before a question is asked: topic, session memory, suggestions, Jump to. */
 export function AskStart({
   page,
   topic,
@@ -90,24 +88,7 @@ export function AskStart({
           </button>
         ))}
       </div>
-      {/* X-ray only, in an X-ray panel (design update 3). */}
-      <div className="xray-only">
-        <XrayPanel className="flex flex-col gap-2 rounded-[10px] px-[14px] py-3">
-          <p className="m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-xr-muted">Break my AI</p>
-          <div className="flex flex-wrap gap-2">
-            {ASK_ATTACKS.map(([id, chip]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onAsk(ASK_QUESTIONS[id])}
-                className="min-h-10 cursor-pointer rounded-[8px] border border-xr-rule bg-transparent px-3 py-[6px] font-mono text-[13px] text-xr-ink"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-        </XrayPanel>
-      </div>
+      {/* No Break my AI chips here (Aswin, 2026-11-23): Break my AI lives on the hero only. */}
       <div className="flex flex-col gap-[6px]">
         <p className={LABEL}>Jump to</p>
         <div className="flex flex-wrap gap-2">

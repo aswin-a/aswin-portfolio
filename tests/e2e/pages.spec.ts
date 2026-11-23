@@ -102,6 +102,7 @@ test("shared Footer: contact and the footer bar on every page, phones included (
     await expect(page.locator("section#contact")).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 2, name: "Talk to Aswin." })).toBeVisible();
     await expect(page.locator("#contact").getByRole("link", { name: "CV", exact: true })).toHaveAttribute("href", "/about");
+    await expect(page.locator("#contact").getByRole("link", { name: "GitHub", exact: true })).toHaveAttribute("href", "https://github.com/aswin-a");
     await expect(page.getByRole("contentinfo")).toContainText(/Updated \d{1,2} [A-Z][a-z]{2} \d{4} · © 2026 Aswin · aswin-a\.com/);
   }
   await expect(page.locator("#contact")).toHaveCSS("padding", "72px 24px 88px");
@@ -261,6 +262,7 @@ test("CV: JSON-LD Person with alumniOf and sameAs", async ({ page }) => {
   expect(ld.mainEntity["@type"]).toBe("Person");
   expect(ld.mainEntity.alumniOf.name).toBe("IIT Mandi");
   expect(ld.mainEntity.sameAs).toContain("https://linkedin.com/in/aswin-a-pm");
+  expect(ld.mainEntity.sameAs).toContain("https://github.com/aswin-a");
 });
 
 test("case study: before/after tabs and the X-ray link button", async ({ page }) => {

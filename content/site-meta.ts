@@ -3,7 +3,7 @@ import { todo } from "@/lib/content";
 /** Facts used across the site. Every todo() is Aswin's to fill in (SPEC §12). */
 export const siteMeta = {
   evalSetLink: todo("[link]"), // TODO(aswin): public eval set on GitHub
-  github: todo("[link]"), // TODO(aswin): GitHub profile
+  github: "https://github.com/aswin-a", // GitHub profile (Aswin, 2026-11-23)
   linkedin: "https://www.linkedin.com/in/aswin-a-pm", // From the public CV
   domain: "aswin-a.com", // Production domain (Aswin, 2026-11-20)
   responseTime: todo("[response time]"), // TODO(aswin): "usually within …" on the contact success state

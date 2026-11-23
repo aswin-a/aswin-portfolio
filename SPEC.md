@@ -102,7 +102,7 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 
 **X-ray mode** (`Nav.dc.html`, `Main.dc.html`)
 - The toggle in Nav reveals the X-ray panels on every page; it does not re-theme the page. The toggle itself shows the state (on: dark button, accent track). The Ask scrim still darkens in X-ray.
-- X-ray-only content: the "This run" and "Build details" panels, the Break my AI panel (hero) and its chips (Ask), "How I built this" (hero), drill traces, the Ask answer trace, the case-study logged trace, the eval table, and the guard chips.
+- X-ray-only content: the "This run" and "Build details" panels, the Break my AI panel (hero), "How I built this" (hero), drill traces, the Ask answer trace, the case-study logged trace, the eval table, and the guard chips.
 - It persists across page navigation and reloads within the session (sessionStorage), and can be set by `?xray=1`.
 - Intro banner on home: "New here? Try X-ray." with "Turn on X-ray" and "Got it". Shown until dismissed or X-ray is turned on; the Nav shows a "NEW" pill while the banner is showing. Remember dismissal in localStorage.
 - "How I build agentic products, with proof" cards marked "live here" turn X-ray on and scroll to their anchor: the hero (`#top`) or the Break my AI panel (`#break-my-ai`). That panel only exists while X-ray is on, so X-ray turns on first, then the page scrolls. The "planned" card has no link.
@@ -112,7 +112,7 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 - Opens from the Nav button, the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it. Focus is trapped while open and returns to the trigger on close.
 - Desktop: centred modal, max-width 680, top padding 10vh. ≤ 640 px: bottom sheet (`sheet` mode), radius 18 18 0 0.
 - Suggested questions change by page (`ASK_BY_PAGE`: home, work, log, about). The question texts in `ASK_ANSWERS` are the exact suggested-question copy.
-- "Break my AI" chips (X-ray only, in an X-ray panel) and "Jump to" links as designed.
+- "Jump to" links as designed. **No "Break my AI" chips in Ask** (Aswin, 2026-11-23, overriding `Ask.dc.html`): Break my AI lives on the hero only. The attack questions still get their guarded answers when typed.
 - **Topic mode (design update 6):** Ask accepts an optional `topic` (`{label, questions}`) and an initial question (`autoAsk`). With a topic, a box "ASKING ABOUT · {label}" lists the topic's questions as tappable rows. An initial question is asked as soon as Ask opens. The CV page opens Ask this way: "Ask about this role →" (the item's questions, label "{title} · {company}"), the Ask box's own question and its 3 chips (topic "My experience"). Topic questions are **suggested prompts only**: they go to the live endpoint like any other question; the prototype's canned `a` answers are never shown.
 - **Session memory:** after a fit check, its context (role, match count, gaps) is carried into Ask and shown in the "CONTINUING FROM YOUR FIT CHECK · SESSION MEMORY" box with "Forget this". It lives in sessionStorage only and is sent with Ask requests. Nothing is stored server-side.
 

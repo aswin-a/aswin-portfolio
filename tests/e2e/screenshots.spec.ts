@@ -51,9 +51,9 @@ for (const [name, width, height] of SIZES) {
           await page.keyboard.press("Enter");
           await dialog.getByText("› compose · writing the answer…").waitFor();
         } else if (pick) {
-          // Update 3: the Break my AI chips are X-ray only, so without X-ray the attack is typed.
+          // Ask has no Break my AI chips (Aswin, 2026-11-23), so attacks are typed.
           const attack = ASK_ATTACKS.find(([, chip]) => chip === pick);
-          if (attack && !xray) {
+          if (attack) {
             await dialog.getByRole("textbox").fill(ASK_QUESTIONS[attack[0]]);
             await page.keyboard.press("Enter");
           } else {
