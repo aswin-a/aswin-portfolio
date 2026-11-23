@@ -1,73 +1,47 @@
-import { siteMeta } from "@/content/site-meta";
+import { cvHeader, cvItems, cvSkills, cvStats } from "@/content/cv";
+import { cvItem } from "@/lib/cv";
 
 export type Fact = { id: string; text: string; label: string; href: string };
 
 /**
- * Canonical bio facts used in answers (SPEC §6). Statements below are taken from the design copy.
+ * Canonical bio facts used in Ask answers (SPEC §6), generated from content/cv.ts (design update 6):
+ * the CV header, stats, skills and a few lines Ask cites often. Ids are stable (lib/ai/fake.ts cites them).
  * Labels are the source chips Ask my work shows (Ask.dc.html: "About · career", "Case studies").
  */
+const career = { label: "About · career", href: "/about" };
+const zelthy = cvItem("zelthy");
+const line = (group: string, starts: string) => {
+  const hit = zelthy.groups?.find((g) => g.name === group)?.items.find((x) => x.startsWith(starts));
+  if (!hit) throw new Error(`content/cv.ts: no Zelthy line "${starts}…" in ${group}`);
+  return hit;
+};
+const sideProjects = cvItems.filter((it) => it.lane === "project");
+const edu = cvItem("edu");
+
 export const facts: Fact[] = [
-  { id: "fact-title", text: "Senior Product Manager.", label: "About · career", href: "/about" },
-  {
-    id: "fact-focus",
-    text: "Works on platforms, APIs and integrations, including in healthcare.",
-    label: "About · career",
-    href: "/about",
-  },
-  {
-    id: "fact-years",
-    text: `${siteMeta.yearsOfExperience} years as a product manager.`,
-    label: "About · career",
-    href: "/about",
-  },
+  { id: "fact-title", text: `${cvHeader.name}: ${cvHeader.role}.`, ...career },
+  { id: "fact-focus", text: cvHeader.summary, ...career },
+  { id: "fact-years", text: `${cvStats[0][0]} ${cvStats[0][1]}.`, ...career },
+  { id: "fact-stats", text: cvStats.map(([big, small]) => `${big} ${small}.`).join(" "), ...career },
   {
     id: "fact-ai-work",
-    text: "Builds AI agents: a job-search agent, an Instagram competitor agent for Dhee's (shown as a recorded run) and this site's fit check.",
+    text: `Projects: ${sideProjects.map((it) => `${it.title} (${it.org}, ${it.dates}). ${it.scope}`).join(" ")}`,
     label: "Case studies",
     href: "/work",
   },
-  {
-    id: "fact-llm-experience",
-    text: "No professional LLM role yet. His AI work is agents he built and shipped on his own projects.",
-    label: "About · career",
-    href: "/about",
-  },
-  {
-    id: "fact-platform-win",
-    // Chosen from the master resume; Aswin to confirm it is the one he'd lead with.
-    text: "Delivered 17 platform packages in 8 months at Zelthy; 95% of new apps adopted them and time to deploy fell 80%.",
-    label: "About · career",
-    href: "/about",
-  },
-  // From the master resume and the public CV, Nov 2026.
+  { id: "fact-llm-experience", text: line("Data, ML and AI", "Prototyped LLM features"), ...career },
+  { id: "fact-platform-win", text: line("Product delivery, roadmap and metrics", "Delivered 17 software packages"), ...career },
   {
     id: "fact-career-total",
-    text: "9 years across product and technology: 4 years in product management at Zelthy (Associate Product Manager to Senior Product Manager, 2020–2024) and about 5 years as a founder owning product at two startups, The Solar Labs (2017–2020) and Dhee's (2024–2026).",
-    label: "About · career",
-    href: "/about",
+    text: cvItems
+      .filter((it) => it.lane === "work")
+      .map((it) => `${it.title}, ${it.org} (${it.dates}).`)
+      .join(" "),
+    ...career,
   },
-  {
-    id: "fact-education",
-    text: "B.Tech in Computer Science and Engineering, IIT Mandi (2013–2017). A former developer: wrote production code for about 3 years at The Solar Labs.",
-    label: "Resume (PDF)",
-    href: "/resume.pdf",
-  },
-  {
-    id: "fact-location",
-    text: "Based in Chennai, India. Has worked remotely with clients and teams in Singapore, Malaysia, Vietnam, Hong Kong and Australia.",
-    label: "About · career",
-    href: "/about",
-  },
-  {
-    id: "fact-leadership",
-    text: "Led 5 product managers and 2 interns at Zelthy, hired 3 of the PMs, and led project teams of 20+.",
-    label: "About · career",
-    href: "/about",
-  },
-  {
-    id: "fact-ai-tools",
-    text: "Uses Claude, Claude Code, ChatGPT, Cursor and v0 day to day for PRDs, documentation, prototypes and agents.",
-    label: "About · career",
-    href: "/about",
-  },
+  { id: "fact-ladder", text: `${zelthy.ladder}.`, ...career },
+  { id: "fact-education", text: `${edu.title}, ${edu.org} (${edu.dates}).`, ...career },
+  { id: "fact-location", text: `Location: ${cvHeader.location}.`, ...career },
+  { id: "fact-leadership", text: line("Team leadership", "Led and mentored"), ...career },
+  ...cvSkills.map(([name, list], i) => ({ id: `fact-skills-${i + 1}`, text: `Skills · ${name}: ${list}.`, ...career })),
 ];

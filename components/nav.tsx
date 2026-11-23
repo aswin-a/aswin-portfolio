@@ -9,7 +9,7 @@ export type NavCurrent = "home" | "work" | "log" | "about";
 const LINKS: { id: NavCurrent; label: string; href: string }[] = [
   { id: "work", label: "Case studies", href: "/work" },
   { id: "log", label: "Build log", href: "/log" },
-  { id: "about", label: "About", href: "/about" },
+  { id: "about", label: "CV", href: "/about" },
 ];
 
 /** Header from Nav.dc.html. */

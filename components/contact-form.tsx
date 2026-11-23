@@ -7,7 +7,7 @@ const field =
   "min-h-11 rounded-lg border px-3 py-2 font-sans text-[16px] text-ink";
 
 /**
- * Contact form from Main.dc.html. Sending is wired to /api/contact in Milestone 6; until then
+ * Contact form from Footer.dc.html (design update 6). Sending is wired to /api/contact in Milestone 6; until then
  * submit does nothing (no fake "sent"). "Talk to Aswin about this role" in the hero pre-fills Role.
  */
 export function ContactForm({ responseTime, prefilledRole }: { responseTime: string; prefilledRole?: string }) {

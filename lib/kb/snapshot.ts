@@ -7,7 +7,8 @@ import { HIDE_UNPROVEN, containsTodo, todosIn } from "@/lib/content";
 
 /**
  * The knowledge base everything the AI may say comes from (SPEC §6). Built once from the typed
- * files in /content/kb when the server bundle loads, validated, and frozen. No embeddings.
+ * files in /content/kb (themselves generated from content/cv.ts, design update 6) when the server
+ * bundle loads, validated, and frozen. No embeddings.
  *
  * Production drops any entry that still holds a TODO(aswin) placeholder ("Anything without proof
  * yet is left out"). The not-done list has no placeholders and is always present.
@@ -38,7 +39,7 @@ function build(): KbEntry[] {
       scope: "roles" as const,
       label: r.label,
       href: r.href,
-      text: `${r.title} at ${r.company} (${r.years}). ${r.summary}`,
+      text: [`${r.title}, ${r.company} (${r.years}).`, r.summary, ...r.details].filter(Boolean).join(" "),
       tags: r.tags ?? [],
       todos: todosIn(r),
     })),
@@ -47,7 +48,7 @@ function build(): KbEntry[] {
       scope: "projects" as const,
       label: p.label,
       href: p.href,
-      text: `${p.title} (${p.status}). ${p.summary} Evidence: ${p.evidence.join(" ")}`,
+      text: `${p.title} (${p.status}). ${p.summary}${p.evidence.length ? ` Evidence: ${p.evidence.join(" ")}` : ""}`,
       tags: p.tags ?? [],
       todos: todosIn(p),
     })),

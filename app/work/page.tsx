@@ -13,7 +13,7 @@ export default function WorkIndex() {
       <main>
         <ProductsSection headingLevel={1} anchorBase="/" />
       </main>
-      <Footer maxWidth={1040} />
+      <Footer />
     </div>
   );
 }

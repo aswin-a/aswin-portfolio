@@ -35,7 +35,7 @@ export default async function BuildLog() {
           </a>
         </div>
       </main>
-      <Footer maxWidth={880} />
+      <Footer />
     </div>
   );
 }

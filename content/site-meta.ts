@@ -2,7 +2,6 @@ import { todo } from "@/lib/content";
 
 /** Facts used across the site. Every todo() is Aswin's to fill in (SPEC §12). */
 export const siteMeta = {
-  yearsOfExperience: "4", // Formal PM years at Zelthy (master resume). Total career framing is in content/kb/facts.ts.
   evalSetLink: todo("[link]"), // TODO(aswin): public eval set on GitHub
   github: todo("[link]"), // TODO(aswin): GitHub profile
   linkedin: "https://www.linkedin.com/in/aswin-a-pm", // From the public CV

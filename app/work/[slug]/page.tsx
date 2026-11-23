@@ -33,7 +33,7 @@ export default async function CaseStudyRoute({ params }: Props) {
     <div className="min-h-screen bg-bg font-sans text-ink">
       <Nav current="work" />
       <CaseStudyPage cs={cs} next={next} related={related} />
-      <Footer maxWidth={1200} />
+      <Footer />
     </div>
   );
 }

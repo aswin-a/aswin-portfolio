@@ -1,6 +1,5 @@
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/fit-check/hero";
-import { Contact } from "@/components/home/contact";
 import { FromTheLog } from "@/components/home/from-the-log";
 import { ProductsSection } from "@/components/home/products";
 import { UnderTheHood } from "@/components/home/under-the-hood";
@@ -42,9 +41,8 @@ export default async function Home() {
         <UnderTheHood />
         <ProductsSection />
         {logPosts.length > 0 && <FromTheLog posts={logPosts} />}
-        <Contact />
       </main>
-      <Footer maxWidth={1040} phone />
+      <Footer />
     </div>
   );
 }
