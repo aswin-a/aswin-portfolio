@@ -3,7 +3,7 @@ import { costUsd, tokensOf } from "@/lib/ai/cost";
 import type { EvidenceCard } from "@/lib/ai/schemas";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
 import { assertPublicUrl, htmlToText, isPrivateAddress } from "@/lib/run/fetch-url";
-import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHonesty, hasScore, sandboxConsistent } from "@/lib/run/guards";
+import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHonesty, hasScore, notDoneTopicFor, sandboxConsistent } from "@/lib/run/guards";
 import { composeVerdict } from "@/lib/run/verdict";
 
 const notDone = KB.filter((e) => e.scope === "not_done");
@@ -120,5 +120,130 @@ describe("fetch_url safety", () => {
   it("turns HTML into text", () => {
     const html = "<html><head><title>x</title><style>p{}</style></head><body><h1>Senior PM</h1><script>evil()</script><ul><li>Own the API</li><li>Ship agents &amp; evals</li></ul></body></html>";
     expect(htmlToText(html)).toBe("Senior PM\n\n- Own the API\n- Ship agents & evals");
+  });
+});
+
+// ---------- Milestone 7: the gaps in guard and verdict coverage ----------
+
+describe("verdict.compose · template (M7)", () => {
+  it("uses the design's notes word for word, and counts n as matches + gaps", () => {
+    expect(composeVerdict(4, 2)).toEqual({ verdict: "Strong on 4 of 6 requirements.", note: "Each match links to the role or project behind it. Gaps are listed, not hidden." });
+    expect(composeVerdict(1, 5)).toEqual({ verdict: "Not a strong fit: 1 of 6 requirements.", note: "Better you hear it from this site than in round two." });
+  });
+  it("is exactly strong at one half, never below", () => {
+    expect(composeVerdict(1, 1).verdict).toMatch(/^Strong on 1 of 2/);
+    expect(composeVerdict(5, 6).verdict).toMatch(/^Not a strong fit: 5 of 11/);
+    expect(composeVerdict(1, 0).verdict).toBe("Strong on 1 of 1 requirements.");
+  });
+  it("never carries a percentage or score", () => {
+    for (const [m, g] of [[0, 0], [3, 3], [1, 9], [7, 0]]) {
+      const v = composeVerdict(m, g);
+      expect(hasScore(`${v.verdict} ${v.note}`)).toBe(false);
+    }
+  });
+});
+
+describe("hasScore · every form guard.honesty rejects (M7)", () => {
+  it.each(["92%", "92 %", "a 7.5% gap", "fifty per cent", "50 percent", "score", "scored well", "scores", "8/10", "4 / 5", "95/100", "rated highly", "a rating of"])("flags %s", (s) => {
+    expect(hasScore(s)).toBe(true);
+  });
+  it.each(["Built the API platform", "3 of 6 requirements", "10+ years", "Rated R? No: 'Ratelimit'", "2024/25 roadmap", "B2B/SaaS"])("passes %s", (s) => {
+    // "Rated" at the start is a rating word; the rest are plain facts.
+    expect(hasScore(s)).toBe(s.startsWith("Rated"));
+  });
+});
+
+describe("guard.citations · edge cases (M7)", () => {
+  const notDoneEntry = notDone[0];
+  it("a match citing a not-done or fact entry is a gap, even if kb.search returned it", () => {
+    const cards: EvidenceCard[] = [{ type: "match", req: "Anything", evidence: "x", sourceId: notDoneEntry.id }];
+    const out = guardCitations(["Anything"], cards, [notDoneEntry]);
+    expect(out[0]).toMatchObject({ type: "gap", closest: NO_SOURCE_CLOSEST });
+    expect(out.fired).toEqual(["guard.citations"]);
+  });
+  it("keeps the requirement order and text, matching cards by req first, then by position", () => {
+    const cards: EvidenceCard[] = [
+      { type: "gap", req: "B", closest: "c", close: "", notDoneId: null },
+      { type: "match", req: "A", evidence: "e", sourceId: "cloudeagle" },
+    ];
+    const out = guardCitations(["A", "B"], cards, [cloudeagle]);
+    expect(out.map((c) => [c.req, c.type])).toEqual([["A", "match"], ["B", "gap"]]);
+  });
+  it("leaves gaps alone and fires nothing for clean output", () => {
+    const cards: EvidenceCard[] = [{ type: "gap", req: "A", closest: "c", close: "d", notDoneId: null }];
+    expect([...guardCitations(["A"], cards, [])]).toMatchObject([{ type: "gap", closest: "c", close: "d" }]);
+    expect(guardCitations(["A"], cards, []).fired).toEqual([]);
+  });
+});
+
+describe("guard.honesty · edge cases (M7)", () => {
+  it("every not-done topic, asked as a requirement, is a gap with no close", () => {
+    for (const n of notDone) {
+      const topic = n.text.replace(/^NOT DONE: /, "").split(". Closest:")[0];
+      expect(notDoneTopicFor(topic, notDone)?.id, topic).toBe(n.id);
+      const out = guardHonesty([{ type: "match", req: topic, evidence: "Did it.", sourceId: "cloudeagle" }], notDone);
+      expect(out.matches, topic).toEqual([]);
+      expect(out.gaps[0].close).toBe("");
+      expect(out.fired).toEqual(["guard.honesty"]);
+    }
+  });
+  it("doesn't treat an unrelated requirement as a not-done topic", () => {
+    expect(notDoneTopicFor("Own a public API and partner integrations", notDone)).toBeUndefined();
+    expect(notDoneTopicFor("", notDone)).toBeUndefined();
+  });
+  it("a match whose source isn't in the KB becomes a gap", () => {
+    const out = guardHonesty([{ type: "match", req: "APIs", evidence: "Built it.", sourceId: "ghost" }], notDone);
+    expect(out).toMatchObject({ matches: [], gaps: [{ req: "APIs", closest: NO_SOURCE_CLOSEST, close: "" }], fired: ["guard.honesty"] });
+  });
+  it("a gap with a score in its closest or close line is replaced", () => {
+    const out = guardHonesty([{ type: "gap", req: "Evals", closest: "Scored 6/10 on evals", close: "", notDoneId: null }], notDone);
+    expect(out.gaps[0].closest).toBe(NO_SOURCE_CLOSEST);
+  });
+  it("counts come from the cards, mixed in order", () => {
+    const cards: EvidenceCard[] = [
+      { type: "match", req: "Agents", evidence: "Designed it.", sourceId: "cloudeagle" },
+      { type: "gap", req: "Evals at scale", closest: "Keeps an eval set.", close: "Would adopt the team's tooling.", notDoneId: null },
+      { type: "match", req: "Consumer hardware launches at scale", evidence: "x", sourceId: "dhees" },
+    ];
+    const out = guardHonesty(cards, notDone);
+    expect([out.matches.length, out.gaps.length]).toEqual([1, 2]);
+  });
+});
+
+describe("Ask guard · every kind (M7)", () => {
+  const src = ["cloudeagle"];
+  it.each([
+    ["refuse", "guard.prompt_injection"],
+    ["none", "guard.not_done"],
+    ["conflict", "guard.conflicting_info"],
+    ["clarify", "guard.ambiguous_ask"],
+    ["gap", "guard.gap_stated"],
+    ["fit", "none · answered from the knowledge base"],
+  ] as const)("%s → %s", (kind, guard) => {
+    expect(guardAsk({ kind, text: "From the record.", sourceIds: src, guard: "none" }, false).guard).toBe(guard);
+  });
+  it("memory answers use the session-memory guard line", () => {
+    expect(guardAsk({ kind: "fit", text: "From your fit check.", sourceIds: ["memory", "cloudeagle"], guard: "none" }, true)).toMatchObject({
+      guard: "none · answered from session memory + knowledge base",
+      sources: [{ label: "Your fit check", href: "/#top" }, { label: "Case study · CloudEagle concept", href: "/work/integration-builder" }],
+    });
+  });
+  it("refuse and clarify may cite nothing; a score anywhere is unknown", () => {
+    expect(guardAsk({ kind: "clarify", text: "Good at what?", sourceIds: [], guard: "none" }, false).kind).toBe("clarify");
+    expect(guardAsk({ kind: "fit", text: "He's a 95% match.", sourceIds: src, guard: "none" }, false).kind).toBe("unknown");
+    expect(guardAsk({ kind: "unknown", text: "anything", sourceIds: src, guard: "none" }, false).text).toBe(ASK_UNKNOWN_TEXT);
+  });
+  it("dedupes sources", () => {
+    expect(guardAsk({ kind: "fit", text: "Yes.", sourceIds: ["cloudeagle", "cloudeagle"], guard: "none" }, false).sources).toHaveLength(1);
+  });
+});
+
+describe("sandbox guard · every WORK_ATTACKS pair (M7)", () => {
+  it("accepts each design verdict with its guard and refuses a score in the reason", async () => {
+    const { WORK_ATTACKS, WORK_SAFE } = await import("@/content/case-studies/cloudeagle-attacks");
+    for (const a of WORK_ATTACKS) expect(sandboxConsistent({ verdict: a.verdict, reason: a.reason, guard: a.guard }), a.type).toBe(true);
+    expect(sandboxConsistent({ verdict: WORK_SAFE.verdict, reason: WORK_SAFE.reason, guard: WORK_SAFE.guard })).toBe(true);
+    expect(sandboxConsistent({ verdict: "BLOCKED", reason: "Risk score 9/10.", guard: "guard.scope" })).toBe(false);
+    expect(sandboxConsistent({ verdict: "FLAGGED", reason: "Held.", guard: "guard.clarify" })).toBe(false);
   });
 });
