@@ -9,18 +9,19 @@ Scope: **v1 only.** No vector database, no embeddings.
 
 ## 1. The design files
 
-`/design` holds the 10 finalised artboards exported from Claude Design ("Aswin — Portfolio Website Design & Prototype"). Each `.dc.html` is a self-contained prototype: markup with inline styles, `{{bindings}}`, `<sc-if>` / `<sc-for>` / `<dc-import>` and a `<script type="text/x-dc">` block holding state, sample data and interaction logic.
+`/design` holds the 11 finalised artboards exported from Claude Design ("Aswin — Portfolio Website Design & Prototype"). Each `.dc.html` is a self-contained prototype: markup with inline styles, `{{bindings}}`, `<sc-if>` / `<sc-for>` / `<dc-import>` and a `<script type="text/x-dc">` block holding state, sample data and interaction logic.
 
 | Artboard | What it is | Becomes |
 | --- | --- | --- |
 | `Main.dc.html` | Home page, 1440 wide | `/` |
 | `Hero.dc.html` | Fit-check hero component (all logic + copy) | `components/fit-check/*` |
 | `HeroStates.dc.html` | The hero's states side by side: empty, running, result, badfit, error, limited, plus "X-ray on: Break my AI" (the empty fit check with the X-ray red-team panel below it) | Acceptance reference for the hero |
-| `Nav.dc.html` | Header with Case studies / Build log / About, X-ray toggle, Ask my work ⌘K | `components/nav.tsx` |
-| `Ask.dc.html` | "Ask my work" command bar (desktop modal; `sheet` prop = mobile bottom sheet) | `components/ask/*` |
+| `Nav.dc.html` | Header with Case studies / Build log / CV, X-ray toggle, Ask my work ⌘K | `components/nav.tsx` |
+| `Footer.dc.html` | Shared "Talk to Aswin" contact section + site footer bar, on every page (design update 6) | `components/footer.tsx` |
+| `Ask.dc.html` | "Ask my work" command bar (desktop modal; `sheet` prop = mobile bottom sheet; optional `topic` and `autoAsk`, design update 6) | `components/ask/*` |
 | `Work.dc.html` | CloudEagle case study, the PRD template for every product's case study | `/work/[slug]` |
 | `BuildLog.dc.html` | Build log index with category filters | `/log` |
-| `About.dc.html` | About: intro, resume card, career dependency graph, roles, certificates | `/about` |
+| `About.dc.html` | CV (design update 6): header with Download PDF / Copy as plain text, 4 stat cards, Ask box, experience timeline (roles, side projects, education; Zelthy's expandable groups), skills, certificates | `/about` |
 | `Mobile.dc.html` | Home at 390 px (recruiter arriving from LinkedIn) | Responsive behaviour of `/` |
 | `MobileAsk.dc.html` | Ask my work as a phone bottom sheet | Responsive behaviour of Ask |
 | `canvas.json` | Artboard titles, sizes and order | Reference only |
@@ -86,12 +87,13 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 
 | Route | Source | Notes |
 | --- | --- | --- |
-| `/` | `Main.dc.html` + `Hero.dc.html`, mobile per `Mobile.dc.html` | Sections in order (design update 4): Nav, X-ray intro banner, Hero (fit check), "How I build agentic products, with proof" (12 cards), "Products I've built" (4 products), From the build log, Contact, footer, Ask overlay. Before / after AI is no longer on home (it stays inside the case study) |
+| `/` | `Main.dc.html` + `Hero.dc.html`, mobile per `Mobile.dc.html` | Sections in order (design update 4): Nav, X-ray intro banner, Hero (fit check), "How I build agentic products, with proof" (12 cards), "Products I've built" (4 products), From the build log, the shared Footer (Contact + footer bar, §5), Ask overlay. Before / after AI is no longer on home (it stays inside the case study) |
 | `/work/[slug]` | `Work.dc.html` | The nav label is "Case studies"; the route stays `/work`. The only case studies are the 4 products in `content/products.ts`, numbered and ordered as on home, all from the same PRD template: `job-search-agent` (01), `fit-check` (02), `integration-builder` (03, the CloudEagle.ai take-home; breadcrumb "03 · CLOUDEAGLE.AI"), `instagram-agent` (04). The "Next" card follows that order. Products 01 and 04 show a recorded run (video or trace replay), not a live agent. Platform & API work is removed (Aswin, 2026-11-20) |
 | `/work` | Not designed | **Gap:** default to the "Products I've built" section of `Main.dc.html` (the 4 product cards) as a standalone page with Nav and footer. Flag it to Aswin |
 | `/log` | `BuildLog.dc.html` | Filters: All, Build notes, Teardowns, Essays, TIL, with counts |
 | `/log/[slug]` | Not designed | **Gap:** simple article page in the build-log type styles (serif title, mono meta line, 880 px column). Flag it to Aswin |
-| `/about` | `About.dc.html` | |
+| `/about` | `About.dc.html` | The CV page (design update 6). The nav label is "CV"; the route stays `/about`. Rendered from `content/cv.ts` |
+| `/about.md` | `content/cv.ts` | Markdown twin of the CV for GEO, generated from the same content as the page and "Copy as plain text" (design update 6) |
 | `/api/run` | §6–8 | The single AI endpoint ("one endpoint, one knowledge base, two prompts") |
 | `/api/contact` | §9 | |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/llms-full.txt`, `/rss.xml` | §11 | |
@@ -100,35 +102,40 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 
 **X-ray mode** (`Nav.dc.html`, `Main.dc.html`)
 - The toggle in Nav reveals the X-ray panels on every page; it does not re-theme the page. The toggle itself shows the state (on: dark button, accent track). The Ask scrim still darkens in X-ray.
-- X-ray-only content: the "This run" and "Build details" panels, the Break my AI panel (hero) and its chips (Ask), "How I built this" (hero), drill traces, the Ask answer trace, the case-study logged trace, the eval table, and the guard chips.
+- X-ray-only content: the "This run" and "Build details" panels, the Break my AI panel (hero), "How I built this" (hero), drill traces, the Ask answer trace, the case-study logged trace, the eval table, and the guard chips.
 - It persists across page navigation and reloads within the session (sessionStorage), and can be set by `?xray=1`.
 - Intro banner on home: "New here? Try X-ray." with "Turn on X-ray" and "Got it". Shown until dismissed or X-ray is turned on; the Nav shows a "NEW" pill while the banner is showing. Remember dismissal in localStorage.
 - "How I build agentic products, with proof" cards marked "live here" turn X-ray on and scroll to their anchor: the hero (`#top`) or the Break my AI panel (`#break-my-ai`). That panel only exists while X-ray is on, so X-ray turns on first, then the page scrolls. The "planned" card has no link.
-- Footer on every page: "This site is an AI product. Turn on X-ray to see how it works." and "Updated {date} · © 2026 Aswin · {domain}". On the phone home page (`Mobile.dc.html`) the footer is one line: "Updated {date} · © 2026 Aswin". `{date}` is filled at build time (the build's date, `BUILD_DATE`, formatted like "20 Nov 2026"), never hard-coded.
+- **Shared Footer on every page** (`Footer.dc.html`, design update 6): one component, rendered at the end of every page. It holds the "Talk to Aswin." contact section (`section#contact`, padding `72px 24px 88px`, or `48px 20px 56px` below 640px; links LinkedIn, GitHub, CV; the contact form, §9) and then the footer bar: "This site is an AI product. Turn on X-ray to see how it works." and "Updated {date} · © 2026 Aswin · {domain}", the same on phones (the one-line phone footer is gone). The `#contact` anchor works from every page. `{date}` is filled at build time (the build's date, `BUILD_DATE`, formatted like "20 Nov 2026"), never hard-coded. There is no per-page contact or footer code.
 
 **Ask my work** (`Ask.dc.html`, `MobileAsk.dc.html`)
 - Opens from the Nav button, the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it. Focus is trapped while open and returns to the trigger on close.
 - Desktop: centred modal, max-width 680, top padding 10vh. ≤ 640 px: bottom sheet (`sheet` mode), radius 18 18 0 0.
 - Suggested questions change by page (`ASK_BY_PAGE`: home, work, log, about). The question texts in `ASK_ANSWERS` are the exact suggested-question copy.
-- "Break my AI" chips (X-ray only, in an X-ray panel) and "Jump to" links as designed.
+- "Jump to" links as designed. **No "Break my AI" chips in Ask** (Aswin, 2026-11-23, overriding `Ask.dc.html`): Break my AI lives on the hero only. The attack questions still get their guarded answers when typed.
+- **Topic mode (design update 6):** Ask accepts an optional `topic` (`{label, questions}`) and an initial question (`autoAsk`). With a topic, a box "ASKING ABOUT · {label}" lists the topic's questions as tappable rows. An initial question is asked as soon as Ask opens. The CV page opens Ask this way: "Ask about this role →" (the item's questions, label "{title} · {company}"), the Ask box's own question and its 3 chips (topic "My experience"). Topic questions are **suggested prompts only**: they go to the live endpoint like any other question; the prototype's canned `a` answers are never shown.
 - **Session memory:** after a fit check, its context (role, match count, gaps) is carried into Ask and shown in the "CONTINUING FROM YOUR FIT CHECK · SESSION MEMORY" box with "Forget this". It lives in sessionStorage only and is sent with Ask requests. Nothing is stored server-side.
 
-**Contact pre-fill:** "Talk to Aswin about this role" in the hero scrolls to `#contact` and pre-fills the Role field, showing "pre-filled from your fit check".
+**Contact pre-fill:** "Talk to Aswin about this role" in the hero scrolls to `#contact` (the shared Footer) and pre-fills the Role field, showing "pre-filled from your fit check". Only the fit check sets the role; other pages leave it empty.
+
+**CV page** (`About.dc.html`, design update 6): "Copy as plain text" copies the CV as plain text (`cvPlainText()` in the design), built from `content/cv.ts`, and shows "Copied ✓" for 2 s. "Download PDF" will serve a static PDF built from the same content at build time; until then it is a placeholder `#` link. Zelthy's 7 area cards each open independently (`aria-expanded`); an open card spans the full row with an accent border and "Hide N points ↑". Below 640px the dates column is hidden and the dates show inside each card.
 
 ## 6. Knowledge base (no vector DB)
 
-Everything the AI may say comes from typed content in `/content/kb/`:
+**The CV is the one source** (design update 6). `content/cv.ts` holds the CV word for word from `About.dc.html`: `stats`, `items` (`{ id, lane: 'work'|'project'|'edu', dates, title, org, ladder?, scope, highlights[], groups?: {name, summary, items[]}[], qa?: {q}[], link?, href?, link2?, href2? }`), `skills` and the general Ask topic. The CV page, "Copy as plain text", `/about.md` **and the knowledge base** are all generated from it, so the CV page and the AI can never disagree. A unit test checks that every role, project and fact entry traces back to a CV line. The not-done list is the one hand-written part (it lists what is *not* on the CV).
+
+Everything the AI may say comes from typed content in `/content/kb/`, generated from `content/cv.ts`:
 
 ```
 /content/kb/
-  roles.ts          # { id, title, company, years, summary, href }[]
-  projects.ts       # { id, title, status, summary, evidence[], href }[]
+  roles.ts          # { id, title, company, years, summary, href }[]   ← from cv.items (lane work, edu)
+  projects.ts       # { id, title, status, summary, evidence[], href }[] ← side projects, Zelthy's groups
   not-done.ts       # { id, topic, closest?, note }[]  ← things Aswin has NOT done
-  facts.ts          # canonical bio facts used in answers
+  facts.ts          # canonical bio facts used in answers ← CV header, stats, skills
   fallback.ts       # the 3 precomputed role-type matches (HERO_FALLBACK shape)
 ```
 
-- Each entry has a stable `id`, a human `label` for source chips (e.g. "Case study · CloudEagle concept", "Role · About") and an `href`.
+- Each entry has a stable `id`, a human `label` for source chips (e.g. "Case study · CloudEagle concept", "CV · Senior Product Manager · Zelthy", "CV · My experience"; CV-based entries are labelled "CV · …" and link to the CV page, Aswin 2026-11-23) and an `href`.
 - **`kb.search`** is a deterministic server function, not the model: it scores entries by keyword/tag overlap with the requirements and returns the top entries from the scopes `roles`, `projects`, `not_done`. No embeddings. Optional `tags` on roles and projects are search words only, never claims.
 - `kb.search` reads a frozen, Zod-validated snapshot of `/content/kb` built into the server bundle (`lib/kb/snapshot.ts`). Production leaves out entries that still hold a `TODO(aswin)` placeholder. The last-good copy for the fallback drill is the precomputed `fallback.ts`.
 
@@ -156,8 +163,8 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 - **Matches and gaps render as tables at ≥ 640px** and as stacked rows below 640px, exactly as in `Hero.dc.html`.
 - **No result footer line.** It is replaced by the X-ray **"This run"** and **"Build details"** panels, shown with X-ray on and a result. "This run" is fed by the run log (§10); "Build details" by build metadata and `eval-results.json`. Eval numbers and live-usage numbers are always labelled separately and never combined.
 - **States:** empty, running, result, badfit, error and limited, with the exact copy. "break" is not a state: Break my AI is an X-ray panel below the fit check (see §8).
-- **Failure drills** ("knowledge base offline", "hit the rate limit") live in the X-ray Break my AI panel and put the fit check above into its error or limited fallback state. They are real requests with a `drill` flag that force that failure on the server, so the real fallback path runs and its trace is shown in an X-ray panel (`HERO_DRILL_TRACE` is the expected trace). Drills don't call the LLM for the failed step and don't count against the visitor's limit.
-- **"How I built this"**: no toggle. The panel shows only when X-ray is on, as an X-ray panel, content exactly as in the design. Its `[placeholders]` come from `/content/site-meta.ts`.
+- **Failure drills** are **out of v1 UI scope** (design update 5: the drill buttons are hidden, `showDrills` is false). Keep the server-side drill path, the fallback UI (error and limited states, precomputed matches, drill trace) and their tests; they serve real outages and rate limits. The home "production" card's CTA reads "Try Break my AI →" (Aswin, 2026-11-23). As built before update 5: the drills ("knowledge base offline", "hit the rate limit") lived in the X-ray Break my AI panel and put the fit check above into its error or limited fallback state. They are real requests with a `drill` flag that force that failure on the server, so the real fallback path runs and its trace is shown in an X-ray panel (`HERO_DRILL_TRACE` is the expected trace). Drills don't call the LLM for the failed step and don't count against the visitor's limit.
+- **"How I built this"**: no toggle. The panel shows only when X-ray is on, as an X-ray panel, content exactly as in the design (design update 5: plain-language lists in sans type, no "Honest note", no cost line). Its architecture chips match the step names the API streams (`JD or link` › `fetch_url · links only` › `jd.parse` › `kb.search` › `evidence.map` › `guard.citations` › `guard.honesty` › `verdict.compose`). Its `[placeholders]` come from `/content/site-meta.ts`.
 
 ## 8. Ask my work and Break my AI — `/api/run` with `mode: "ask"`
 
@@ -170,7 +177,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 - Every factual answer cites ≥ 1 KB source; a server check drops uncited claims to `unknown`.
 - **Break my AI on the hero** (`id="break-my-ai"`) is an X-ray panel shown whenever X-ray is on, in every hero state, below the fit check (which stays usable). It uses the same mode. The UI shows the verdicts from the design: REFUSED / STATED / FLAGGED / CLARIFIED / ANSWERED (mapping: refuse→REFUSED, none→STATED, conflict→FLAGGED, clarify→CLARIFIED, others→ANSWERED), the ATTEMPTS row ("None yet. Your attempts appear here, newest first.", or a tally of squares plus "{held} of {attempts} held up"; session only, last 6 entries) and the guard line, which always shows (the panel is already X-ray).
   - **Pending state (design update 4):** while an attempt runs, its entry shows `RUNNING…`, "Checking the guardrails… {step}", a progress bar and "guardrail: … · trace: …"; the input, chips and drills are disabled and the button reads "Running…". `{step}` and the bar come from the real step events of the run (`kb.search`, `compose`, `guardrails`), never a timer.
-  - **Drills are logged:** each failure drill adds a `DRILL` entry (its reply, "See the fallback above ↑" and "fallback path: {path} · trace {run id}") once the drill's real fallback event arrives. DRILL entries are not counted in attempts, held or the tally.
+  - **Drills are logged** (no drill buttons in v1, design update 5; the entry type stays): each failure drill adds a `DRILL` entry (its reply, "See the fallback above ↑" and "fallback path: {path} · trace {run id}") once the drill's real fallback event arrives. DRILL entries are not counted in attempts, held or the tally.
   - A failed, rate-limited or budget-stopped attempt isn't logged or counted; its pending entry is removed and it shows Ask's error, limit or budget line below the input. Ask's budget line: "Ask my work is paused for this month: the AI budget is spent. Aswin is one message away."
 - **Case study "Try to break it"** (`Work.dc.html`) uses `mode: "sandbox"` with a prompt that plays the CloudEagle integration builder and returns `{verdict: BLOCKED|FLAGGED|CLARIFIED|DRAFTED, reason, guard}`. The six preset attacks and their expected verdicts are `WORK_ATTACKS`; they are also eval cases. Its counter reads "No attempts yet" before the first attempt, then "{stopped} held up of {attempts}" (design update 4). The verdict and guard must agree, or the attempt fails closed as an error. States the design doesn't show (approved M5), one line under the input; a failed attempt isn't logged or counted:
   - Loading: "Running against the builder…"
@@ -180,7 +187,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 
 ## 9. Contact form — `/api/contact`
 
-Fields exactly as designed: Name, Work email, Role, Message; button "Send to Aswin". Validate with Zod, verify Turnstile, rate-limit 3/hour per visitor, send via Resend to `CONTACT_TO_EMAIL` with reply-to set to the sender. Success state exactly as designed ("✓ SENT", "Thanks. Your note is with Aswin.", response-time line from content). On failure, show an inline error and a mailto link.
+The form lives in the shared Footer (`Footer.dc.html`), so it is on every page; the API and Turnstile protection are the same everywhere. Fields exactly as designed: Name, Work email, Role, Message; button "Send to Aswin". Validate with Zod, verify Turnstile, rate-limit 3/hour per visitor, send via Resend to `CONTACT_TO_EMAIL` with reply-to set to the sender. Success state exactly as designed ("✓ SENT", "Thanks. Your note is with Aswin.", response-time line from content). On failure, show an inline error and a mailto link.
 
 ## 10. Limits, cost, logging, evals
 
@@ -219,7 +226,7 @@ RLS on; server-only writes; no raw IPs.
 
 ## 11. SEO + GEO (invisible, required)
 
-Metadata and OG images per page; JSON-LD `Person` + `ProfilePage` (home, about), `Article` (posts), `CreativeWork` (case studies); `robots.ts` allowing OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User, GPTBot, ClaudeBot, Google-Extended and disallowing `/api/`; `/llms.txt` + `/llms-full.txt` built from `/content`; all content server-rendered; middleware logs AI-crawler user agents to `ai_crawls`; RSS for the build log.
+Metadata and OG images per page; JSON-LD `Person` + `ProfilePage` (home, about; on the CV page `Person` carries `alumniOf` IIT Mandi, `hasOccupation` (and `worksFor` while a CV role is current) from `content/cv.ts`, and `sameAs` LinkedIn and GitHub), `Article` (posts), `CreativeWork` (case studies); `robots.ts` allowing OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User, GPTBot, ClaudeBot, Google-Extended and disallowing `/api/`; `/llms.txt` + `/llms-full.txt` built from `/content`; all content server-rendered; middleware logs AI-crawler user agents to `ai_crawls`; RSS for the build log.
 
 ## 12. Content Aswin must supply (placeholders in the design)
 
@@ -231,7 +238,8 @@ Create these files with `TODO(aswin)` values and a clear comment, and build a `p
 - `content/products.ts`: the 4 "Products I've built" items, typed `{ num, slug, status, name, pitch, built, flow: {text, human?: boolean}[], tags, primary: {label, href}, secondary: {label, href} }`. `status` is data only; no status pill renders on the desktop cards (design update 4)
 - `content/site-meta.ts` (years of experience, eval set link, GitHub, LinkedIn, domain, response time, posting cadence, "what breaks first at scale", "next", cost per run, 90-day plan line)
 - `content/posts/*.mdx` (3 designed posts)
-- `content/certificates.ts`, `public/resume.pdf`
+- `content/cv.ts` (design update 6): the CV, word for word from `About.dc.html`. Its `[date]` placeholder (the Dhee's website dates) and `#` links stay as placeholders until Aswin fills them; "Synced from my master resume" shows `siteMeta.resumeUpdated`
+- `content/certificates.ts`, `public/resume.pdf` (the CV page's "Download PDF" stays `#` until the build-time PDF exists)
 
 Under the hood rule from the design: "Anything without proof yet is left out." A card or case study whose proof isn't filled in is hidden in production, not shown with placeholders.
 
@@ -264,7 +272,7 @@ Provide `.env.example`. Verify model IDs against Anthropic's current model list 
 ## 14. Milestones (one at a time; stop for review after each)
 
 1. **Foundation:** scaffold, tokens + both themes, fonts, Nav (with X-ray toggle + persistence), footer, intro banner, content file skeletons with `TODO(aswin)`.
-2. **Static pages, pixel-faithful:** `/` (all sections except the live hero, which shows its empty state), `/work/[slug]` PRD template, `/log`, `/about` with the dependency graph, mobile layouts. Compare side by side with each artboard.
+2. **Static pages, pixel-faithful:** `/` (all sections except the live hero, which shows its empty state), `/work/[slug]` PRD template, `/log`, `/about` (the CV page since design update 6; the dependency graph is gone), mobile layouts. Compare side by side with each artboard.
 3. **Ask my work UI:** modal + bottom sheet, ⌘K, per-page suggestions, session memory box, answer card states (wired to a stub first).
 4. **Fit-check hero UI:** all states driven by a typed event stream from a local mock that matches §7, so the UI is done before the backend.
 5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask, sandbox), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.

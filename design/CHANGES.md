@@ -2,6 +2,99 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-23 (update 6): About becomes a full CV page; contact moves into a shared Footer; Ask gets topic questions
+
+Changed artboards: `About.dc.html` (rewritten), `Ask.dc.html`, `Main.dc.html`, `Mobile.dc.html`, `Work.dc.html`, `BuildLog.dc.html`, `Nav.dc.html`, plus a **new** component, `Footer.dc.html`. `canvas.json` is now the full canvas file (About h 4600, Mobile h 4600, new Footer board 1280×640). `Hero`, `HeroStates` and `MobileAsk` are unchanged.
+
+### 1. Nav.dc.html
+- The `about` link label `About` → `CV`. The route and the `current="about"` key stay the same.
+
+### 2. New shared component: Footer.dc.html ("Talk to Aswin" + site footer)
+- The **contact section and the site footer moved out of Main** into one component. It is now used on **every page**: Main, Work, BuildLog, About and Mobile all render `<dc-import name="Footer">` in place of their own `<footer>`.
+- Contents (same as the old home contact section, with these changes):
+  - `section#contact` with a responsive padding: `72px 24px 88px`, or `48px 20px 56px` below 640px.
+  - The H2 "Talk to Aswin." is now `clamp(36px, 6vw, 48px)`.
+  - The third link is `CV` (was "Resume (PDF)"), pointing to the CV page.
+  - The same form: Name, Work email, Role (with the "pre-filled from your fit check" hint), Message, "Send to Aswin" button, and the "✓ SENT" confirmation.
+  - Then the footer bar: "This site is an AI product. Turn on X-ray to see how it works." and "Updated [date, set on deploy] · © 2026 Aswin · [domain]". **Mobile now shows this same footer** (with `[domain]`).
+- Prop `role`: when it is set or changes, the Role field fills in and shows the pre-filled hint. Main passes `role={{fitRole}}`, the role from the fit check, which is only set after "Talk to Aswin about this role". Other pages pass nothing.
+- Build: one `<Footer role?>` component in the root layout (or one per page). The `#contact` anchor must work from every page; the fit-check CTA links to `#contact` on home.
+
+### 3. Main.dc.html
+- Removed the inline contact section and the footer; both are replaced by `<Footer role={fitRole}>` (see §2). `fitRole` is `form.role` once it has been pre-filled from the fit check, otherwise empty.
+- (Main still keeps its own `form` state and `setRole`. In the build, the fit check's role goes straight to the Footer.)
+
+### 4. Mobile, Work, BuildLog
+- Their own `<footer>` markup is replaced by the shared Footer. On those pages the full "Talk to Aswin" contact form now sits above the footer bar.
+
+### 5. About.dc.html → "CV — timeline with outcomes" (full rewrite)
+Page title `CV — Aswin A`; artboard height 4600. Light tokens only (no X-ray panels on this page). Sections, top to bottom:
+
+**5a. Header**
+- Eyebrow `CURRICULUM VITAE`. H1 `Aswin A` (serif `clamp(40px, 5vw, 56px)`).
+- Role line "Senior Product Manager · Platforms, integrations and agentic AI products" (18px 500).
+- Location line "Chennai, India · LinkedIn" (the link goes to `https://linkedin.com/in/aswin-a-pm`).
+- A serif 21px summary paragraph (see the file for the exact text).
+- On the right, a 260px column:
+  - "Download PDF" (primary button, link TBD)
+  - "Copy as plain text" (secondary button; it copies `cvPlainText()` and shows "Copied ✓" for 2s)
+  - "Synced from my master resume · [date]" (mono 12px)
+- **4 stat cards** (`minmax(200px,1fr)`), each a serif 26px figure over a 14px muted line: 9 years · 125% growth · 17 packages · 1M API calls a day (exact captions are in `CV_STATS`).
+- **Ask box** (accent border, accentTint background, radius 12px):
+  - "Questions about my experience?" with the sub-line "Ask my work answers from this CV, with sources."
+  - An inline form: a text input (placeholder "Ask your own question, e.g. has he worked with healthcare data?"), a `⌘K` hint and an "Ask" button. Submitting opens Ask with the general topic and asks the question straight away.
+  - "Or try one:" plus 3 pill chips from `CV_GENERAL.qa`.
+
+**5b. Experience: a vertical timeline**
+- Legend: "solid: roles · dashed, indented: side projects".
+- Each item is a grid row: on desktop a 132px right-aligned dates column, then the timeline (a 2px rule left border with a 12px dot). Below 640px the dates column is hidden and the dates show inside the card.
+- **Roles** (`lane: work`): paper card with a `1px solid rule` border, filled ink dot, title 20px 600.
+- **Side projects** (`lane: project`): transparent card with a `1.5px dashed rule` border, hollow dot (bg fill, muted border), indented 40px (16px on mobile), a `SIDE PROJECT` label, title 17px.
+- **Education** (`lane: edu`): paper dot with an ink border, title 17px.
+- Card contents, in order:
+  - dates (mobile only), org line (15px muted)
+  - optional `ladder` (mono 12px: the promotion path at Zelthy)
+  - scope paragraph, highlights `<ul>`
+  - optional expandable **groups**
+  - action row: "Ask about this role →" (mono accent, shown when the item has `qa`) and up to two links (`link`/`href`, `link2`/`href2`)
+- **Zelthy groups** ("Pick an area to see everything I did"): 7 cards in a grid `repeat(auto-fill, minmax(280px,1fr))`, gap 10px. Each card shows name, summary and "See all N points ↓", with a `+` toggle.
+  - Opening a card spans it full width (`grid-column: 1 / -1`), turns its border accent, sets the label to "Hide N points ↑" and shows the full list.
+  - Use `aria-expanded`. Each card opens independently.
+  - The groups are: Core platform and integrations · Product delivery, roadmap and metrics · Releases, reliability and compliance · Data, ML and AI · Commercial and go-to-market · Client engagement and delivery · Team leadership.
+- Items in order (newest first):
+  1. Job-fit AI on this site (project)
+  2. AI job-search agent (project)
+  3. Instagram content intelligence agent (project)
+  4. Dhee's website (project; links to dhees.com and GitHub)
+  5. Founder and Product Lead, Dhee's Pet Company (role)
+  6. Senior Product Manager, Zelthy (role, with the groups)
+  7. Co-Founder, The Solar Labs (role)
+  8. B.Tech CSE, IIT Mandi (edu)
+- **All CV wording lives in the `CV_ITEMS`, `CV_STATS`, `CV_GENERAL` and `CV_SKILLS` arrays in the file. Copy it word for word into content files; don't paraphrase.**
+
+**5c. Skills:** 7 rows (name 15px 600; list 15px muted spanning 2 columns) with rule dividers. Data is in `CV_SKILLS`.
+
+**5d. Certificates:** one placeholder chip "[Professional AI certificate · once earned] verify ↗".
+
+**5e.** The shared Footer, then Ask with `page="about"`, `topic` and `auto-ask`.
+
+### 6. Ask.dc.html: topic mode
+- Two new props:
+  - `topic` `{ label, qa: [{q, a}] }`
+  - `autoAsk` (a question string to ask as soon as Ask opens)
+- When `topic` is set, a box appears near the top (accent border, accentTint, radius 10px): `ASKING ABOUT · {label}` (mono 12px accent), then the topic's questions as full-width tappable rows (min-height 44px).
+- When `autoAsk` is set, Ask asks it as soon as it opens. If it matches one of the topic's questions, that answer is used; otherwise the normal routing applies.
+- Topic answers show the guard `none · answered from the knowledge base` and a source `CV · {label}` that links to the CV page.
+- **Build:** the `qa` answers in the prototype are canned. In the real build, the topic questions are **suggested prompts only**: send them to the real Ask endpoint, retrieving from the knowledge base with citations, like any other question. Never return the hard-coded `a` text.
+
+### Spec impact
+- **Routes:** keep the CV route at `/about` (nav label "CV"), unless Aswin says otherwise. Add `/about.md` (markdown twin) for GEO, generated from the same content.
+- **Content model:** add `content/cv.ts` with `stats`, `items` (`{ id, lane: 'work'|'project'|'edu', dates, title, org, ladder?, scope, highlights[], groups?: {name, summary, items[]}[], qa?: {q}[], link?, href?, link2?, href2? }`) and `skills`. **The knowledge base for the fit check and Ask must be generated from this same file**, so the CV page and the AI can never disagree. Add a test that every KB entry traces back to a CV line.
+- **"Copy as plain text"** uses the same content. "Download PDF" serves a static PDF built from it at build time (placeholder link for now).
+- **Footer and contact:** one shared component on every page. The contact API and Turnstile protection are unchanged. Remove the per-page contact and footer code.
+- **Ask:** accepts an optional `topic` (label plus suggested questions) and an initial question. Answers still come from the live endpoint.
+- **JSON-LD:** the CV page should emit `Person` with `alumniOf` (IIT Mandi), `worksFor`/`hasOccupation` from the CV data, and `sameAs` (LinkedIn, GitHub).
+
 ## 2026-11-20 (update 5): Hero only. "How I built this" rewritten as plain-language lists; failure drills hidden
 
 Changed artboard: `Hero.dc.html` only. All other artboards and board sizes are unchanged since update 4.

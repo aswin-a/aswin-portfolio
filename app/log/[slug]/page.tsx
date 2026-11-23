@@ -48,7 +48,7 @@ export default async function PostPage({ params }: Props) {
           </Link>
         )}
       </main>
-      <Footer maxWidth={880} />
+      <Footer />
     </div>
   );
 }

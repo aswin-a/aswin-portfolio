@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Footer — Talk to Aswin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
+<section id="contact" aria-labelledby="contact-h" style="border-top: 1px solid {{t.rule}}; padding: {{pad}}">
+<div style="max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px">
+<div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="contact-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(36px, 6vw, 48px); line-height: 1.05; letter-spacing: -0.01em">Talk to Aswin.</h2>
+<p style="margin: 0; font-family: {{t.serif}}; font-size: 20px; line-height: 1.45; color: {{t.muted}}">If the fit check sent you here, the role is already filled in. I read every message myself.</p>
+<div style="display: flex; gap: 8px 18px; flex-wrap: wrap; margin-top: 8px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">LinkedIn [link]</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">GitHub [link]</a>
+<a href="About.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">CV</a>
+</div>
+</div>
+<div style="flex: 1 1 420px">
+<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{send}}" style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-name" style="font-size: 14px; font-weight: 500">Name</label>
+<input id="c-name" type="text" value="{{form.name}}" onChange="{{onName}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-email" style="font-size: 14px; font-weight: 500">Work email</label>
+<input id="c-email" type="email" value="{{form.email}}" onChange="{{onEmail}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-role" style="font-size: 14px; font-weight: 500">Role</label>
+<input id="c-role" type="text" value="{{form.role}}" onChange="{{onRoleField}}" placeholder="e.g. Senior Platform PM" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{roleBorder}}; border-radius: 8px; background: {{roleBg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
+<sc-if value="{{rolePrefilled}}" hint-placeholder-val="{{ false }}">
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">pre-filled from your fit check</span>
+</sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="c-msg" style="font-size: 14px; font-weight: 500">Message</label>
+<textarea id="c-msg" rows="4" value="{{form.msg}}" onChange="{{onMsg}}" style="padding: 10px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; resize: vertical"></textarea>
+</div>
+<button type="submit" style="align-self: flex-start; min-height: 48px; padding: 12px 22px; border-radius: 10px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 16px; font-weight: 600; cursor: pointer">Send to Aswin</button>
+</form>
+</sc-if>
+<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 28px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px; display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">✓ SENT</p>
+<p style="margin: 0; font-family: {{t.serif}}; font-size: 26px">Thanks. Your note is with Aswin.</p>
+<p style="margin: 0; font-size: 15px; color: {{t.muted}}">He replies from his own inbox, usually within [response time].</p>
+</div>
+</sc-if>
+</div>
+</div>
+</section>
+<footer style="border-top: 1px solid {{t.rule}}; padding: 28px 24px">
+<div style="max-width: 1040px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">
+<span>This site is an AI product. Turn on X-ray to see how it works.</span>
+<span>Updated [date, set on deploy] · © 2026 Aswin · [domain]</span>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"$preview":{"width":1280,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sent: false, prefilled: !!props.role, narrow: typeof window !== 'undefined' && window.innerWidth < 640, form: { name: '', email: '', role: props.role || '', msg: '' } };
+    this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
+  }
+  componentDidMount() { if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize); }
+  componentWillUnmount() { if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  componentDidUpdate(prev) {
+    if (prev.role !== this.props.role && this.props.role) {
+      var f = Object.assign({}, this.state.form, { role: this.props.role });
+      this.setState({ form: f, prefilled: true, sent: false });
+    }
+  }
+  setField(k, v) { var f = Object.assign({}, this.state.form); f[k] = v; this.setState({ form: f }); }
+  renderVals() {
+    var s = this.state;
+    var t = { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8',
+      serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
+    var pre = s.prefilled && !!s.form.role;
+    return {
+      t: t, pad: s.narrow ? '48px 20px 56px' : '72px 24px 88px',
+      notSent: !s.sent, sent: s.sent, form: s.form, rolePrefilled: pre,
+      roleBorder: pre ? t.accent : t.rule, roleBg: pre ? t.accentTint : t.bg,
+      onName: (e) => this.setField('name', e.target.value),
+      onEmail: (e) => this.setField('email', e.target.value),
+      onRoleField: (e) => { this.setField('role', e.target.value); this.setState({ prefilled: false }); },
+      onMsg: (e) => this.setField('msg', e.target.value),
+      send: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ sent: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

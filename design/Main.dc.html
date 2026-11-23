@@ -118,62 +118,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 </div>
 </section>
 
-<section id="contact" aria-labelledby="contact-h" style="border-top: 1px solid {{t.rule}}; padding: 72px 24px 88px">
-<div style="max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px">
-<div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 14px">
-<h2 id="contact-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 48px; line-height: 1.05; letter-spacing: -0.01em">Talk to Aswin.</h2>
-<p style="margin: 0; font-family: {{t.serif}}; font-size: 20px; line-height: 1.45; color: {{t.muted}}">If the fit check sent you here, the role is already filled in. I read every message myself.</p>
-<div style="display: flex; gap: 8px 18px; flex-wrap: wrap; margin-top: 8px">
-<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">LinkedIn [link]</a>
-<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">GitHub [link]</a>
-<a href="About.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">Resume (PDF)</a>
-</div>
-</div>
-<div style="flex: 1 1 420px">
-<sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
-<form onSubmit="{{send}}" style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
-<div style="display: flex; flex-direction: column; gap: 6px">
-<label for="c-name" style="font-size: 14px; font-weight: 500">Name</label>
-<input id="c-name" type="text" value="{{form.name}}" onChange="{{onName}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
-</div>
-<div style="display: flex; flex-direction: column; gap: 6px">
-<label for="c-email" style="font-size: 14px; font-weight: 500">Work email</label>
-<input id="c-email" type="email" value="{{form.email}}" onChange="{{onEmail}}" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
-</div>
-</div>
-<div style="display: flex; flex-direction: column; gap: 6px">
-<label for="c-role" style="font-size: 14px; font-weight: 500">Role</label>
-<input id="c-role" type="text" value="{{form.role}}" onChange="{{onRoleField}}" placeholder="e.g. Senior Platform PM" style="min-height: 44px; padding: 8px 12px; border: 1px solid {{roleBorder}}; border-radius: 8px; background: {{roleBg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px">
-<sc-if value="{{rolePrefilled}}" hint-placeholder-val="{{ false }}">
-<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">pre-filled from your fit check</span>
-</sc-if>
-</div>
-<div style="display: flex; flex-direction: column; gap: 6px">
-<label for="c-msg" style="font-size: 14px; font-weight: 500">Message</label>
-<textarea id="c-msg" rows="4" value="{{form.msg}}" onChange="{{onMsg}}" style="padding: 10px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 16px; resize: vertical"></textarea>
-</div>
-<button type="submit" style="align-self: flex-start; min-height: 48px; padding: 12px 22px; border-radius: 10px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 16px; font-weight: 600; cursor: pointer">Send to Aswin</button>
-</form>
-</sc-if>
-<sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
-<div role="status" style="padding: 28px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px; display: flex; flex-direction: column; gap: 8px">
-<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">✓ SENT</p>
-<p style="margin: 0; font-family: {{t.serif}}; font-size: 26px">Thanks. Your note is with Aswin.</p>
-<p style="margin: 0; font-size: 15px; color: {{t.muted}}">He replies from his own inbox, usually within [response time].</p>
-</div>
-</sc-if>
-</div>
-</div>
-</section>
+
 </main>
 
-<footer style="border-top: 1px solid {{t.rule}}; padding: 28px 24px">
-<div style="max-width: 1040px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">
-<span>This site is an AI product. Turn on X-ray to see how it works.</span>
-<span>Updated [date, set on deploy] · © 2026 Aswin · [domain]</span>
-</div>
-</footer>
+<dc-import name="Footer" role="{{fitRole}}" hint-size="100%,640px"></dc-import>
 
 <dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="home" context="{{askCtx}}" on-close="{{closeAsk}}" on-forget="{{forgetCtx}}" hint-size="0px,0px"></dc-import>
 </div>
@@ -200,6 +148,7 @@ class Component extends DCLogic {
     var s = this.state, x = s.xray, t = mainTokens(false);
     return {
       t: t, xray: x, askOpen: s.askOpen,
+      fitRole: s.prefilled ? s.form.role : '',
       notSent: !s.sent, sent: s.sent,
       form: s.form, rolePrefilled: s.prefilled && !!s.form.role,
       roleBorder: s.prefilled ? t.accent : t.rule,

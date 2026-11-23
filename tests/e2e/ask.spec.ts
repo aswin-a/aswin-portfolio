@@ -1,3 +1,4 @@
+import { ASK_ATTACKS, ASK_QUESTIONS } from "@/lib/ask/copy";
 import { expect, FAKE, test, type Page } from "./fixtures";
 
 // Session memory in the shape the hero writes (Milestone 4). Uses the design's HERO_BAD sample.
@@ -94,22 +95,12 @@ test.describe("before a question", () => {
     });
   }
 
-  test("Break my AI chips show only in X-ray, in an X-ray panel; Jump to links always", async ({ page }) => {
-    await open(page);
-    await expect(dialog(page).getByRole("button", { name: "prompt injection", exact: true })).toBeHidden();
-    await expect(dialog(page).getByText("Break my AI", { exact: true })).toBeHidden();
-    await expect(dialog(page).getByRole("link", { name: "Build log" })).toBeVisible();
-    await page.keyboard.press("Escape");
+  test("no Break my AI in Ask, even in X-ray (Aswin, 2026-11-23); Jump to links always", async ({ page }) => {
     await open(page, "/?xray=1");
+    await expect(dialog(page).getByText("Break my AI", { exact: true })).toHaveCount(0);
     for (const chip of ["prompt injection", "something he hasn't done", "conflicting info", "ambiguous ask"]) {
-      await expect(dialog(page).getByRole("button", { name: chip, exact: true })).toBeVisible();
+      await expect(dialog(page).getByRole("button", { name: chip, exact: true })).toHaveCount(0);
     }
-    const label = dialog(page).getByText("Break my AI", { exact: true });
-    await expect(label).toHaveCSS("color", "rgb(163, 169, 176)");
-    const panel = label.locator("xpath=..");
-    await expect(panel).toHaveCSS("background-color", "rgb(16, 18, 20)");
-    await expect(panel).toHaveCSS("border-top-left-radius", "10px");
-    await expect(panel.getByText("X-RAY", { exact: true })).toBeVisible();
     // The dialog itself stays light; only the scrim darkens.
     await expect(dialog(page)).toHaveCSS("background-color", "rgb(255, 253, 248)");
     await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveAttribute("href", "/work/integration-builder");
@@ -217,7 +208,7 @@ test.describe("answers", () => {
     await expect(status(page)).not.toContainText("compose · writing the answer");
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
     await expect(input(page)).toBeFocused();
-    await expect(status(page).getByRole("link", { name: "About · career →" })).toHaveAttribute("href", "/about");
+    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toHaveAttribute("href", "/about");
     await expect(status(page).getByRole("link", { name: /Platform & API work/ })).toHaveCount(0);
     await status(page).getByRole("button", { name: "← Ask another" }).click();
     await expect(dialog(page).getByText("Suggested for this page")).toBeVisible();
@@ -236,7 +227,7 @@ test.describe("answers", () => {
   test("no todo box once the cited content is supplied", async ({ page }) => {
     await open(page);
     await dialog(page).getByRole("button", { name: /What's his biggest platform win\?/ }).click();
-    await expect(status(page).getByRole("link", { name: "About · career →" })).toBeVisible();
+    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toBeVisible();
     await expect(status(page).getByText(/^\[.*\]$/)).toHaveCount(0);
   });
 
@@ -247,9 +238,11 @@ test.describe("answers", () => {
     ["ambiguous ask", "NEEDS CLARIFYING", "solid", "1px"],
   ];
   for (const [chip, label, style, width] of TONES) {
-    test(`Break my AI: ${chip}`, async ({ page }) => {
+    test(`a typed attack still gets its guarded answer: ${chip}`, async ({ page }) => {
       await open(page, "/?xray=1");
-      await dialog(page).getByRole("button", { name: chip, exact: true }).click();
+      const attack = ASK_ATTACKS.find(([, c]) => c === chip)!;
+      await input(page).fill(ASK_QUESTIONS[attack[0]]);
+      await page.keyboard.press("Enter");
       const labelEl = status(page).getByText(label, { exact: true });
       await expect(labelEl).toBeVisible();
       const card = labelEl.locator("..");
@@ -338,5 +331,49 @@ test.describe("layout", () => {
     // The phone artboard's fixed "Ask my work" bottom button is a prototype control: not built.
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toHaveCount(0);
+  });
+});
+
+test.describe("topic mode on the CV page (update 6)", () => {
+  const topicBox = (page: Page) => dialog(page).getByText(/^ASKING ABOUT · /).locator("xpath=..");
+
+  test("the Nav button opens on the general topic; other pages have none", async ({ page }) => {
+    await open(page, "/about");
+    await expect(dialog(page).getByText("ASKING ABOUT · My experience", { exact: true })).toBeVisible();
+    await expect(topicBox(page).getByRole("button")).toHaveText([
+      "What did he own at Zelthy?ask ↵",
+      "Has he managed integrations at scale?ask ↵",
+      "Has he led a team?ask ↵",
+    ]);
+    await expect(topicBox(page)).toHaveCSS("border-top-color", "rgb(31, 76, 134)");
+    await expect(topicBox(page).getByRole("button").first()).toHaveCSS("min-height", "44px");
+    await page.keyboard.press("Escape");
+    await open(page, "/");
+    await expect(dialog(page).getByText(/^ASKING ABOUT/)).toHaveCount(0);
+  });
+
+  test("'Ask about this role →' opens the role's questions, which go to the live endpoint", async ({ page }) => {
+    await page.goto("/about");
+    const zelthy = page.getByRole("main").locator("ol > li").nth(5);
+    await zelthy.getByRole("button", { name: "Ask about this role →" }).click();
+    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy", { exact: true })).toBeVisible();
+    await dialog(page).getByRole("button", { name: /^What did he ship with ML or AI\?/ }).click();
+    await expect(status(page)).toContainText("› What did he ship with ML or AI?");
+    // Not the prototype's canned answer: the fake model doesn't know this question, so the live path says so.
+    await expect(status(page)).not.toContainText("ML-based OCR for prescriptions and bills, in production");
+    await expect(status(page)).toContainText("The knowledge base doesn't cover that");
+  });
+
+  test("the Ask box asks its own question, or a chip, as soon as Ask opens", async ({ page }) => {
+    await page.goto("/about");
+    await page.getByRole("textbox", { name: "Ask your own question about Aswin's experience" }).fill("Has he worked on APIs?");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(status(page)).toContainText("› Has he worked on APIs?");
+    await expect(status(page)).toContainText("Yes.");
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "Has he led a team?", exact: true }).click();
+    await expect(status(page)).toContainText("› Has he led a team?");
+    await dialog(page).getByRole("button", { name: "← Ask another" }).click();
+    await expect(dialog(page).getByText("ASKING ABOUT · My experience", { exact: true })).toBeVisible();
   });
 });

@@ -6,6 +6,12 @@ import { ASK_MAX_CHARS } from "@/lib/ask/types";
 import { DRILL_LOG, HERO_ATTACKS, HERO_DRILLS, type BreakTone, type BreakVerdict } from "@/lib/fit-check/copy";
 import type { Drill } from "@/lib/fit-check/types";
 
+/**
+ * Failure drills are out of v1 UI scope (design update 5: `showDrills` is hard-coded to false). The
+ * fallback UI, DRILL entries and the server drill path stay for real outages, limits and tests.
+ */
+const SHOW_DRILLS = false;
+
 /** One row of the Break my AI log (Hero.dc.html `breakLog`, design update 4). */
 export type BreakEntry =
   /** An attempt still running: `step` and `progress` come from the run's real step events. */
@@ -198,24 +204,26 @@ export function BreakPanel({
         <Entry key={l.id} l={l} />
       ))}
 
-      <div className="flex flex-col gap-[10px] border-t border-xr-rule pt-[14px]">
-        <p className="m-0 font-mono text-[11px] uppercase tracking-[0.06em] text-xr-muted">
-          Failure drills · runs the real fallback in the fit check above
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {HERO_DRILLS.map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              onClick={() => onDrill(d.id)}
-              disabled={running}
-              className={`min-h-10 cursor-pointer rounded-lg border border-dashed border-xr-rule bg-transparent px-3 py-[6px] font-mono text-[13px] text-xr-ink ${dim}`}
-            >
-              {d.chip}
-            </button>
-          ))}
+      {SHOW_DRILLS && (
+        <div className="flex flex-col gap-[10px] border-t border-xr-rule pt-[14px]">
+          <p className="m-0 font-mono text-[11px] uppercase tracking-[0.06em] text-xr-muted">
+            Failure drills · runs the real fallback in the fit check above
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {HERO_DRILLS.map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => onDrill(d.id)}
+                disabled={running}
+                className={`min-h-10 cursor-pointer rounded-lg border border-dashed border-xr-rule bg-transparent px-3 py-[6px] font-mono text-[13px] text-xr-ink ${dim}`}
+              >
+                {d.chip}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </XrayPanel>
   );
 }

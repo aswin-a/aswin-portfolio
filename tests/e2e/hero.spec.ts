@@ -218,7 +218,7 @@ test.describe("fit check", () => {
     await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 243, 236)");
     await expect(hero(page).getByRole("heading", { level: 3, name: "This run" })).toBeVisible();
     await expect(hero(page).getByText("From the logged trace of the check you just ran.")).toBeVisible();
-    const item = (label: string) => hero(page).getByText(label, { exact: true }).locator("xpath=following-sibling::*[1]");
+    const item = (label: string) => hero(page).locator("span").getByText(label, { exact: true }).locator("xpath=following-sibling::*[1]");
     await expect(item("Run ID")).toHaveText(/^run_[0-9a-f]{12}$/);
     await expect(item("Time")).toHaveText(/^\d{1,2} \w{3} \d{4}, \d{2}:\d{2}$/);
     await expect(item("Input")).toHaveText("Text · fetch_url skipped");
@@ -245,7 +245,7 @@ test.describe("fit check", () => {
     await expect(hero(page).getByText("See the trace, sources and cost behind this result.")).toHaveCount(0);
     // "How I built this" shows only in X-ray, as a panel, with no toggle.
     await expect(hero(page).getByRole("heading", { level: 3, name: "How I built this" })).toBeVisible();
-    await expect(hero(page).getByText(/^Honest note:/)).toBeVisible();
+    await expect(hero(page).getByText(/^Honest note:/)).toHaveCount(0);
   });
 
   test("result: the nudge's Turn on X-ray scrolls up to This run, clear of the sticky nav", async ({ page }) => {
@@ -334,32 +334,12 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
   });
 
-  test("drills: knowledge base offline, from the X-ray panel, with the fallback trace", async ({ page }) => {
+  test("failure drills are hidden in v1 (update 5); the fallback states stay", async ({ page }) => {
     await page.goto("/?xray=1");
-    await hero(page).getByRole("button", { name: "knowledge base offline" }).click();
-    await expect(hero(page).getByText("Drill running against")).toBeVisible();
-    await expect(running(page)).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "The knowledge base didn't answer, so the AI won't guess." })).toBeVisible();
-    await expect(hero(page).getByText("Failure drill · knowledge base offline")).toBeVisible();
-    await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
-    await expect(hero(page).getByText(/^FALLBACK TRACE · drill run run_[0-9a-f]{12}$/)).toBeVisible();
-    const fail = hero(page).getByText(/^× retry 1 of 1: kb\.search\(\.\.\.\) → timeout · 1[5-9]\d\d ms$/);
-    await expect(fail).toBeVisible();
-    await expect(fail).toHaveCSS("color", "rgb(237, 182, 94)");
-    await expect(hero(page).getByText("› guard.no_sources → stop instead of answering")).toBeVisible();
-    // With X-ray off, the trace hides and the nudge offers it back.
-    await xrayToggle(page).click();
-    await expect(hero(page).getByText(/^FALLBACK TRACE/)).toHaveCount(0);
-    await expect(hero(page).getByText("See the fallback path this drill just ran.")).toBeVisible();
-    await hero(page).getByRole("button", { name: "Back to the fit check" }).click();
-    await expect(page.getByLabel(JD_LABEL)).toBeVisible();
-  });
-
-  test("drills: rate limit", async ({ page }) => {
-    await page.goto("/?xray=1");
-    await hero(page).getByRole("button", { name: "hit the rate limit" }).click();
-    await expect(hero(page).getByText("Failure drill · rate limit")).toBeVisible();
-    await expect(hero(page).getByText("› llm.call skipped · nothing billed")).toBeVisible();
+    await expect(breakPanel(page).getByRole("heading", { level: 3, name: "Break my AI" })).toBeVisible();
+    await expect(hero(page).getByRole("button", { name: "knowledge base offline" })).toHaveCount(0);
+    await expect(hero(page).getByRole("button", { name: "hit the rate limit" })).toHaveCount(0);
+    await expect(hero(page).getByText("Failure drills · runs the real fallback in the fit check above")).toHaveCount(0);
   });
 });
 
@@ -388,7 +368,6 @@ test.describe("Break my AI", () => {
     await expect(attempts(page)).toHaveText("AttemptsNone yet. Your attempts appear here, newest first.");
     // The fit check above stays usable.
     await expect(page.getByLabel(JD_LABEL)).toBeVisible();
-    await expect(breakPanel(page).getByText("Failure drills · runs the real fallback in the fit check above")).toHaveCSS("font-size", "11px");
     await expect(breakPanel(page).getByText(/These cases ship with the public eval set/)).toHaveCount(0);
 
     await hero(page).getByRole("button", { name: "conflicting info" }).click();
@@ -434,7 +413,6 @@ test.describe("Break my AI", () => {
     await expect(input(page)).toHaveValue("");
     await expect(input(page)).toHaveCSS("opacity", "0.5");
     await expect(breakPanel(page).getByRole("button", { name: "prompt injection" })).toBeDisabled();
-    await expect(breakPanel(page).getByRole("button", { name: "knowledge base offline" })).toBeDisabled();
     // A running attempt isn't counted yet.
     await expect(attempts(page)).toHaveText("Attempts");
   });
@@ -460,18 +438,6 @@ test.describe("Break my AI", () => {
     await input(page).fill(`Is he good? ${FAKE.budget}`);
     await runBtn(page).click();
     await expect(hero(page).getByRole("alert")).toHaveText("Ask my work is paused for this month: the AI budget is spent. Aswin is one message away.");
-  });
-
-  test("a failure drill adds a DRILL entry that isn't counted", async ({ page }) => {
-    await page.goto("/?xray=1");
-    await hero(page).getByRole("button", { name: "hit the rate limit" }).click();
-    await expect(breakPanel(page).getByText("DRILL", { exact: true })).toBeVisible();
-    await expect(breakPanel(page).getByText("Rate limit hit: the AI was not called and nothing was billed; the fit check showed precomputed matches.")).toBeVisible();
-    await expect(breakPanel(page).getByRole("link", { name: "See the fallback above ↑" })).toHaveAttribute("href", "#fit-h");
-    await expect(breakPanel(page).getByText(/^fallback path: ratelimit 429 → fallback\.precomputed · trace /)).toBeVisible();
-    await expect(attempts(page)).toHaveText("AttemptsNone yet. Your attempts appear here, newest first.");
-    await hero(page).getByRole("button", { name: "prompt injection" }).click();
-    await expect(attempts(page)).toContainText("1 of 1 held up");
   });
 
   test("keeps the last 6 attempts", async ({ page }) => {

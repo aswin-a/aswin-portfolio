@@ -10,9 +10,18 @@ import { ask } from "@/lib/ask/client";
 import { ASK_LOADING, ASK_PLACEHOLDER, ASK_SUBMIT, ASK_THINKING, askPageFor, CTX_QUESTION, gapQuestion } from "@/lib/ask/copy";
 import { sessionMemory } from "@/lib/ask/session-memory";
 import { ASK_MAX_CHARS, type AskResult, type AskStepEvent } from "@/lib/ask/types";
+import { cvGeneral } from "@/lib/cv";
+import type { CvTopic } from "@/content/cv";
 
 /** Which session-memory question to open on: a gap index, or "q" for "What should I ask him…". */
 export type AskFocus = number | "q";
+
+/**
+ * How Ask opens. `topic` shows "ASKING ABOUT · {label}" with its suggested questions, and
+ * `autoAsk` is asked as soon as Ask opens (Ask.dc.html topic mode, design update 6). On the CV
+ * page Ask opens on the general topic unless another is given.
+ */
+export type AskOpenOptions = { focus?: AskFocus; topic?: CvTopic; autoAsk?: string };
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -20,8 +29,9 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabi
 type Asked = { question: string; steps: AskStepEvent[]; result: AskResult | null };
 
 /** "Ask my work" command bar (Ask.dc.html); a bottom sheet at ≤ 640 px (MobileAsk.dc.html), via the [@media(max-width:640px)] classes. */
-export function AskDialog({ focus, onClose }: { focus?: AskFocus; onClose: () => void }) {
+export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpenOptions & { onClose: () => void }) {
   const page = askPageFor(usePathname());
+  const topic = givenTopic ?? (page === "about" ? cvGeneral : undefined);
   const memory = useSyncExternalStore(sessionMemory.subscribe, sessionMemory.get, () => null);
   const [query, setQuery] = useState("");
   const [asked, setAsked] = useState<Asked | null>(null);
@@ -101,6 +111,14 @@ export function AskDialog({ focus, onClose }: { focus?: AskFocus; onClose: () =>
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q) submitQuestion(q);
   }, [focus, submitQuestion]);
+
+  // Opened with a question to ask straight away (the CV page). It goes to the live endpoint like any other.
+  useEffect(() => {
+    const q = autoAsk?.trim().slice(0, ASK_MAX_CHARS);
+    // Starts a request, which sets state when it resolves; runs once on open.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (q) submitQuestion(q);
+  }, [autoAsk, submitQuestion]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -206,7 +224,7 @@ export function AskDialog({ focus, onClose }: { focus?: AskFocus; onClose: () =>
         ) : asked ? (
           <AskThinking question={asked.question} steps={asked.steps} focusRef={thinkingRef} />
         ) : (
-          <AskStart page={page} memory={memory} onAsk={submitQuestion} onForget={forget} onNavigate={onClose} />
+          <AskStart page={page} topic={topic} memory={memory} onAsk={submitQuestion} onForget={forget} onNavigate={onClose} />
         )}
       </div>
     </div>,

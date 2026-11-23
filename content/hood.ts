@@ -15,10 +15,9 @@ export const hood: HoodItem[] = [
   { name: "tools", status: "live here", proof: "The fit check calls three tools: fetch_url, jd.parse and kb.search.", cta: "See the calls in X-ray →", href: "#top", live: true },
   { name: "orchestration", status: "live here", proof: "A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.", cta: "Open X-ray →", href: "#top", live: true },
   { name: "memory", status: "live here", proof: "Your fit result carries into Ask my work for this session, and nothing is stored after.", cta: "Open X-ray →", href: "#top", live: true },
-  { name: "production", status: "live here", proof: "Rate limit, budget cap, and a precomputed fallback when either trips.", cta: "Run the failure drills →", href: "#break-my-ai", live: true },
+  { name: "production", status: "live here", proof: "Rate limit, budget cap, and a precomputed fallback when either trips.", cta: "Try Break my AI →", href: "#break-my-ai", live: true },
   { name: "guardrails", status: "live here", proof: "Every claim is cited, gaps are stated, and injected instructions are refused.", cta: "Try Break my AI →", href: "#break-my-ai", live: true },
-  // TODO(aswin): "[25]" is the design's placeholder for the eval case count (same number as siteMeta.evalCaseCount).
-  { name: "evals", status: "GitHub", proof: `${todo("[25]")} test JDs and red-team cases, run before every change.`, cta: "View the eval set →", href: siteMeta.evalSetLink },
+  { name: "evals", status: "GitHub", proof: `${siteMeta.evalCaseCount} test JDs and red-team cases, run before every change.`, cta: "View the eval set →", href: siteMeta.evalSetLink },
   { name: "human in loop", status: "shipped", proof: "I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.", cta: "Read the OCR story →", href: todo("[link]") }, // TODO(aswin): the OCR story
   { name: "data privacy", status: "shipped", proof: "Advised against sending patient data to LLMs at a healthcare SaaS platform.", cta: "Read more →", href: todo("[link]") }, // TODO(aswin)
   { name: "rag", status: "prototype", proof: "A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.", cta: "Why no vector DB yet →", href: todo("[link]") }, // TODO(aswin)

@@ -29,7 +29,10 @@ export const ASK_BY_PAGE: Record<AskPage, AskQuestionId[]> = {
   about: ["apis", "health", "win", "hardware"],
 };
 
-/** Break my AI chips: [question id, chip text]. */
+/**
+ * The design's Break my AI chips: [question id, chip text]. Not shown in Ask (Aswin, 2026-11-23:
+ * Break my AI lives on the hero only); the attack questions still get their guarded answers when typed.
+ */
 export const ASK_ATTACKS: [AskQuestionId, string][] = [
   ["inject", "prompt injection"],
   ["hardware", "something he hasn't done"],

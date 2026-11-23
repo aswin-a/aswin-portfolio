@@ -33,6 +33,16 @@
 </sc-if>
 <sc-if value="{{noAnswer}}" hint-placeholder-val="{{ true }}">
 <div style="padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 18px">
+<sc-if value="{{hasTopic}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 1px solid {{t.accent}}; border-radius: 10px; background: {{t.accentTint}}">
+<span style="font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.06em; color: {{t.accent}}">ASKING ABOUT · {{topicLabel}}</span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{topicQuestions}}" as="tq" hint-placeholder-count="3">
+<button type="button" onClick="{{tq.pick}}" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 10px; margin: 0 -10px; border: 0; border-radius: 8px; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 15px; text-align: left; cursor: pointer">{{tq.text}}<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">ask ↵</span></button>
+</sc-for>
+</div>
+</div>
+</sc-if>
 <sc-if value="{{hasCtx}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 1px solid {{t.accent}}; border-radius: 10px; background: {{t.accentTint}}">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
@@ -107,7 +117,7 @@
 </div>
 </sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"open":{"editor":"boolean","default":true},"xray":{"editor":"boolean","default":false},"sheet":{"editor":"boolean","default":false},"page":{"editor":"enum","options":["home","work","log","about"],"default":"home"},"context":{"editor":null},"onClose":{"editor":null},"onForget":{"editor":null},"$preview":{"width":1280,"height":760}}'>
+<script type="text/x-dc" data-dc-script data-props='{"open":{"editor":"boolean","default":true},"xray":{"editor":"boolean","default":false},"sheet":{"editor":"boolean","default":false},"page":{"editor":"enum","options":["home","work","log","about"],"default":"home"},"context":{"editor":null},"topic":{"editor":null},"autoAsk":{"editor":null},"onClose":{"editor":null},"onForget":{"editor":null},"$preview":{"width":1280,"height":760}}'>
 var ASK_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function askTokens(x) {
   var c = x
@@ -176,7 +186,21 @@ class Component extends DCLogic {
       var focus = c && c.focus !== null && c.focus !== undefined ? 'ctx' + c.focus : null;
       if (this.timer) { clearInterval(this.timer); this.timer = null; }
       this.setState({ query: '', answerId: focus, asked: '', thinking: false, tstep: 0 });
+      var q = (this.props.autoAsk || '').trim();
+      if (q) {
+        var tp = this.props.topic && this.props.topic.qa ? this.props.topic.qa : [];
+        var hit = -1;
+        tp.forEach((x, i) => { if (x.q === q) hit = i; });
+        this.ask(hit >= 0 ? 'tp' + hit : askRoute(q), q);
+      }
     }
+  }
+  topicAnswer(id) {
+    var tp = this.props.topic;
+    if (!tp || !tp.qa) return null;
+    var item = tp.qa[parseInt(id.slice(2), 10)];
+    if (!item) return null;
+    return { q: item.q, kind: 'fit', guard: 'none · answered from the knowledge base', text: item.a, todo: '', sources: [{ label: 'CV · ' + tp.label, href: 'About.dc.html' }] };
   }
   ctxAnswer(id) {
     var c = this.props.context;
@@ -202,7 +226,8 @@ class Component extends DCLogic {
     var open = this.props.open === undefined ? true : !!this.props.open;
     var ids = ASK_BY_PAGE[page] || ASK_BY_PAGE.home;
     var aid = this.state.answerId;
-    var a = aid ? (aid.indexOf('ctx') === 0 ? this.ctxAnswer(aid) : ASK_ANSWERS[aid]) : null;
+    var a = aid ? (aid.indexOf('ctx') === 0 ? this.ctxAnswer(aid) : (aid.indexOf('tp') === 0 ? this.topicAnswer(aid) : ASK_ANSWERS[aid])) : null;
+    var topic = this.props.topic && this.props.topic.qa ? this.props.topic : null;
     var ctx = this.props.context && this.props.context.gaps ? this.props.context : null;
     var answer = { q: '', text: '', todo: '', hasTodo: false, hasLabel: false, label: '', labelColor: t.muted, guard: '', sources: [], sourceCount: 0 };
     var answerBorder = '1px solid ' + t.rule, answerBg = t.bg;
@@ -239,6 +264,9 @@ class Component extends DCLogic {
       thinkSteps: [['kb.search', 'searching the knowledge base'], ['guardrails', 'checking the answer cites a source'], ['compose', 'writing the answer']].slice(0, this.state.tstep + 1).map((st, i) => ({ text: st[0] + ' · ' + st[1] + (i === this.state.tstep ? '…' : ''), mark: i < this.state.tstep ? '✓' : '›', color: i < this.state.tstep ? t.accent : t.ink })),
       answer: answer, answerBorder: answerBorder, answerBg: answerBg,
       questions: ids.map((id) => ({ text: ASK_ANSWERS[id].q, pick: () => this.ask(id, ASK_ANSWERS[id].q) })),
+      hasTopic: !!topic,
+      topicLabel: topic ? topic.label : '',
+      topicQuestions: topic ? topic.qa.map((x, i) => ({ text: x.q, pick: () => this.ask('tp' + i, x.q) })) : [],
       hasCtx: !!ctx,
       ctx: ctx ? { role: ctx.role, matchCount: ctx.matchCount, gapCount: ctx.gaps.length } : { role: '', matchCount: 0, gapCount: 0 },
       ctxQuestions: ctx ? ctx.gaps.map((g, i) => ({ text: 'About the gap: ' + g.req, pick: () => this.ask('ctx' + i, 'About the gap: ' + g.req) })).concat([{ text: 'What should I ask him about these gaps?', pick: () => this.ask('ctxq', 'What should I ask him about these gaps?') }]) : [],

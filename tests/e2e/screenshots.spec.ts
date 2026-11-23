@@ -51,9 +51,9 @@ for (const [name, width, height] of SIZES) {
           await page.keyboard.press("Enter");
           await dialog.getByText("› compose · writing the answer…").waitFor();
         } else if (pick) {
-          // Update 3: the Break my AI chips are X-ray only, so without X-ray the attack is typed.
+          // Ask has no Break my AI chips (Aswin, 2026-11-23), so attacks are typed.
           const attack = ASK_ATTACKS.find(([, chip]) => chip === pick);
-          if (attack && !xray) {
+          if (attack) {
             await dialog.getByRole("textbox").fill(ASK_QUESTIONS[attack[0]]);
             await page.keyboard.press("Enter");
           } else {
@@ -79,13 +79,12 @@ const HERO_STATES: [string, string | null, string | null][] = [
   ["error", `${HERO_SAMPLES[0].jd} ${FAKE.error}`, null],
   ["limited", `${HERO_SAMPLES[0].jd} ${FAKE.limited}`, null],
   ["budget", `${HERO_SAMPLES[0].jd} ${FAKE.budget}`, null],
-  ["drill-kb", null, "knowledge base offline"],
 ];
 for (const [name, width, height] of SIZES) {
   for (const xray of [false, true]) {
     for (const [state, jd, pick] of HERO_STATES) {
-      // Update 3: Break my AI and the drills live in the X-ray panel, so they need X-ray on.
-      if (!xray && (state === "break" || state === "drill-kb")) continue;
+      // Update 3: Break my AI lives in the X-ray panel, so it needs X-ray on. Update 5 hid the drill buttons.
+      if (!xray && state === "break") continue;
       const file = `hero-${state}-${name}${xray ? "-xray" : ""}`;
       test(`capture ${file}`, async ({ page }) => {
         await page.setViewportSize({ width, height });
@@ -114,4 +113,23 @@ for (const [name, width, height] of SIZES) {
       });
     }
   }
+}
+
+// Design update 6: the CV page with an area card open, and Ask in topic mode.
+for (const [name, width, height] of SIZES) {
+  test(`capture about-group-open-${name}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/about");
+    await page.getByRole("button", { name: /^Core platform and integrations/ }).click();
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `test-results/screens/about-group-open-${name}.png`, fullPage: true });
+  });
+  test(`capture ask-topic-${name}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/about");
+    await page.getByRole("main").locator("ol > li").nth(5).getByRole("button", { name: "Ask about this role →" }).click();
+    await page.getByRole("dialog", { name: "Ask my work" }).getByText(/^ASKING ABOUT/).waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `test-results/screens/ask-topic-${name}.png` });
+  });
 }

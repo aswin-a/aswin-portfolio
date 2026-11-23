@@ -292,7 +292,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
             <Result
               result={result}
               bad={phase === "badfit"}
-              onAskGap={(i) => openAsk(i)}
+              onAskGap={(i) => openAsk({ focus: i })}
               onAsk={() => openAsk()}
               onTalk={talk}
               headingRef={setFocusTarget}
