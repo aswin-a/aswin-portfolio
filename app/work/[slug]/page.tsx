@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyPage } from "@/components/case-study/case-study";
 import { Footer } from "@/components/footer";
+import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { caseStudies } from "@/lib/case-studies";
 import { posts } from "@/lib/posts";
+import { creativeWorkJsonLd, pageMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -17,7 +19,8 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cs = (await caseStudies()).find((c) => c.slug === slug);
-  return { title: cs ? `Case study — ${cs.title}` : "Case study" };
+  if (!cs) return { title: "Case study" };
+  return pageMetadata({ title: `Case study — ${cs.title}`, description: cs.lede, path: `/work/${cs.slug}`, type: "article" });
 }
 
 export default async function CaseStudyRoute({ params }: Props) {
@@ -31,6 +34,7 @@ export default async function CaseStudyRoute({ params }: Props) {
   const related = logPosts.find((p) => p.slug === cs.relatedPost);
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
+      <JsonLd data={creativeWorkJsonLd(cs)} />
       <Nav current="work" />
       <CaseStudyPage cs={cs} next={next} related={related} />
       <Footer />

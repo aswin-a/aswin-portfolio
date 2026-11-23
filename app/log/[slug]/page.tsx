@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
+import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { loadPost, posts } from "@/lib/posts";
+import { articleJsonLd, pageMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -16,7 +18,8 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = (await posts()).find((x) => x.slug === slug);
-  return { title: p ? p.title : "Build log" };
+  if (!p) return { title: "Build log" };
+  return pageMetadata({ title: p.title, description: p.summary, path: `/log/${p.slug}`, type: "article" });
 }
 
 /** Design gap (SPEC §4): a simple article page in the build log's type styles, 880px column. */
@@ -26,6 +29,7 @@ export default async function PostPage({ params }: Props) {
   const { meta, Body } = await loadPost(slug);
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
+      <JsonLd data={articleJsonLd(meta)} />
       <Nav current="log" />
       <main className="mx-auto flex max-w-[880px] flex-col gap-9 px-6 pt-[72px] pb-24">
         <header className="flex flex-col gap-[14px]">

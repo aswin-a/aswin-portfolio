@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { ProductsSection } from "@/components/home/products";
 import { Nav } from "@/components/nav";
+import { DESCRIPTIONS, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Case studies" };
+export const metadata: Metadata = pageMetadata({ title: "Case studies", description: DESCRIPTIONS.work, path: "/work" });
 
 // Design gap (SPEC §4): the home page's "Products I've built" section as a standalone page.
 export default function WorkIndex() {
