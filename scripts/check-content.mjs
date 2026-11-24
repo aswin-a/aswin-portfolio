@@ -78,6 +78,48 @@ export function pagePlaceholders(html) {
   return [...found];
 }
 
+/**
+ * The PRD template fields a study fills through `skeleton(card, fill)` (content/case-studies/_skeleton.ts),
+ * each with the text that shows it's in `fill`. A field that isn't there falls back to the skeleton's
+ * placeholder, so it's reported against the study rather than as a line of the skeleton.
+ */
+const SKELETON_FIELDS = [
+  ["lede", /\blede: "/],
+  ["CONTEXT", /\bCONTEXT: "/],
+  ["BUILT WITH", /"BUILT WITH": "/],
+  ["FOCUS", /\bFOCUS: "/],
+  ["TIME SPENT", /"TIME SPENT": "/],
+  ["LAST UPDATED", /"LAST UPDATED": "/],
+  ["demo", /\bdemo: "/],
+  ["primary user", /\bwho: "/],
+  ["problem", /\bproblem: "/],
+  ["why AI", /\bwhyAi: "/],
+  ["built myself", /\bbuiltMyself: "/],
+  ["used or reused", /\busedOrReused: "/],
+  ["north-star metric", /"NORTH STAR": "/],
+  ["guardrail metric", /\bGUARDRAIL: "/],
+  ["adoption metric", /\bADOPTION: "/],
+  ["before/after: manual steps", /\bmanual: \[/],
+  ["before/after: agent steps", /\bagent: \[/],
+  ["before/after: manual total", /\bmanualTotal: "/],
+  ["before/after: agent total", /\bagentTotal: "/],
+  ["what's next (v2)", /\bv2: "/],
+  ["what surprised you", /\blearned: "/],
+  ["repo", /\brepo: "/],
+];
+
+/** The template fields a study that uses the skeleton still leaves to it, by name. */
+export function skeletonGaps(source) {
+  const at = source.indexOf("skeleton(");
+  if (at < 0) return [];
+  const fill = source.slice(at);
+  const gaps = SKELETON_FIELDS.filter(([, re]) => !re.test(fill)).map(([name]) => name);
+  const count = (re) => (fill.match(re) ?? []).length;
+  for (let i = count(/\btopic: "/g); i < 3; i++) gaps.push(`decision ${i + 1}`);
+  for (let i = count(/\btitle: "/g); i < 4; i++) gaps.push(`safeguard ${i + 1}`);
+  return gaps;
+}
+
 function main() {
   if (args.includes("--production-only") && process.env.VERCEL_ENV !== "production") {
     console.log("check:content skipped (not a production build). Run `pnpm check:content` to see what is left.");
@@ -101,11 +143,13 @@ function main() {
   } else {
     // /content, plus the eval set's real-JD slots (SPEC §10: ≥ 6 real JDs).
     for (const file of [...walk("content", (n) => /\.(ts|tsx|mdx|md|json)$/.test(n)), ...walk("evals/real-jds", (n) => n.endsWith(".txt"))]) {
-      readFileSync(file, "utf8")
-        .split("\n")
-        .forEach((line, i) => {
-          if (/TODO\(aswin\)|\btodo\(/.test(line)) hits.push(`${file}:${i + 1}`);
-        });
+      // The skeleton's placeholders are reported per study, below, not as its own lines.
+      if (file.endsWith("_skeleton.ts")) continue;
+      const source = readFileSync(file, "utf8");
+      source.split("\n").forEach((line, i) => {
+        if (/TODO\(aswin\)|\btodo\(/.test(line)) hits.push(`${file}:${i + 1}`);
+      });
+      for (const gap of skeletonGaps(source)) hits.push(`${file}: ${gap}`);
     }
   }
 

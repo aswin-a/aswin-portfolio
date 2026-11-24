@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { JD_LABEL } from "./fixtures";
 import { evalMeta } from "@/lib/eval-results";
+import { products } from "@/content/products";
+import { siteMeta } from "@/content/site-meta";
 
 /** The eval numbers the site shows: content/eval-results.json, or the design placeholders before a real run. */
 const EVAL = evalMeta();
@@ -40,7 +42,7 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   await expect(grid.getByText(`${EVAL.evalCaseCount} test JDs and red-team cases, run before every change.`)).toBeVisible();
   // agents points at a hidden case study: not a link, its CTA muted with a COMING SOON pill.
   await expect(grid.getByRole("link", { name: /^agents/ })).toHaveCount(0);
-  await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "#");
+  await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent/blob/main/skills/tailored-resume/SKILL.md");
   await expect(grid.getByRole("link", { name: /^evals/ })).toHaveAttribute("href", "https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
   await expect(grid.getByRole("link", { name: /^guardrails/ })).toHaveAttribute("href", "#break-my-ai");
   // The arrow is part of the CTA; the planned card is not a link and its CTA is muted.
@@ -102,10 +104,15 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(cards.nth(1).getByRole("link", { name: "Try it above ↑" })).toHaveAttribute("href", "#fit-h");
   await expect(cards.nth(1).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
   await expect(cards.nth(1).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  await expect(cards.nth(2).getByText("[e.g. the spec, Figma flows and the clickable prototype]")).toBeVisible();
-  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", "#");
+  const builder = products.find((p) => p.slug === "integration-builder")!;
+  await expect(cards.nth(2).getByText(builder.built)).toBeVisible();
+  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary!.href);
   await expect(cards.nth(2).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
   await expect(cards.nth(2).getByText("COMING SOON", { exact: true })).toBeVisible();
+  // The Instagram agent has no run yet: no "Watch the recorded run" (Aswin, 2026-11-24); its case study is hidden.
+  await expect(cards.nth(3).getByText("Watch the recorded run", { exact: true })).toHaveCount(0);
+  await expect(cards.nth(3).getByRole("link")).toHaveCount(0);
+  await expect(cards.nth(3).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
 });
 
 test("shared Footer: contact and the footer bar on every page, phones included (update 6)", async ({ page }) => {
@@ -159,7 +166,7 @@ test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-l
   await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
   await expect(panel.getByText(`${EVAL.evalCaseCount} test JDs and questions, including bad-fit roles and red-team cases`)).toBeVisible();
   await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
-  await expect(panel.getByText("No vector DB in v1, on purpose: [your reason]")).toBeVisible();
+  await expect(panel.getByText(`No vector DB in v1, on purpose: ${siteMeta.noVectorDbReason}`)).toBeVisible();
   await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
   await expect(panel.getByText(/live usage/)).toHaveCount(0);
 });
@@ -186,9 +193,9 @@ test("removed X-ray-only lines stay gone in X-ray; the page never re-themes", as
 
 test("log: filters show counts, filter posts and the empty state (TIL stays upper-case)", async ({ page }) => {
   await page.goto("/log");
-  await expect(page.getByRole("button", { name: "All 3" })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Essays 1" }).click();
-  await expect(page.getByRole("article")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "All 5" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Essays 2" }).click();
+  await expect(page.getByRole("article")).toHaveCount(2);
   await page.getByRole("button", { name: "Teardowns 0" }).click();
   await expect(page.getByText("No teardowns yet. The first one is in the works.")).toBeVisible();
   await page.getByRole("button", { name: "TIL 0" }).click();
@@ -203,7 +210,7 @@ test("CV: header, stats, timeline lanes and links (update 6)", async ({ page }) 
   await expect(page.getByText("CURRICULUM VITAE", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: "Aswin A" })).toBeVisible();
   await expect(page.getByRole("link", { name: "LinkedIn", exact: true }).first()).toHaveAttribute("href", "https://linkedin.com/in/aswin-a-pm");
-  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "#");
+  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "/resume.pdf");
   await expect(page.getByText("Synced from my master resume · 13 Nov 2026")).toBeVisible();
   await expect(page.getByText("125% growth", { exact: true })).toHaveCSS("font-size", "26px");
   const items = page.getByRole("main").locator("ol > li");
@@ -287,11 +294,11 @@ test("case study: before/after tabs and the X-ray link button", async ({ page })
   await page.getByRole("button", { name: "How I built this (X-ray)" }).click();
   expect(await theme(page)).toBe("xray");
   await expect(page.getByRole("button", { name: "Close How I built this" })).toBeVisible();
-  const trace = page.getByText(/^LOGGED TRACE · run .+ · real run, never a simulation$/);
+  const trace = page.getByText(/^LOGGED TRACE · (run .+ · )?real run, never a simulation$/);
   await expect(trace).toBeVisible();
   await expect(trace.locator("xpath=..")).toHaveCSS("background-color", "rgb(16, 18, 20)");
   await expect(trace.locator("xpath=..").getByText("X-RAY", { exact: true })).toBeVisible();
-  const evals = page.getByText(/^OFFLINE EVAL SET · .+ cases incl\. red-team$/);
+  const evals = page.getByText(/^OFFLINE EVAL SET · .+ cases( incl\. red-team)?$/);
   await expect(evals).toBeVisible();
   await expect(evals.locator("xpath=..").getByText("X-RAY", { exact: true })).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 243, 236)");
@@ -318,7 +325,7 @@ test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before a
   await page.goto("/work/integration-builder");
   await expect(page.getByText("CASE STUDIES / 03 · CLOUDEAGLE.AI")).toBeVisible();
   // Numbering and order follow the home products 01–04 (Aswin, 2026-11-20).
-  await expect(page.getByRole("link", { name: /^NEXT · 04 · IN USE · RECORDED RUN/ })).toHaveAttribute("href", "/work/instagram-agent");
+  await expect(page.getByRole("link", { name: /^NEXT · 04 · IN PROGRESS/ })).toHaveAttribute("href", "/work/instagram-agent");
   await expect(page.getByRole("link", { name: "CASE STUDIES", exact: true })).toHaveAttribute("href", "/work");
   await expect(page.getByText("LAST UPDATED", { exact: true })).toBeVisible();
   const counter = page.locator("#s-break").getByRole("status");
@@ -328,7 +335,7 @@ test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before a
     expect((await page.goto(gone))?.status()).toBe(404);
   }
   await page.goto("/work/instagram-agent");
-  await expect(page.getByText("STATUS · IN USE · RECORDED RUN")).toBeVisible();
+  await expect(page.getByText("STATUS · IN PROGRESS")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Instagram content intelligence agent", level: 1 })).toBeVisible();
   await page.goto("/work/instagram-agent");
   await expect(page.getByRole("link", { name: /^NEXT · 01 · IN USE · RECORDED RUN/ })).toHaveAttribute("href", "/work/job-search-agent");
@@ -366,6 +373,9 @@ test("phone home: compact hood list and Products I've built (update 4)", async (
   await expect(work.getByText("wait for my approval", { exact: true })).toHaveCSS("color", "rgb(138, 85, 16)");
   await expect(work.getByText("CONCEPT", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
   await expect(work.getByText("COMING SOON", { exact: true })).toHaveCount(3);
+  await expect(work.getByText("Instagram content intelligence agent", { exact: true }).locator("xpath=..")).toHaveText(
+    "IN PROGRESSInstagram content intelligence agentCOMING SOON",
+  );
   await expect(page.locator("#work-h")).toBeHidden();
 });
 

@@ -5,11 +5,29 @@ export const meta = {
   title: "Integrations experience is agent experience",
   category: "essay",
   tag: "Essay",
-  date: todo("[date]"), // TODO(aswin)
-  readTime: todo("[read time]"), // TODO(aswin)
-  summary: todo("[Two-line summary: what platform PMs already know about agents]"), // TODO(aswin)
+  date: todo("[date]"),
+  readTime: "3 min", // L2 (Aswin, 2026-11-24)
+  summary: "Platform PMs already know the hard parts of agents: auth, scopes, rate limits, retries, schemas and failures that look like success. An agent is just a new kind of integration client.",
 };
 
-{todo("[Post body]")}
+For four years I owned platform and integrations at Zelthy, a multi-tenant SaaS platform for healthcare and pharma clients. I led integrations with services like Zoom, Twilio, DocuSign, SAP and Azure AD, built a connector framework that replaced one-off, per-app integrations, and ran a daily two-way batch sync over a client's SOAP APIs. Now that I build agents, I keep running into the same problems in a different shape.
 
-{/* TODO(aswin): write the post. */}
+**An agent is an integration client that improvises**
+
+A classic integration calls the same endpoints in the same order every time. An agent chooses its calls at runtime. That makes everything integration teams learned matter more, not less:
+
+- **Auth and scopes.** Least privilege was always good practice. With an agent it's the main thing standing between a wrong guess and a wrong action, and most tokens are broader than their names suggest.
+- **Schemas.** A connector framework works because every integration fills the same shape. Agents are far more reliable when their output is a structured form a validator can check than when it's free text or free-form code.
+- **Rate limits and retries.** An agent stuck in a loop is a runaway job with a reasoning layer on top. It needs budgets, Retry-After handling and a hard stop.
+- **Failures that look like success.** Every integrations PM has a story about a 200 with an empty body. Agents make it worse, because they explain a wrong result confidently.
+- **Observability.** You can't fix what you didn't log. Every call an agent makes should be visible to whoever is accountable for it.
+
+**Agent experience is developer experience for a new reader**
+
+Platform teams spend years making APIs pleasant for developers: clear docs, predictable errors, examples, sandboxes. Agents read the same docs, with less patience and more literalness. Clear error messages, consistent pagination and honest scopes help an agent as much as they help a developer, and an API that's hard for a developer to use correctly is worse for an agent.
+
+**What I carried into my agents**
+
+In my CloudEagle take-home, the AI fills a declarative connector form that one hardened engine runs, read-only, because that's how you'd build a connector framework for people too. In my job-search agent, the risky step (applying) sits behind an explicit approval, the way a production deploy sits behind a release gate. Neither idea is new. They're platform habits applied to a new kind of client.
+
+That's why I don't see "PM who builds agents" and "PM who builds platforms" as different jobs. The agent is the newest consumer of the platform, and the platform decides how safe it can be.

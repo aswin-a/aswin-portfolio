@@ -1,4 +1,49 @@
-label: TODO(aswin): role title · company
-bad: false
+label: Product Manager (Procurement) · JiBe ERP
+bad: true
 
-TODO(aswin): paste a real job description here (the full text). Set bad: true for a role that should not be a fit.
+Position
+
+Product Manager (Procurement)
+
+About JiBe
+
+JiBe is a cloud-based fully integrated ERP system for the shipping industry. Our goal is to allow shipping companies to improve productivity, efficiency, and safety levels, while reducing costs. JiBe ERP enables increased automation and streamlining processes, creating pre-defined workflows, and reducing the usage of email and paper.
+
+Job Responsibilities
+
+Define and execute the product roadmap for Procurement & Vendor Management modules.
+Gather customer requirements and translate them into user stories and functional specifications.
+Work closely with Engineering, QA, Sales, and Implementation teams throughout the product lifecycle.
+Conduct market research and competitor analysis to identify product improvements.
+Drive new feature development, testing, release, and adoption.
+Act as the subject matter expert for procurement processes and best practices.
+Use customer feedback and data insights to enhance user experience and product value.
+
+Requirements
+
+4+ years of experience in Product Management, Product Ownership, or Business Analysis.
+Experience with B2B SaaS products, ERP systems, or procurement solutions.
+Strong understanding of procurement, purchasing, vendor management, and workflow automation.
+Experience writing requirements, process flows, and user stories.
+Excellent stakeholder management and communication skills.
+Maritime, shipping, supply chain, or ERP product experience preferred.
+Experience in Procurement, Supply Chain, or Maritime ERP products.
+Familiarity with SAP, Oracle, Microsoft Dynamics, JiBe, or similar ERP platforms.
+Experience creating wireframes, mockups, and UI requirements.
+
+Qualifications and Skills
+
+Bachelor's degree in computer science, Information Technology, Business Management, Supply Chain Management, Procurement, Finance, Marine Engineering, or related field.
+4+ years of experience in Product Management, Product Ownership, Business Analysis, or ERP Product roles.
+Experience with B2B SaaS products and ERP solutions.
+Strong understanding of Procurement, Purchasing, Vendor Management, and Supply Chain processes.
+Experience creating requirements for documents, user stories, process flows, and product specifications.
+Excellent communication, stakeholder management, and presentation skills.
+
+Preferred Qualifications
+
+Previous experience in the Maritime industry
+Previous experience working or managing in crew accounting department
+Previous software and web development experience
+Previous experience in a Marine ERP product management role
+Previous experience in designing UI and preparing mockups and wireframes

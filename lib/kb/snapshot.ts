@@ -10,7 +10,7 @@ import { HIDE_UNPROVEN, containsTodo, todosIn } from "@/lib/content";
  * files in /content/kb (themselves generated from content/cv.ts, design update 6) when the server
  * bundle loads, validated, and frozen. No embeddings.
  *
- * Production drops any entry that still holds a TODO(aswin) placeholder ("Anything without proof
+ * Production drops any entry that still holds a todo() placeholder ("Anything without proof
  * yet is left out"). The not-done list has no placeholders and is always present.
  */
 export const KB_SCOPES = ["roles", "projects", "not_done", "facts"] as const;

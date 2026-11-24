@@ -24,7 +24,10 @@ export const CaseStudySchema = z.object({
     .object({
       note: z.string().optional(),
       steps: z.array(z.object({ label: z.string(), fn: z.string(), guard: z.boolean(), ms: z.string() })),
-      runId: z.string(),
+      /** The logged run's id. Left out when the run's logs have none (the trace then shows no id). */
+      runId: z.string().optional(),
+      /** A sentence after the design's caption under the diagram (Aswin, 2026-11-24). */
+      caption: z.string().optional(),
     })
     .optional(),
   builtMyself: z.string().optional(),
@@ -42,6 +45,8 @@ export const CaseStudySchema = z.object({
     .object({
       items: z.array(z.object({ source: z.enum(["LIVE USAGE", "OFFLINE EVAL"]), name: z.string(), value: z.string() })),
       evalCount: z.string(),
+      /** False when the eval set has no red-team cases, so the label doesn't claim any. */
+      redTeam: z.boolean().optional(),
       evals: z.array(z.object({ case: z.string(), expected: z.string(), result: z.string() })),
       failedFirst: z.string(),
     })

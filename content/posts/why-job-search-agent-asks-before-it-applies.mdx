@@ -5,12 +5,32 @@ export const meta = {
   title: "Why my job-search agent asks before it applies",
   category: "build",
   tag: "Build notes",
-  date: todo("[date]"), // TODO(aswin)
-  readTime: todo("[read time]"), // TODO(aswin)
-  summary: todo("[Two-line summary: the approval step, what it costs, why it stays]"), // TODO(aswin)
+  date: todo("[date]"),
+  readTime: "3 min", // L3 (Aswin, 2026-11-24)
+  summary: "My job-search agent stops before every application and waits for an exact approval line for that one job. It costs me a message per job. It stays because an application under my name can't be unsent.",
   study: { label: "Case study · Job-search agent", slug: "job-search-agent" },
 };
 
-{todo("[Post body]")}
+I built a Claude agent for my own job search. It searches LinkedIn, scores each job against my experience, saves the ones that clear my bar, writes a tailored resume per job, and fills in the application. Everything up to the application runs without asking me. The application itself never does.
 
-{/* TODO(aswin): write the post. */}
+**What the agent does on its own**
+
+Saving a job, scoring it, writing resumes in Drive and updating my tracker are all reversible, so none of them need approval. The agent screens results at a human pace, scores each job 0–100 with fixed weights (skills and tools, experience, evidence of results, domain, seniority), saves everything above my minimum score and logs it. For each job it writes an "ideal" resume from the JD alone, then maps my Master Resume against it and the JD, and asks me short gap questions where my evidence is thin. It never fills a gap by inventing a claim.
+
+**Where it stops**
+
+After the final resume, the agent hands me an apply kickoff and stops. It only moves when my latest message is exactly "APPROVED TO APPLY - Company - Role" for that job. Then it fills the form from my Master Resume, the final resume and my saved answers, and any question it can't source (CTC, notice period, visa, relocation, essays) stops it again. Before Submit, it shows a table of every field, its value and where that value came from, and it waits for one more word: SUBMIT.
+
+**What that costs**
+
+At least two extra messages per job, a review of every form, and no way to apply to fifty jobs overnight. The agent is slower than an auto-apply tool, by design.
+
+**Why it stays**
+
+Three reasons.
+
+1. **An application can't be unsent.** A wrong resume, a guessed CTC or a role I'd never take goes out under my name, to a recruiter who'll remember it. Everything else the agent does can be undone; this can't.
+2. **The approval is the review.** The pause is where I catch a bullet worded beyond what I can defend, or a job that looked right on paper and isn't. If I rubber-stamped applications, I'd lose the reason I built a careful pipeline in the first place.
+3. **The gate makes the rest of the automation safe.** Because nothing irreversible happens without me, I can let the agent run freely everywhere else: searching, scoring, drafting. The approval step is what lets the other steps stay automatic.
+
+The same rule shows up in every agent I design now: let the model do as much as possible on its own, and draw the line at actions you can't take back. My CloudEagle integration builder works the same way, with the AI repairing its draft on its own while a person approves what goes live.

@@ -1,15 +1,81 @@
 import { todo } from "@/lib/content";
 import { skeleton } from "./_skeleton";
 
-{/* Product 01 in "Products I've built" (content/products.ts, design update 4). The page fields are TODO(aswin). */}
+{/* Product 01 in "Products I've built" (content/products.ts, design update 4). Fields not filled here fall back to the skeleton's placeholders. */}
 
 export const meta = {
-  ...skeleton({
-    slug: "job-search-agent",
-    num: "01",
-    status: "IN USE · RECORDED RUN",
-    cardTitle: "AI job search and apply agent",
-    built: "The project instructions, step prompts A–F and the approval step.",
-  }),
+  ...skeleton(
+    {
+      slug: "job-search-agent",
+      num: "01",
+      status: "IN USE · RECORDED RUN",
+      cardTitle: "AI job search and apply agent",
+      built: "The project instructions, step prompts A–F and the approval step.",
+    },
+    {
+      lede: "A Claude agent that finds and scores LinkedIn jobs, writes a truthful tailored resume for each one, and applies only after I approve that specific job.",
+      facts: {
+        CONTEXT: "Side project (my own 2026 job search)",
+        "BUILT WITH": "Claude Projects · Claude Skills · Claude in Chrome · MCP · Google Drive, Docs and Sheets",
+        FOCUS: "Human in the loop",
+        "LAST UPDATED": "31 Oct 2026",
+      },
+      problem: {
+        who: "Me: a senior PM job seeker applying to many roles, who needs every resume tailored to the JD and every claim on it defensible in an interview.",
+        problem: "Tailoring a resume properly means reading the JD, deciding what it really asks for, mapping your experience to it and rewording without overstating, and that is slow to do for every application. Auto-apply tools are fast, but they send generic or embellished resumes under your name, and a wrong application can't be taken back.",
+        whyAi: "AI makes the slow parts fast: screening and scoring jobs, analysing the JD, and rewording my real experience in the JD's language. It is not trusted to invent experience, guess form answers such as CTC or notice period, or press Apply on its own.",
+      },
+      decisions: [
+        {
+          topic: "When the agent may apply",
+          chose: "An exact approval line per job (\"APPROVED TO APPLY - Company - Role\"), then a review table of every form field with its source, then a separate SUBMIT",
+          over: "Auto-applying to any job above a fit-score threshold",
+          because: "Every application costs me two extra messages and a review, but nothing goes out under my name that I haven't read.",
+        },
+        {
+          topic: "How the tailored resume is written",
+          chose: "Three-way mapping: first an \"ideal\" resume written from the JD alone, then my Master Resume mapped against it and the JD, with gap questions where my evidence is partial",
+          over: "Rewriting the Master Resume straight to the JD",
+          because: "An extra step and more tokens per job, but wording (from the ideal resume) stays separate from facts (from the Master Resume), so the model can't fill gaps with invented claims.",
+        },
+        {
+          topic: "How it uses LinkedIn",
+          chose: "My own Chrome session through Claude in Chrome, browsing at a human pace (at most about 40 job pages per run), and stopping on any CAPTCHA, login wall or rate-limit warning",
+          over: "Scraping, unofficial APIs or working around blocks",
+          because: "Runs are slower and need my browser open, but my LinkedIn account isn't put at risk.",
+        },
+      ],
+      builtMyself: "The workflow and its four stages (search and fit scoring, ideal resume, three-way tailored resume, apply after approval), the project instructions and step prompts A–E, the Claude Skill that scores JD fit against my Master Resume, the fit-score weights, the approval gates, and the job tracker.",
+      usedOrReused: "Claude and Claude Projects, Claude in Chrome, the existing Google Drive, Docs and Sheets MCP connectors (I configured them, I didn't build an MCP server), and LinkedIn.",
+      safeguards: [
+        {
+          title: "Apply only after approval",
+          stops: "An application going out for a job I haven't reviewed",
+          userSees: "The agent stops after the final resume, gives an apply kickoff block and waits for the exact approval line for that job; before Submit it shows a Field | Value | Source table and waits for SUBMIT.",
+        },
+        {
+          title: "No invented experience",
+          stops: "Fabricated tools, metrics, responsibilities or keywords on a resume",
+          userSees: "Every claim must trace to the Master Resume or my answers; where evidence is missing the agent marks the requirement \"Not supported\" or asks a short yes/no gap question instead of writing it in.",
+        },
+        {
+          title: "Never guess a form answer",
+          stops: "Wrong CTC, notice period, visa, relocation or diversity answers",
+          userSees: "The agent pauses and asks; nothing gets a default value.",
+        },
+        {
+          title: "Stop, don't work around",
+          stops: "LinkedIn blocks, account flags or paid InMail credits spent by accident",
+          userSees: "On a CAPTCHA, login wall, assessment, payment or ID request the agent stops and describes it; before a recruiter message that would use an InMail credit it asks \"SEND (uses 1 InMail credit) or CANCEL?\"",
+        },
+      ],
+      metrics: {
+        "NORTH STAR": "Tailored, approved applications sent per week that I'd defend line by line in an interview.",
+        GUARDRAIL: "Claims in final resumes that can't be traced to my Master Resume or my own answers (target: zero).",
+        ADOPTION: "Share of shortlisted jobs that I take all the way to a final tailored resume.",
+      },
+      v2: "A scheduled, unattended shortlist run: the prompt variant already exists. It waited because I chose to run searches manually for now and watch each run myself.",
+    },
+  ),
   relatedPost: "why-job-search-agent-asks-before-it-applies",
 };

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { LiveLink } from "@/components/home/live-link";
 import { hood, type HoodItem } from "@/content/hood";
 import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { workLinkIsLive } from "@/lib/case-studies";
 import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
 
@@ -24,8 +25,12 @@ function CardLink({ card, className, children }: { card: HoodItem; className: st
 }
 
 /** Desktop grid (Main.dc.html) and the phone list (Mobile.dc.html, ≤ 640px). */
-export function UnderTheHood() {
-  const cards = published(hood);
+export async function UnderTheHood() {
+  // A card whose proof is an unpublished case study is left out with it (Aswin, 2026-11-24). A hidden
+  // one (content/case-studies/visibility.ts) keeps its card, with "COMING SOON" in place of the link.
+  const isLive = await workLinkIsLive();
+  const hidden = (u: HoodItem) => u.href !== undefined && isHiddenStudyHref(u.href);
+  const cards = published(hood).filter((u) => hidden(u) || isLive(u.href));
   return (
     <>
       <section aria-labelledby="uh-h" className="border-t border-rule px-6 py-14 max-[640px]:hidden">
@@ -53,7 +58,7 @@ export function UnderTheHood() {
                   </span>
                 </span>
                 <span className="text-[15px] leading-[1.5] text-muted">{u.proof}</span>
-                {u.href && isHiddenStudyHref(u.href) ? (
+                {hidden(u) ? (
                   <ComingSoonLink label={plainLabel(u.cta)} className="mt-auto self-start font-mono text-[12px]" />
                 ) : (
                   <span className={`mt-auto font-mono text-[12px] ${u.status === "planned" ? "text-muted" : "text-accent"}`}>{u.cta}</span>
@@ -78,7 +83,7 @@ export function UnderTheHood() {
           >
             <span className="font-mono text-[14px]">{u.name}</span>
             <span className="flex items-center gap-[6px]">
-              {u.href && isHiddenStudyHref(u.href) && <ComingSoonPill />}
+              {hidden(u) && <ComingSoonPill />}
               <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
             </span>
           </CardLink>

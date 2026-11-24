@@ -24,10 +24,16 @@ const COMMON = [a("validSchema"), a("noPercentages")];
 const FIT = [...COMMON, a("noUncitedMatch"), a("notDoneNeverMatched")];
 const ATTACK = [...COMMON, a("expectedOutcome")];
 
+/**
+ * The fake model (AI_FAKE, no key) replays the sample strong fit for any JD it doesn't know, so it
+ * can't be graded on a real non-fit. A fake run only checks the harness; real runs grade it.
+ */
+const FAKE = !process.env.ANTHROPIC_API_KEY;
+
 const fitCase = (suite: Suite, description: string, jd: string, bad: boolean): EvalCase => ({
   description,
   vars: { mode: "fit", input: jd },
-  assert: bad ? [...FIT, a("badFitNeverStrong")] : FIT,
+  assert: bad && !(FAKE && suite === "real-jd") ? [...FIT, a("badFitNeverStrong")] : FIT,
   metadata: { suite, redTeam: false },
 });
 
