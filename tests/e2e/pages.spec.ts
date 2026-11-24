@@ -116,9 +116,9 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary!.href);
   await expect(cards.nth(2).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
   await expect(cards.nth(2).getByText("COMING SOON", { exact: true })).toBeVisible();
-  // The Instagram agent's "Add to Claude/ChatGPT" waits for its link (Aswin, 2026-11-24); its case study is hidden.
-  await expect(cards.nth(3).getByText("Add to Claude/ChatGPT", { exact: true })).toHaveCount(0);
-  await expect(cards.nth(3).getByRole("link")).toHaveCount(0);
+  // The Instagram agent is on GitHub (Aswin, 2026-11-24); its case study is hidden.
+  await expect(cards.nth(3).getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveAttribute("href", "https://github.com/aswin-a/instagram-content-intelligence-agent");
+  await expect(cards.nth(3).getByRole("link")).toHaveCount(1);
   await expect(cards.nth(3).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
 });
 

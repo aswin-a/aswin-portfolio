@@ -93,9 +93,7 @@ export const products: Product[] = [
       { text: "Suggest Dhee’s next posts" },
     ],
     tags: ["agents", "tools"],
-    // TODO(aswin): primary "Add to Claude/ChatGPT" (Aswin, 2026-11-24), shown once its link is in:
-    // primary: { label: "Add to Claude/ChatGPT", href: "<link>" },
-    // Left out until then: a placeholder link would hide the whole card in production.
+    primary: { label: "Add to Claude/ChatGPT", href: "https://github.com/aswin-a/instagram-content-intelligence-agent" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/instagram-agent" },
   },
 ];
