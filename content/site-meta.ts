@@ -1,4 +1,3 @@
-import { todo } from "@/lib/content";
 import { evalMeta } from "@/lib/eval-results";
 
 /** Facts used across the site. Every placeholder here is Aswin's to fill in (SPEC §12). */
@@ -15,6 +14,7 @@ export const siteMeta = {
   // Offline eval numbers: content/eval-results.json, written by a real eval run in CI (SPEC §10).
   // Placeholders until the first run. Never typed in by hand; live usage numbers are separate.
   ...evalMeta(),
-  evalFailedFirst: todo("[what broke, and the fix]"),
+  evalFailedFirst:
+    "The happy-path case: my test input named no app, so the sandbox rightly asked a clarifying question. I changed the input to name Slack and its read-only scope.", // Aswin, 2026-11-24
   noVectorDbReason: "everything the AI can quote (my CV, case studies and posts) fits in a single prompt, so retrieval would add a moving part without making answers any better. I'll add one when the content outgrows the context window.", // "No vector DB in v1, on purpose: …" (Hero.dc.html update 5; Aswin, 2026-11-24)
 } as const;

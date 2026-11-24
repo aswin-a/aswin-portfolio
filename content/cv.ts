@@ -1,4 +1,3 @@
-import { todo } from "@/lib/content";
 
 /**
  * The CV, word for word from the CV_STATS, CV_GENERAL, CV_ITEMS and CV_SKILLS arrays in
@@ -94,8 +93,8 @@ export const cvItems: CvItem[] = [
       "Connected Drive and Chrome through MCP connectors and wrote a custom Claude Skill for job-fit scoring",
       "Used to prepare 20+ applications; fit scores checked against LinkedIn’s match score",
     ],
-    link: "View recorded run →",
-    href: "#", // TODO(aswin): recorded run link
+    link: "Add to Claude/ChatGPT →", // Aswin, 2026-11-24: the agent's repo, in place of the design's "View recorded run →"
+    href: "https://github.com/aswin-a/linkedin-job-search-agent",
   },
   {
     id: "ig",
@@ -111,7 +110,7 @@ export const cvItems: CvItem[] = [
   {
     id: "web",
     lane: "project",
-    dates: todo("[date]"),
+    dates: "Feb 2026", // Aswin, 2026-11-24
     title: "Dhee’s website",
     org: "Side project · for Dhee’s · Astro, TypeScript, Cloudflare",
     scope: "Designed and built the company’s single-page site with Cursor and v0: recipes, prices, delivery areas and free-sample requests, with ordering over WhatsApp.",

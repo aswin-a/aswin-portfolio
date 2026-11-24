@@ -36,13 +36,14 @@ describe("eval cases (SPEC §10)", () => {
     for (const c of cases) expect(c.assert.map((a) => a.value)).toContain("file://assertions.ts:validSchema");
   });
   it("real-JD slots: TODO(aswin) placeholders are skipped; filled ones are read with label and bad flag", () => {
-    // The repo's slots: J1–J5 are filled (Aswin, 2026-11-24); J6 is still a placeholder.
+    // The repo's slots: J1–J6 are all filled (Aswin, 2026-11-24).
     expect(readRealJds().map((j) => [j.file, j.label, j.bad])).toEqual([
       ["jd-01.txt", "Senior Product Manager (Platform & AI) · Wrike", false],
       ["jd-02.txt", "Senior Product Manager, Forward Deployed · CertifyOS", false],
       ["jd-03.txt", "Senior Product Manager, Agentic Application · Duck Creek Technologies", false],
       ["jd-04.txt", "AI Product Manager (Purple Fabric) · Intellect Design Arena", false],
       ["jd-05.txt", "Product Manager (Procurement) · JiBe ERP", true],
+      ["jd-06.txt", "Product Manager, Charging Infrastructure and Experience · Ather Energy", true],
     ]);
     // Every real JD fits the site's input limit, or a real eval run would fail on validation.
     for (const j of readRealJds()) expect(j.jd.length).toBeLessThanOrEqual(JD_MAX_CHARS);

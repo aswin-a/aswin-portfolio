@@ -5,6 +5,12 @@ import { products } from "@/content/products";
 import { cvMarkdown, cvPlainText, cvStrings, topicFor, cvItem } from "@/lib/cv";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
 
+/** Fields Aswin filled in or changed after the design (2026-11-24); everything else is word for word. */
+const ASWIN_FILLED: Record<string, Record<string, string>> = {
+  jsa: { link: "Add to Claude/ChatGPT →", href: "https://github.com/aswin-a/linkedin-job-search-agent" },
+  web: { dates: "Feb 2026" },
+};
+
 /** The CV arrays as the design has them, evaluated from design/About.dc.html. */
 function designCv() {
   const src = readFileSync("design/About.dc.html", "utf8");
@@ -41,6 +47,7 @@ describe("content/cv.ts", () => {
       const di = d.CV_ITEMS[i] as Record<string, unknown> & { qa?: { q: string }[]; href?: string };
       const expected = {
         ...di,
+        ...(ASWIN_FILLED[it.id] ?? {}),
         ...(di.qa ? { qa: di.qa.map(({ q }) => ({ q })) } : {}),
         ...(di.href === "Main.dc.html" ? { href: "/" } : {}),
       };

@@ -172,7 +172,7 @@ test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-l
   await expect(panel.getByText("fetch_url · links only", { exact: true })).toHaveCSS("border-top-style", "dashed");
   await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
   await expect(panel.getByText(`${EVAL.evalCaseCount} test JDs and questions, including bad-fit roles and red-team cases`)).toBeVisible();
-  await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
+  await expect(panel.getByText(`What failed first: ${siteMeta.evalFailedFirst}`)).toBeVisible();
   await expect(panel.getByText(`No vector DB in v1, on purpose: ${siteMeta.noVectorDbReason}`)).toBeVisible();
   await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
   await expect(panel.getByText(/live usage/)).toHaveCount(0);
