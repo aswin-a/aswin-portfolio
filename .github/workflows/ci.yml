@@ -3,8 +3,12 @@
 name: CI
 
 on:
+  # A push that only changes the eval results (merging the Evals workflow's PR) is skipped: that
+  # PR already ran CI on the same code, and the build validates the file anyway.
   push:
     branches: [main]
+    paths-ignore:
+      - content/eval-results.json
   # A PR that changes only the eval results is the Evals workflow's own PR. GitHub doesn't run
   # pull_request workflows for PRs made with the built-in token (it waits for an approval that then
   # expires), so Evals starts this workflow on that branch itself (workflow_dispatch below).
