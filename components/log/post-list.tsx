@@ -55,7 +55,7 @@ export function PostList({ posts }: { posts: Post[] }) {
                 {p.title}
               </Link>
             </h2>
-            <p className="m-0 rounded-lg border border-dotted border-muted px-3 py-[10px] font-mono text-[13px] leading-[1.55] text-muted">
+            <p className="m-0 font-mono text-[13px] leading-[1.55] text-muted">
               {p.summary}
             </p>
             {p.study && (

@@ -98,7 +98,7 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(cards.nth(1).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/fit-check");
   const builder = products.find((p) => p.slug === "integration-builder")!;
   await expect(cards.nth(2).getByText(builder.built)).toBeVisible();
-  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary.href);
+  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary!.href);
   await expect(cards.nth(2).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/integration-builder");
 });
 

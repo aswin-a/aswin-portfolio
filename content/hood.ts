@@ -20,6 +20,6 @@ export const hood: HoodItem[] = [
   { name: "evals", status: "GitHub", proof: `${siteMeta.evalCaseCount} test JDs and red-team cases, run before every change.`, cta: "View the eval set →", href: siteMeta.evalSetLink },
   { name: "human in loop", status: "shipped", proof: "I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.", cta: "Read the OCR story →", href: todo("[link]") }, // TODO(aswin): the OCR story
   { name: "data privacy", status: "shipped", proof: "Advised against sending patient data to LLMs at a healthcare SaaS platform.", cta: "Read more →", href: todo("[link]") }, // TODO(aswin)
-  { name: "rag", status: "prototype", proof: "A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.", cta: "Why no vector DB yet →", href: todo("[link]") }, // TODO(aswin)
+  { name: "rag", status: "prototype", proof: "A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.", cta: "Why no vector DB yet →", href: "/work/fit-check#s-decisions" }, // Decision 01 there is retrieval vs. a vector DB (Aswin, 2026-11-24); hidden until that study is published
   { name: "mcp server", status: "planned", proof: "My agent uses MCP connectors today. Next: kb.search as an MCP server you can add to Claude.", cta: "Coming soon" },
 ];

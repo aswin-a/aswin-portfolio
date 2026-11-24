@@ -45,7 +45,7 @@ export const cvHeader = {
   linkedin: { label: "LinkedIn", href: "https://linkedin.com/in/aswin-a-pm", plain: "linkedin.com/in/aswin-a-pm" },
   summary:
     "I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM, and five as a founder across two startups. I own platforms end to end, from APIs and integrations to identity and workflow engines, and now I build AI agents on the same foundations.",
-  downloadPdf: { label: "Download PDF", href: "#" }, // TODO(aswin): static PDF built from this file at build time (SPEC §5)
+  downloadPdf: { label: "Download PDF", href: "/resume.pdf" }, // The general CV in public/resume.pdf (Aswin, 2026-11-24), in place of one built from this file (SPEC §5)
   /** Followed by siteMeta.resumeUpdated (Aswin, 2026-11-23). */
   synced: { label: "Synced from my master resume" },
 };
@@ -66,6 +66,9 @@ export const cvGeneral: CvTopic = {
     { q: "Has he led a team?" },
   ],
 };
+
+/** Items whose design link stays off until it has something real to open (Aswin, 2026-11-24: the Instagram agent has no run yet). */
+export const cvLinkHidden = new Set(["ig"]);
 
 export const cvItems: CvItem[] = [
   {

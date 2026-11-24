@@ -39,7 +39,7 @@ describe("design update 4 content", async () => {
     }
     expect(hood.find((h) => h.status === "planned")?.href).toBeUndefined();
     // Placeholder links render as "#", as in the design.
-    expect(hood.filter((h) => h.href && hrefOf(h.href) === "#").map((h) => h.name)).toEqual(["skills", "human in loop", "data privacy", "rag"]);
+    expect(hood.filter((h) => h.href && hrefOf(h.href) === "#").map((h) => h.name)).toEqual(["skills", "human in loop", "data privacy"]);
     expect(hood.find((h) => h.name === "evals")?.href).toBe("https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
     expect(hood.find((h) => h.name === "evals")?.proof).toBe(`${evalMeta().evalCaseCount} test JDs and red-team cases, run before every change.`);
   });

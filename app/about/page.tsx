@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { certificates } from "@/content/certificates";
-import { cvHeader, cvItems, cvSkills, cvStats, type CvItem } from "@/content/cv";
+import { cvHeader, cvItems, cvLinkHidden, cvSkills, cvStats, type CvItem } from "@/content/cv";
 import { siteMeta } from "@/content/site-meta";
 import { hrefOf } from "@/lib/content";
 import { cvPlainText, topicFor } from "@/lib/cv";
@@ -135,7 +135,7 @@ export default function About() {
                       {it.groups && <CvGroups groups={it.groups} />}
                       <div className="flex flex-wrap items-center gap-x-5 gap-y-[6px]">
                         {it.qa && <AskAboutRole topic={topicFor(it)} />}
-                        {it.href && it.link && <CvLink href={it.href}>{it.link}</CvLink>}
+                        {it.href && it.link && !cvLinkHidden.has(it.id) && <CvLink href={it.href}>{it.link}</CvLink>}
                         {it.href2 && it.link2 && <CvLink href={it.href2}>{it.link2}</CvLink>}
                       </div>
                     </article>

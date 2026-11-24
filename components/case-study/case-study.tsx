@@ -171,10 +171,12 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                   </span>
                 ))}
               </div>
-              <p className="m-0 text-[15px] text-muted">Boxes outlined in blue are where safeguards run.</p>
+              <p className="m-0 text-[15px] text-muted">
+                Boxes outlined in blue are where safeguards run.{cs.arch.caption && ` ${cs.arch.caption}`}
+              </p>
               <div className="xray-only">
                 <XrayPanel className="flex flex-col gap-[10px] rounded-[14px] p-5 font-mono text-[13px]">
-                  <p className="m-0 text-xr-muted">LOGGED TRACE · run {cs.arch.runId} · real run, never a simulation</p>
+                  <p className="m-0 text-xr-muted">LOGGED TRACE · {cs.arch.runId && `run ${cs.arch.runId} · `}real run, never a simulation</p>
                   {cs.arch.steps.map((a) => (
                     <div key={a.fn} className="flex justify-between gap-3 border-t border-xr-rule py-[6px]">
                       <span>
@@ -270,7 +272,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
               </div>
               <div className="xray-only">
                 <XrayPanel className="flex flex-col gap-3 rounded-[14px] p-5 font-mono text-[13px]">
-                  <span className="text-xr-muted">OFFLINE EVAL SET · {cs.perf.evalCount} cases incl. red-team</span>
+                  <span className="text-xr-muted">OFFLINE EVAL SET · {cs.perf.evalCount} cases{cs.perf.redTeam !== false && " incl. red-team"}</span>
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[520px] border-collapse text-[13px]">
                       <thead>

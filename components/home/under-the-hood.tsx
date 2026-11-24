@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { LiveLink } from "@/components/home/live-link";
 import { hood, type HoodItem } from "@/content/hood";
+import { workLinkIsLive } from "@/lib/case-studies";
 import { hrefOf, published } from "@/lib/content";
 
 /** Status pill colours (Main.dc.html, design update 4). The phone list never uses dashed borders. */
@@ -22,8 +23,10 @@ function CardLink({ card, className, children }: { card: HoodItem; className: st
 }
 
 /** Desktop grid (Main.dc.html) and the phone list (Mobile.dc.html, ≤ 640px). */
-export function UnderTheHood() {
-  const cards = published(hood);
+export async function UnderTheHood() {
+  // A card whose proof is an unpublished case study is left out with it (Aswin, 2026-11-24).
+  const isLive = await workLinkIsLive();
+  const cards = published(hood).filter((u) => isLive(u.href));
   return (
     <>
       <section aria-labelledby="uh-h" className="border-t border-rule px-6 py-14 max-[640px]:hidden">

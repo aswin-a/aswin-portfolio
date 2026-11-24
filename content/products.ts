@@ -15,7 +15,8 @@ export type Product = {
   built: string;
   flow: FlowStep[];
   tags: string[];
-  primary: { label: string; href: string };
+  /** The main button. None while there is nothing to show (the Instagram agent has no run yet). */
+  primary?: { label: string; href: string };
   secondary: { label: string; href: string };
   /** The short flow on the phone card (Mobile.dc.html), when it has one. */
   phoneFlow?: FlowStep[];
@@ -74,13 +75,13 @@ export const products: Product[] = [
       { text: "Deploy" },
     ],
     tags: ["integrations", "guardrails"],
-    primary: { label: "Run it locally", href: "https://github.com/aswin-a-95/cloudeagle-ai-integration-builder" }, // Aswin, 2026-11-24
+    primary: { label: "Run it locally", href: "https://github.com/aswin-a/cloudeagle-ai-integration-builder" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/integration-builder" },
   },
   {
     num: "04",
     slug: "instagram-agent",
-    status: "IN USE · RECORDED RUN",
+    status: "IN PROGRESS", // Not run yet (Aswin, 2026-11-24): the design's "IN USE · RECORDED RUN" returns with a real run
     name: "Instagram content intelligence agent",
     pitch: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.",
     built: "The agent’s prompts and analysis steps.",
@@ -92,7 +93,7 @@ export const products: Product[] = [
       { text: "Suggest Dhee’s next posts" },
     ],
     tags: ["agents", "tools"],
-    primary: { label: "Watch the recorded run", href: "/work/instagram-agent" },
+    // No "Watch the recorded run" until there is a real run (Aswin, 2026-11-24).
     secondary: { label: "Read the case study →", href: "/work/instagram-agent" },
   },
 ];

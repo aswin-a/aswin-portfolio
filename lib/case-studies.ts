@@ -17,3 +17,15 @@ export async function caseStudies(): Promise<CaseStudy[]> {
   const all = await Promise.all(CASE_STUDY_SLUGS.map(loadCaseStudy));
   return published(all);
 }
+
+/**
+ * True unless `href` points at a case study that isn't published (production hides unfinished ones).
+ * Links to those are left out rather than leading to a 404 (Aswin, 2026-11-24).
+ */
+export async function workLinkIsLive(): Promise<(href: string | undefined) => boolean> {
+  const live = new Set((await caseStudies()).map((c) => c.slug));
+  return (href) => {
+    const m = href?.match(/^\/work\/([^/#?]+)/);
+    return !m || live.has(m[1]);
+  };
+}

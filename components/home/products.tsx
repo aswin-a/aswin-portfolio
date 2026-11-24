@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { products, type Product } from "@/content/products";
+import { workLinkIsLive } from "@/lib/case-studies";
 import { hrefOf, published } from "@/lib/content";
 
-/** `/` paths use client navigation; anchors and placeholder links stay plain. */
-function A({ href, className, children }: { href: string; className: string; children: ReactNode }) {
+/** `/` paths use client navigation; anchors and placeholder links stay plain. No href: not a link. */
+function A({ href, className, children }: { href: string | undefined; className: string; children: ReactNode }) {
+  if (href === undefined) return <div className={className}>{children}</div>;
   if (href.startsWith("/")) return <Link href={href} className={className}>{children}</Link>;
   return <a href={href} className={className}>{children}</a>;
 }
@@ -16,15 +18,24 @@ const accentStatus = (status: string) => status === "LIVE HERE" || status.starts
  * `headingLevel` is 1 on the standalone /work page (a design gap, SPEC §4), where the hero's
  * `#fit-h` anchor lives on `/`, so `anchorBase` is "/".
  */
-export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { headingLevel?: 1 | 2; anchorBase?: "" | "/" }) {
+export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { headingLevel?: 1 | 2; anchorBase?: "" | "/" }) {
   const H = headingLevel === 1 ? "h1" : "h2";
   const items = published(products);
+  // A button to an unpublished case study is left out (Aswin, 2026-11-24); the card stays.
+  const isLive = await workLinkIsLive();
+  const primaryOf = (p: Product) => (p.primary && isLive(p.primary.href) ? p.primary : undefined);
+  const secondaryOf = (p: Product) => (isLive(p.secondary.href) ? p.secondary : undefined);
   const href = (h: string) => {
     const url = hrefOf(h);
     return url.startsWith("#") && url !== "#" ? `${anchorBase}${url}` : url;
   };
   // The phone card goes where the primary button goes when that's on this page ("Try it above ↑").
-  const phoneHref = (p: Product) => (p.primary.href.startsWith("#") ? href(p.primary.href) : href(p.secondary.href));
+  const phoneHref = (p: Product) => {
+    const primary = primaryOf(p);
+    if (primary?.href.startsWith("#")) return href(primary.href);
+    const secondary = secondaryOf(p);
+    return secondary && href(secondary.href);
+  };
 
   return (
     <>
@@ -54,20 +65,26 @@ export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { heading
                     <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">What I built </span>
                     {p.built}
                   </p>
-                  <div className="mt-auto flex flex-wrap gap-[10px] pt-[6px]">
-                    <A
-                      href={href(p.primary.href)}
-                      className="inline-flex min-h-11 items-center rounded-[10px] bg-btn-bg px-4 py-2 text-[14px] font-semibold text-btn-ink no-underline"
-                    >
-                      {p.primary.label}
-                    </A>
-                    <A
-                      href={href(p.secondary.href)}
-                      className="inline-flex min-h-11 items-center px-1 font-mono text-[13px] text-accent no-underline"
-                    >
-                      {p.secondary.label}
-                    </A>
-                  </div>
+                  {(primaryOf(p) || secondaryOf(p)) && (
+                    <div className="mt-auto flex flex-wrap gap-[10px] pt-[6px]">
+                      {primaryOf(p) && (
+                        <A
+                          href={href(primaryOf(p)!.href)}
+                          className="inline-flex min-h-11 items-center rounded-[10px] bg-btn-bg px-4 py-2 text-[14px] font-semibold text-btn-ink no-underline"
+                        >
+                          {primaryOf(p)!.label}
+                        </A>
+                      )}
+                      {secondaryOf(p) && (
+                        <A
+                          href={href(secondaryOf(p)!.href)}
+                          className="inline-flex min-h-11 items-center px-1 font-mono text-[13px] text-accent no-underline"
+                        >
+                          {secondaryOf(p)!.label}
+                        </A>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-3">
                   <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">How it works</span>
@@ -130,7 +147,7 @@ export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { heading
                 ))}
               </span>
             ) : (
-              p.primary.href.startsWith("#") && <span className="font-mono text-[12px] text-muted">{p.primary.label}</span>
+              primaryOf(p)?.href.startsWith("#") && <span className="font-mono text-[12px] text-muted">{primaryOf(p)!.label}</span>
             )}
           </A>
         ))}
