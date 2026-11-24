@@ -1,4 +1,91 @@
-label: TODO(aswin): role title · company
+label: Senior Product Manager (Platform & AI) · Wrike
 bad: false
 
-TODO(aswin): paste a real job description here (the full text). Set bad: true for a role that should not be a fit.
+About the job
+
+Wrike is the most powerful work management platform. Built for teams and organizations looking to collaborate, create, and exceed every day, Wrike brings everyone and all work into a single place to remove complexity, increase productivity, and free people up to focus on their most purposeful work.
+
+Wrike is our people, not a place. As a distributed team, we own our growth, stay globally connected, and rely on the product we build to deliver impactful work alongside brilliant minds. You'll have real ownership over meaningful work, a global team that has your back, and the flexibility to do your best work your way. If that sounds like you, we'd love to hear from you.
+
+Our vision: A world where everyone is free to focus on their most purposeful work, together.
+
+About the Role:
+
+Wrike is seeking a highly adaptable Senior Product Manager to join our global product organization. As a strategic leader, you will own the end-to-end lifecycle of your product area, driving measurable business impact and solving complex problems for millions of users.
+
+We are looking for a versatile generalist who is comfortable tackling diverse challenges as business needs evolve, but who is ready to immediately dive into a high-impact, transformative domain: AI-driven Work Intake.
+
+Your Impact:
+
+Deliver Innovation: Validate and ship solutions that revolutionize how work flows into systems, saving customers time and boosting work quality for both administrators and end-users. Evolve Wrike's work intake experience through platform and agentic capabilities within your first 6 months.
+Drive Discovery & Vision: Deeply understand customer workflows and underlying business pains to uncover emerging needs. Paint a compelling product vision and propose pragmatic, innovative solutions — whether through advanced AI, platform capabilities, or a combination of both — that best solve the core problem.
+Adapt & Scale: Act as a flexible product leader capable of pivoting to new, critical product domains as our overarching business strategy evolves.
+
+Your Qualifications:
+
+4+ years of hands-on experience in B2B SaaS Product Management, owning customer-facing digital products from ideation to launch.
+Customer-Centric Mindset: Strong empathy for customers and a passion for delivering exceptional user experiences.
+Product Discovery: You are experienced in conducting market research and user interviews to identify customer needs and pain points. You are also experienced in testing and validating potential solutions with real users to ensure that they effectively address the identified needs.
+Practical AI experience: Hands-on experience with leveraging AI technologies to streamline work and experience with the creation of AI-powered features.
+Collaboration Skills: Ability to work well with cross-functional teams and communicate effectively with many partners across different parts of the organization.
+Advanced English language skills (written and spoken), with the ability to communicate complex concepts clearly to diverse stakeholders.
+
+Standout Qualities:
+
+Experience in the enterprise collaboration, project management, or work management domain.
+Proven experience building and delivering AI or LLM-driven product experiences to market.
+Demonstrated ability to balance the complex configuration needs of system administrators with a frictionless experience for end-users.
+
+Team Dynamics:
+
+You will operate within a core "Product Trio" model (Product, UX, and Engineering) to guide a tight-knit Scrum team of 6-8 engineers and QA to deliver the product innovations.
+You will partner heavily across the organization, pulling in expertise from specialized roles such as AI/ML engineers, Data Scientists, Product Analytics, and Go-to-Market teams to ensure successful launches.
+You will have direct access to enterprise customers and admins to conduct continuous research, test early prototypes, and validate hypotheses through tight feedback loops.
+The opportunity to operate at the bleeding edge of AI and work management, blending complex, enterprise-grade capabilities with modern, intelligent user experiences.
+
+Benefits & Perks:
+
+10 days of National and Festival Holidays per year (eight fixed, two flexible)
+18 days of paid vacation per year
+14 days of sick leave with a medical certificate per year
+5 uncertified sick days per year
+Group Medical Plan: Coverage for employees, spouse, children, and parents/in-laws for Rs 5,00,000. Free health checkup for employees
+Personal Accident Insurance: Rs 50,00,000
+Term Life Insurance: Rs 50,00,000
+Up to 26 weeks of paid maternity leave for the first two children
+4 weeks of paid parental leave
+2 days off for volunteering with nonprofit charities
+Broadband/Internet Reimbursement: INR 1500 per month
+Full-stocked pantry and complimentary lunch
+Hybrid work model
+
+What's Next?
+
+Interview with a Recruiter
+Hiring Manager Interview
+Product Case Study / Technical Interview
+Cultural Fit Interview
+Final interview with Product Director
+
+Who Is Wrike And Our Culture
+
+We're a team of innovators and creators who solve the complex work problems of today and tomorrow.
+
+Hybrid work mode
+
+Wrike is our people, not a place. With 1,000+ employees collaborating across nearly every time zone, we support talent through 10 global hubs — Australia, Costa Rica, Cyprus, Czechia, Estonia, France, India, Ireland, Japan, and the United States — offering flexible ways of working that include remote work, hybrid environments, and co-working spaces across many locations.
+
+While flexibility looks different across teams and regions, employees located near certain hubs — particularly in Prague (CZ), Nicosia (CY), Bangalore (IN), and Rennes (FR) — are generally expected to collaborate in person around 2–3 days per week, balancing the flexibility of distributed work with opportunities for in-person collaboration and connection.
+
+Our persona
+
+Smart: We love what we do, and we're great at it because this is our domain. Our combined knowledge in this space is unmatched.
+Dedicated: We get up every day focused on helping our customers win. We're committed to helping our teammates win, too!
+Approachable: We're friendly, easy to get along with, considerate, and helpful.
+
+Our culture and Values
+
+Customer-Focused: We care about our customers. We understand the customer journey, experience, and value derived from Wrike. Decision-making and action-taking are done with the customer in mind.
+Collaborative: We work as one and win together, each bringing unique strengths that contribute to diversity of thought for better outcomes. Leveraging our own work management platform, we foster an environment of creative collaboration and shared achievement.
+Creative: We strive to succeed through continuous innovation. It's our pursuit of novel concepts that helped us create a market category. We continue to cultivate a workplace that fosters creative thinking as a means of transcending conventional boundaries and empowers us to break new ground to deliver extraordinary work management solutions.
+Committed: We believe in ownership at all levels of the organization, by owning workflows from start to finish. Each member of our team is an integral part of this commitment, establishing work as a platform for personal growth and transformation, as well as collective success and growth.
