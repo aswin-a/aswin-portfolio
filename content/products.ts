@@ -38,7 +38,7 @@ export const products: Product[] = [
       { text: "Apply" },
     ],
     tags: ["agents", "tools", "orchestration"],
-    primary: { label: "Watch the recorded run", href: "/work/job-search-agent" },
+    primary: { label: "Add to Claude/ChatGPT", href: "https://github.com/aswin-a/linkedin-job-search-agent" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/job-search-agent" },
     phoneFlow: [{ text: "search" }, { text: "tailor" }, { text: "wait for my approval", human: true }, { text: "apply" }],
   },
@@ -93,7 +93,9 @@ export const products: Product[] = [
       { text: "Suggest Dhee’s next posts" },
     ],
     tags: ["agents", "tools"],
-    // No "Watch the recorded run" until there is a real run (Aswin, 2026-11-24).
+    // TODO(aswin): primary "Add to Claude/ChatGPT" (Aswin, 2026-11-24), shown once its link is in:
+    // primary: { label: "Add to Claude/ChatGPT", href: "<link>" },
+    // Left out until then: a placeholder link would hide the whole card in production.
     secondary: { label: "Read the case study →", href: "/work/instagram-agent" },
   },
 ];

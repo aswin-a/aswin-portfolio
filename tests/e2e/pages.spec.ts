@@ -101,10 +101,12 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(first.getByText("4", { exact: true })).toHaveCSS("background-color", "rgb(251, 242, 226)");
   // Every case study is hidden for now (content/case-studies/visibility.ts): links to one show muted with COMING SOON.
   // When both buttons go to the same hidden study, the card shows one line.
-  await expect(first.getByRole("link")).toHaveCount(0);
-  await expect(first.getByText("Watch the recorded run", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  // The agent is on GitHub (Aswin, 2026-11-24); its case study is hidden.
+  await expect(first.getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent");
+  await expect(first.getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveCSS("background-color", "rgb(27, 26, 23)");
+  await expect(first.getByRole("link")).toHaveCount(1);
+  await expect(first.getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
   await expect(first.getByText("COMING SOON", { exact: true })).toHaveCount(1);
-  await expect(first.getByText("Read the case study", { exact: true })).toHaveCount(0);
   await expect(cards.nth(1).getByRole("link", { name: "Try it above ↑" })).toHaveAttribute("href", "#fit-h");
   await expect(cards.nth(1).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
   await expect(cards.nth(1).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
@@ -113,8 +115,8 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary!.href);
   await expect(cards.nth(2).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
   await expect(cards.nth(2).getByText("COMING SOON", { exact: true })).toBeVisible();
-  // The Instagram agent has no run yet: no "Watch the recorded run" (Aswin, 2026-11-24); its case study is hidden.
-  await expect(cards.nth(3).getByText("Watch the recorded run", { exact: true })).toHaveCount(0);
+  // The Instagram agent's "Add to Claude/ChatGPT" waits for its link (Aswin, 2026-11-24); its case study is hidden.
+  await expect(cards.nth(3).getByText("Add to Claude/ChatGPT", { exact: true })).toHaveCount(0);
   await expect(cards.nth(3).getByRole("link")).toHaveCount(0);
   await expect(cards.nth(3).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
 });
