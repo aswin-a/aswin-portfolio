@@ -18,6 +18,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # To start CI on the results branch (see the last step).
+  actions: write
 
 concurrency:
   group: evals
@@ -81,6 +83,7 @@ jobs:
           retention-days: 30
 
       - name: Open or update the results pull request
+        id: pr
         if: ${{ env.ANTHROPIC_API_KEY != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -96,12 +99,24 @@ jobs:
           git add content/eval-results.json
           git commit -m "Eval results: $summary"
           git push --force origin "$RESULTS_BRANCH"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
           body="Real eval run of \`/evals\` on ${GITHUB_SHA::7} ($FIT_CHECK_MODEL, $CHAT_MODEL): $summary. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           if gh pr view "$RESULTS_BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
             gh pr edit "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
           else
             gh pr create --base main --head "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
           fi
+
+      # Pushes and PRs made with the built-in token don't trigger other workflows, except
+      # workflow_dispatch. So CI is started here, on the results branch; its checks attach to the
+      # PR's head commit and show on the PR like any other run.
+      - name: Run CI on the results pull request
+        if: ${{ steps.pr.outputs.pushed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run ci.yml --ref "$RESULTS_BRANCH"
+          echo "::notice::CI started on $RESULTS_BRANCH: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/ci.yml?query=branch%3A$RESULTS_BRANCH"
 
       - name: Fail if any case failed
         if: ${{ steps.run.outputs.code == '100' }}

@@ -107,9 +107,12 @@ describe("content/eval-results.json on the site", async () => {
   const { isTodo } = await import("@/lib/content");
   const real = { lastRun: "2026-11-23T10:00:00.000Z", cases: 19, passed: 18, passRate: 0.947, redTeam: { held: 14, total: 14 }, models: { fit: "a", chat: "b" } };
 
+  it("the committed file is valid and is what the site shows", () => {
+    expect(() => EvalResultsSchema.parse(evalResults)).not.toThrow();
+    expect(evalMeta()).toEqual(evalMeta(evalResults));
+  });
   it("before the first real run: the design's placeholders", () => {
-    expect(evalResults).toEqual({ lastRun: null });
-    const m = evalMeta();
+    const m = evalMeta({ lastRun: null });
     for (const v of Object.values(m)) expect(isTodo(v), v).toBe(true);
     expect(m).toMatchObject({ evalCaseCount: "[25]", evalPassed: "[passed]", evalRedTeamPassed: "[held]", evalLastRun: "[date]" });
   });

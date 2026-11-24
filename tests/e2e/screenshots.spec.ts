@@ -33,8 +33,9 @@ async function snap(page: Page, file: string, target: Page | Locator = page, ful
     await target.screenshot({ path: `test-results/screens/${file}.png`, fullPage });
     return;
   }
-  // The footer's deploy date changes with every build.
-  const mask = [page.getByText(/^Updated \d{1,2} \w+ \d{4}$/)];
+  // Masked: the footer's deploy date (changes every build) and the eval case count, which comes
+  // from content/eval-results.json and changes with each real eval run (checked by pages.spec).
+  const mask = [page.getByText(/^Updated \d{1,2} \w+ \d{4}\b/), page.getByText(/test JDs and (red-team cases|questions)/)];
   if ("goto" in target) await expect(target).toHaveScreenshot(`${file}.png`, { fullPage, mask });
   else await expect(target).toHaveScreenshot(`${file}.png`, { mask });
 }
