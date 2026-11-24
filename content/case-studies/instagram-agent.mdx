@@ -1,12 +1,26 @@
 import { todo } from "@/lib/content";
 import { skeleton } from "./_skeleton";
 
-{/* Product 04 in "Products I've built" (content/products.ts, design update 4). The page fields are TODO(aswin). */}
+{/* Product 04 in "Products I've built" (content/products.ts, design update 4). Fields Aswin hasn't filled stay TODO(aswin) in the skeleton. */}
 
-export const meta = skeleton({
-  slug: "instagram-agent",
-  num: "04",
-  status: "IN USE · RECORDED RUN",
-  cardTitle: "Instagram content intelligence agent",
-  built: "The agent’s prompts and analysis steps.",
-});
+export const meta = skeleton(
+  {
+    slug: "instagram-agent",
+    num: "04",
+    status: "IN USE · RECORDED RUN",
+    cardTitle: "Instagram content intelligence agent",
+    built: "The agent’s prompts and analysis steps.",
+  },
+  {
+    lede: "A Claude agent for Dhee's, the fresh dog food brand I founded, that studies which competitor Instagram posts perform best and turns what's working into post ideas and scripts. In progress.",
+    facts: {
+      CONTEXT: "Side project (Dhee's Pet Company, my own brand)",
+      FOCUS: "Content research",
+    },
+    problem: {
+      who: "The founder of a small D2C brand who runs marketing himself and has no time to study competitors' content every week.",
+      problem: "Working out which competitor posts actually perform, and which formats and templates are trending, means hours of scrolling and guessing every week. A small brand without a marketing team ends up posting on gut feel.",
+      whyAi: "AI can go through far more posts than one person and spot patterns in format, hook and topic, then draft ideas in the brand's own voice. It must not be trusted to publish or reply under the brand's name without review, or to copy a competitor's content.",
+    },
+  },
+);
