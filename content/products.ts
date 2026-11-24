@@ -1,5 +1,3 @@
-import { todo } from "@/lib/content";
-
 /** One step of "How it works". A `human` step is where a person decides (amber, "· person decides"). */
 export type FlowStep = { text: string; human?: boolean };
 
@@ -67,7 +65,7 @@ export const products: Product[] = [
     status: "CONCEPT",
     name: "AI integration builder",
     pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.",
-    built: todo("[e.g. the spec, Figma flows and the clickable prototype]"), // TODO(aswin)
+    built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // Aswin, 2026-11-24
     flow: [
       { text: "Paste the app’s API docs" },
       { text: "AI drafts the connector" },
@@ -76,7 +74,7 @@ export const products: Product[] = [
       { text: "Deploy" },
     ],
     tags: ["integrations", "guardrails"],
-    primary: { label: "Run it locally", href: todo("[link]") }, // TODO(aswin): how to run the prototype locally
+    primary: { label: "Run it locally", href: "https://github.com/aswin-a-95/cloudeagle-ai-integration-builder" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/integration-builder" },
   },
   {

@@ -8,7 +8,7 @@ export const meta = {
   num: "03",
   status: "CONCEPT",
   cardTitle: "AI integration builder",
-  built: todo("[e.g. the spec, Figma flows and the clickable prototype]"), // TODO(aswin): one line, also shown on the case study
+  built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // P1 (Aswin, 2026-11-24); also on the home card
   breadcrumb: "03 · CLOUDEAGLE.AI",
   disclaimer: "Take-home concept · shared with written permission · not CloudEagle's product",
   title: "AI integration builder",
@@ -18,18 +18,34 @@ export const meta = {
     { label: "BUILT WITH", value: "Figma · clickable prototype" },
     { label: "FOCUS", value: "Safeguards" },
     { label: "TIME SPENT", value: todo("[hours]") }, // TODO(aswin)
-    { label: "LAST UPDATED", value: todo("[date]") }, // TODO(aswin)
+    { label: "LAST UPDATED", value: "6 Nov 2026" },
   ],
-  demo: todo("[walkthrough video or clickable prototype]"), // TODO(aswin)
+  demo: "https://www.loom.com/share/6f2d467faf8a4565b70f43777cbb12dc",
   problem: {
-    who: todo("[Primary user, in one line. e.g. the admin who needs a new SaaS connector]"), // TODO(aswin)
-    problem: todo("[What is slow or risky today, in two sentences]"), // TODO(aswin)
-    whyAi: todo("[What AI changes here, and what it must not be trusted with]"), // TODO(aswin)
+    who: "A customer's IT admin, usually not a developer, who sees an untracked app in CloudEagle and wants its users covered today.",
+    problem: "CloudEagle already discovers long-tail apps through SSO, finance and browser data, but without a connector it can't see who has an account or who is idle, so those apps depend on CSV uploads or CSM effort. Asking customers to write integration code for each app turns IT admins into developers.",
+    whyAi: "AI is good at reading messy API docs and filling in the app-specific details: the auth header, the endpoint that lists users, the pagination cursor, the field that shows last activity. It must not be trusted with the customer's token, with write calls, with choosing its own live requests, or with deciding that a weak activity signal is good enough to reclaim a seat.",
   },
+  // D7–D9 (Aswin, 2026-11-24). The sheet gave chose / over / because only, so the topics are the design's labels.
   decisions: [
-    { topic: todo("[What the model may do alone]"), chose: todo("[option]"), over: todo("[alternative]"), because: todo("[the cost you accepted]") }, // TODO(aswin)
-    { topic: todo("[Where the human reviews]"), chose: todo("[option]"), over: todo("[alternative]"), because: todo("[the cost you accepted]") }, // TODO(aswin)
-    { topic: todo("[What you cut from v1]"), chose: todo("[option]"), over: todo("[alternative]"), because: todo("[the cost you accepted]") }, // TODO(aswin)
+    {
+      topic: "What the model may do alone",
+      chose: "the AI fills a declarative connector form (auth, endpoints, pagination, field mapping) and repairs it in a bounded test-and-fix loop, with no tools, never seeing the token or real values, at most 3 attempts and 25 requests.",
+      over: "AI-generated connector code per app, or a fully autonomous agent that finds docs, picks scopes, goes live and fixes itself.",
+      because: "a form handles unusual APIs less flexibly than code, but the generic half (auth, pagination, retries, logging) is hardened once in one engine, and the form can only express GET or HEAD calls to one confirmed host. An export renders any approved form as readable Python from a fixed template, so anyone who wants code can still read it.",
+    },
+    {
+      topic: "Where the human reviews",
+      chose: "two human gates, where the admin pastes a read-only token (Connect), then reviews sample records and confirms any fix that changed what a field means (Approve).",
+      over: "approving each AI patch, or having the admin edit the form by hand.",
+      because: "the admin gives up line-level control, but an IT admin can judge sample records and can't judge whether a pagination patch is right.",
+    },
+    {
+      topic: "What you cut from v1",
+      chose: "v1 reads users and one usage field, \"last active\", read-only. Writes such as deprovisioning, licence-level usage, the licences section, a second approver and a backup owner all moved to later phases (the last two are shown disabled as \"Coming in V2\").",
+      over: "users, detailed usage and deprovisioning in v1.",
+      because: "v1 can't reclaim seats on its own, but writes first need plan-only dry runs that list every call, plus approval for each action.",
+    },
   ],
   arch: {
     note: todo("draft flow · replace with yours"), // TODO(aswin): replace the flow, then delete this note
@@ -43,20 +59,37 @@ export const meta = {
     ],
     runId: todo("[run id]"), // TODO(aswin): a real logged run, never a simulation
   },
-  builtMyself: todo("[e.g. the spec, the Figma flows, the clickable prototype, the safeguard rules and eval cases]"), // TODO(aswin)
+  builtMyself: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // D11 (Aswin, 2026-11-24)
   usedOrReused: todo("[Tools, models and parts you didn't build yourself]"), // TODO(aswin)
+  // D13–D16 (Aswin, 2026-11-24)
   safeguards: [
-    { title: todo("[e.g. Draft, never deploy: a person approves every connector]"), stops: todo("[the failure it prevents]"), userSees: todo("[the UI when it fires]") }, // TODO(aswin)
-    { title: todo("[e.g. Least-privilege scopes by default]"), stops: todo("[the failure it prevents]"), userSees: todo("[the UI when it fires]") }, // TODO(aswin)
-    { title: todo("[e.g. Secrets stay out of the model's context]"), stops: todo("[the failure it prevents]"), userSees: todo("[the UI when it fires]") }, // TODO(aswin)
-    { title: todo("[e.g. Allow-listed apps only]"), stops: todo("[the failure it prevents]"), userSees: todo("[the UI when it fires]") }, // TODO(aswin)
+    {
+      title: "Read-only by construction",
+      stops: "An over-privileged token making write calls; vendor tokens often can't be limited to read-only (Okta API tokens inherit the creating admin's role)",
+      userSees: "The form schema and engine only allow GET or HEAD to the confirmed host, and an egress proxy logs every call, so \"0 write calls\" is measured, not claimed. On Connect, the admin sees a warning if the token can also write.",
+    },
+    {
+      title: "Secrets and data stay out of the model",
+      stops: "The token or customers' personal data reaching the model",
+      userSees: "The token is pasted only at the Connect gate and never reaches the AI. When a test fails, the AI sees the response's shape only, with emails and IDs masked.",
+    },
+    {
+      title: "\"Nobody found\" is a failure",
+      stops: "A token without an admin role passing as \"connected, 0 users\", because some APIs return 200 with an empty list",
+      userSees: "Before any test, the Connect screen shows how many members the token can see. Zero fails the check, with a single next step: fix the token.",
+    },
+    {
+      title: "Shadow mode, and proxies never reclaim",
+      stops: "A wrong field mapping marking active people as idle, and an automation reclaiming their seats",
+      userSees: "New connectors go live labelled \"Custom (AI-built)\" and no automation acts on them until 3 clean syncs and the owner marks them trusted. Each last-active value shows its source and confidence; a proxy signal never triggers a reclaim, and apps without activity data are labelled \"No activity data\".",
+    },
   ],
   // WORK_ATTACKS: the six presets and their expected verdicts. Also eval cases (SPEC §8).
   sandbox: { attacks: WORK_ATTACKS.map((a) => ({ ...a })) },
   metrics: [
-    { kind: "NORTH STAR", hint: todo("[e.g. connectors live per week without engineering time]") }, // TODO(aswin)
-    { kind: "GUARDRAIL", hint: todo("[e.g. unsafe actions caught before review]") }, // TODO(aswin)
-    { kind: "ADOPTION", hint: todo("[e.g. admins who build a second connector]") }, // TODO(aswin)
+    { kind: "NORTH STAR", hint: "Long-tail apps with a live, trusted connector each week, built without engineering time." }, // D17–D19 (Aswin, 2026-11-24)
+    { kind: "GUARDRAIL", hint: "Write calls seen at the egress proxy (must stay at zero), and fixes that changed a field's meaning but reached go-live without being flagged to the admin (target: zero)." },
+    { kind: "ADOPTION", hint: "Admins who build a second connector." },
   ],
   perf: {
     items: [
@@ -96,13 +129,13 @@ export const meta = {
     manualTotal: todo("[measured]"), // TODO(aswin): measured runs only
     agentTotal: todo("[measured]"),
   },
-  v2: todo("[What you'd build next, and why it waited]"), // TODO(aswin)
-  learned: todo("[One thing that surprised you, in your words]"), // TODO(aswin)
+  v2: "Write actions such as deprovisioning, so the connector can close the loop on a leaver. It waited because writes need plan-only dry runs that list every call, plus per-action approval, before they're safe to put in an admin's hands.", // D23 (Aswin, 2026-11-24)
+  learned: "\"Sandbox first, then production\" was my first answer, and it didn't survive real vendors: long-tail apps rarely have a data sandbox, and Calendly's \"Sandbox\" turned out to be only an environment setting for OAuth apps. The real risk sat in CloudEagle's own production, where automations act on the data, so that's where the gate went: shadow mode.", // D24
   questions: [
     "Which safeguard would you loosen first, and what would it cost?",
     "What did the first eval run get wrong?",
     "How does this change with ten times as many apps to connect?",
   ],
-  repo: todo("[repo link]"), // TODO(aswin)
+  repo: "https://github.com/aswin-a-95/cloudeagle-ai-integration-builder", // D25 (Aswin, 2026-11-24)
   relatedPost: "designing-safeguards-for-an-ai-that-writes-integrations",
 };
