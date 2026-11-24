@@ -12,10 +12,11 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 | --- | --- |
 | **Fit check** (home hero) | A fixed pipeline streams each step to the page as it runs: `fetch_url` → `jd.parse` → `kb.search` → `evidence.map` → `guard.citations` → `guard.honesty` → `verdict.compose`. It shows matches and gaps as tables, with no scores or percentages. Every match cites a source. |
 | **Ask my work** (⌘K / Ctrl+K) | Questions answered from the same knowledge base, with source chips. Answers can carry on from a fit check through session memory, and "Forget this" clears it. |
-| **X-ray mode** | Reveals inline panels on every page: the live run's trace, build details, "How I built this", and **Break my AI**, a red-team panel for trying prompt injections and failure drills against the real guardrails. |
+| **X-ray mode** | Reveals inline panels on every page: the live run's trace, build details, "How I built this", and **Break my AI**, a red-team panel for trying prompt injections and other attacks against the real guardrails. |
 | **Case studies** (`/work`) | Product write-ups in a PRD format, with before/after views and a "Try to break it" sandbox. |
 | **Build log** (`/log`) | Build notes, teardowns, essays and TILs, with filters. |
-| **About** (`/about`) | Résumé, a career dependency graph, roles and certificates. |
+| **CV** (`/about`) | The CV as a timeline of roles with outcomes, certificates, "Copy as plain text" and a markdown twin at `/about.md`. |
+| **Contact** (every page) | A contact form with its own ready, invalid, sending, sent, error and rate-limited states, plus WhatsApp and call links. The fit check pre-fills the role. |
 
 ## How the AI is kept honest
 
@@ -24,6 +25,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 - **Real traces only.** The steps, timings, tokens and costs shown in X-ray come from the actual run. Nothing on screen is scripted.
 - **Privacy.** Pasted job descriptions and questions are never stored or logged. Only run metrics (steps, tokens, cost, latency) go to Supabase.
 - **Guardrails on every model call.** Input is validated with Zod, Cloudflare Turnstile is verified, each visitor is rate-limited, a monthly budget cap applies, and `maxOutputTokens` is set. User text is wrapped and treated as data, and the model has no tools that can change anything.
+- **A public eval set.** [`evals/`](evals) runs the sample JDs, every Break my AI attack and the case-study cases through the real pipeline with [Promptfoo](https://www.promptfoo.dev/). It checks for valid output, no uncited matches, no "Strong" verdict for a bad fit, no not-done topic as a match, refused injections and no percentages. The eval numbers on the site come only from a real run (see [Evals and CI](#evals-and-ci)).
 
 ## Stack
 
@@ -37,11 +39,12 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 | Rate limits and budget | Upstash Redis and `@upstash/ratelimit` |
 | Bot protection | Cloudflare Turnstile (invisible) |
 | Run logging | Supabase Postgres (metrics only) |
-| Tests | Vitest and Playwright |
+| Tests | Vitest, Playwright (incl. visual baselines) and Promptfoo evals |
+| CI | GitHub Actions |
 
 ## Getting started
 
-Requires Node.js 20+ and pnpm.
+Requires Node.js 22.22+ (Promptfoo's minimum) and pnpm.
 
 ```bash
 pnpm install
@@ -75,14 +78,24 @@ To use the real model, fill in `.env.local`. [`.env.example`](.env.example) expl
 | `pnpm build` | Production build, then a content check that fails if any placeholder would render |
 | `pnpm lint` | ESLint |
 | `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm test` | Vitest unit tests (guards, verdict, `kb.search`, rate limits, content) |
-| `pnpm test:e2e` | Playwright end-to-end tests and screenshots at 1440 and 390 px |
-| `pnpm check:content` | List every `TODO(aswin)` and `[placeholder]` still left in the content |
+| `pnpm test` | Vitest unit tests (guards, verdict, `kb.search`, rate limits and budget, evals, content) |
+| `pnpm test:e2e` | Playwright end-to-end tests, including screenshot comparison against the baselines at 1440 and 390 px |
+| `pnpm test:e2e:update` | Regenerate the screenshot baselines after a deliberate visual change |
+| `pnpm evals` | Run the eval set: the real models if `ANTHROPIC_API_KEY` is set (billed), otherwise the fake model as a harness check |
+| `pnpm evals:results` | Turn a real eval run into `content/eval-results.json` (refuses a fake run) |
+| `pnpm check:content` | List every `TODO(aswin)` and `[placeholder]` still left in the content and the eval set's real-JD slots |
+
+## Evals and CI
+
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push and pull request: lint, typecheck, unit tests, the eval harness on the fake model, the build, and the Playwright suite with its screenshot baselines. It uses no secrets. Run it by hand with `update-snapshots` ticked to regenerate the baselines on GitHub's runner.
+- **Evals** ([`.github/workflows/evals.yml`](.github/workflows/evals.yml)) runs the eval set against the real models when started by hand (`gh workflow run evals.yml --ref main`), or after a push to `main` that changes the evals, prompts, pipeline or knowledge base. It needs the `ANTHROPIC_API_KEY` repository secret. It writes `content/eval-results.json` (cases, pass rate, red-team cases held, last run date) and opens a pull request with only that file. Merging it updates the eval numbers in X-ray's Build details, "How I built this" and the hood card. Eval numbers are offline results and are kept apart from live-usage numbers.
+
+To add a real job description to the eval set, fill one of the slots in [`evals/real-jds/`](evals/real-jds); see [`evals/README.md`](evals/README.md).
 
 ## Project layout
 
 ```
-app/              Routes: /, /work, /work/[slug], /log, /log/[slug], /about, /api/run
+app/              Routes: /, /work, /work/[slug], /log, /log/[slug], /about, /api/run, /api/contact
 components/       UI: nav, fit-check hero, Ask, X-ray panels, case study, home sections
 content/          Everything the site and the AI say
   kb/             Knowledge base: roles, projects, not-done, facts, fallback
@@ -96,8 +109,11 @@ lib/
   ask/            Ask my work client, session memory and copy
   server/         Rate limits, budget, Turnstile, run logging
 design/           The approved design artboards (.dc.html) and CHANGES.md
+evals/            The public eval set (Promptfoo): cases, assertions, provider, real-JD slots
+scripts/          check:content, evals and eval-results
 supabase/         Database migrations
-tests/            unit/ (Vitest) and e2e/ (Playwright)
+tests/            unit/ (Vitest) and e2e/ (Playwright, with screenshot baselines in __screenshots__)
+.github/          CI and Evals workflows
 SPEC.md           The build spec: routes, backend, data, limits
 ```
 
@@ -113,11 +129,11 @@ Done:
 - Ask my work
 - Fit-check hero
 - Backend (`/api/run`, guards, limits, run logging)
-- Design updates 1–4
+- Contact form, analytics and SEO
+- Quality: unit tests, Playwright with screenshot baselines, Promptfoo evals and CI
+- Design updates 1–7
 
 Still to come:
-- Contact form, analytics and SEO
-- Promptfoo evals in CI
 - Launch checks
 
 Some content is still placeholder text, marked `TODO(aswin)` or `[bracketed]`. `pnpm check:content` lists it.
