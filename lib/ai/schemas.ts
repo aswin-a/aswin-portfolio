@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ASK_KINDS, ASK_MAX_CHARS, SessionMemorySchema } from "@/lib/ask/types";
 import { DRILLS, JD_MAX_CHARS } from "@/lib/fit-check/types";
+import { SANDBOX_GUARDS, SANDBOX_VERDICTS } from "@/lib/ai/sandbox-reply";
 
 /**
  * Zod schemas for `/api/run` (SPEC §7–8, §10): the request body and every structured output the
@@ -21,7 +22,7 @@ export const FitRunSchema = z.object({
 export const AskRunSchema = z.object({
   mode: z.literal("ask"),
   question: z.string().trim().min(1).max(ASK_MAX_CHARS),
-  memory: SessionMemorySchema.nullable().optional(),
+  memory: z.nullable(SessionMemorySchema).optional(),
   turnstileToken: TurnstileToken,
 });
 
@@ -89,17 +90,9 @@ export const AskOutputSchema = z.object({
 });
 export type AskOutput = z.infer<typeof AskOutputSchema>;
 
-/** WORK_ATTACKS guards from Work.dc.html, plus WORK_SAFE's line for a drafted config. */
-export const SANDBOX_VERDICTS = ["BLOCKED", "FLAGGED", "CLARIFIED", "DRAFTED"] as const;
-export const SANDBOX_GUARDS = [
-  "guard.injection",
-  "guard.scope",
-  "guard.secrets",
-  "guard.allowlist",
-  "guard.conflict",
-  "guard.clarify",
-  "none · review_required=true",
-] as const;
+// The verdicts, guards and reply schema live in lib/ai/sandbox-reply.ts (zod/mini, parsed in the browser).
+export { SANDBOX_GUARDS, SANDBOX_VERDICTS, RunTraceLiteSchema, SandboxReplySchema, type SandboxReply } from "@/lib/ai/sandbox-reply";
+/** The model's structured output: the same fields as the reply, without the trace. */
 export const SandboxOutputSchema = z.object({
   verdict: z.enum(SANDBOX_VERDICTS),
   reason: z.string().min(1).max(300),
@@ -109,10 +102,6 @@ export type SandboxOutput = z.infer<typeof SandboxOutputSchema>;
 
 // ---------- Responses for ask and sandbox (JSON, not streamed) ----------
 
-export const RunTraceLiteSchema = z.object({ runId: z.string(), costUsd: z.number().nonnegative(), ms: z.number().nonnegative() });
-
-export const SandboxReplySchema = SandboxOutputSchema.extend({ trace: RunTraceLiteSchema.optional() });
-export type SandboxReply = z.infer<typeof SandboxReplySchema>;
 
 /** `budget`: the monthly AI budget is spent (SPEC §10, approved M5 addition). */
 export const FAIL_STATUSES = ["error", "limited", "budget"] as const;

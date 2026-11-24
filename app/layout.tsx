@@ -16,6 +16,8 @@ const newsreader = Newsreader({
   axes: ["opsz"],
   variable: "--font-newsreader",
   display: "swap",
+  // Not preloaded: measured, a preload made Lighthouse mobile LCP worse (it competes with the first-load JS).
+  preload: false,
 });
 const newsreaderItalic = Newsreader({
   subsets: ["latin"],
