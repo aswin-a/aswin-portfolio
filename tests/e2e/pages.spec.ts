@@ -47,7 +47,11 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   await expect(grid.getByRole("link", { name: /^guardrails/ })).toHaveAttribute("href", "#break-my-ai");
   // The arrow is part of the CTA; the planned card is not a link and its CTA is muted.
   await expect(grid.getByText("Read the job-search study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  await expect(grid.getByText("COMING SOON", { exact: true })).toHaveCSS("border-top-style", "dashed");
+  // agents and rag both point at hidden case studies.
+  await expect(grid.getByText("COMING SOON", { exact: true })).toHaveCount(2);
+  await expect(grid.getByText("COMING SOON", { exact: true }).first()).toHaveCSS("border-top-style", "dashed");
+  await expect(grid.getByRole("link", { name: /^rag/ })).toHaveCount(0);
+  await expect(grid.getByText("Why no vector DB yet", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
   await expect(grid.getByText("Read the job-search study →", { exact: true })).toHaveCount(0);
   await expect(grid.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
   await expect(grid.getByText("Coming soon", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
@@ -355,7 +359,8 @@ test("phone home: compact hood list and Products I've built (update 4)", async (
   await expect(list.getByRole("link", { name: /^production/ })).toHaveAttribute("href", "#break-my-ai");
   await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
   await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
-  await expect(list.getByText("COMING SOON", { exact: true })).toBeVisible();
+  await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
+  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(2);
   // Phone pills are never dashed; shipped is ink.
   await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
   await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
