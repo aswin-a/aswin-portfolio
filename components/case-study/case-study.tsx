@@ -5,12 +5,18 @@ import { Sandbox } from "@/components/case-study/sandbox";
 import { XrayLinkButton } from "@/components/case-study/xray-link";
 import { XrayPanel } from "@/components/xray-panel";
 import { siteMeta } from "@/content/site-meta";
-import { hrefOf, isTodo, withTodo } from "@/lib/content";
+import { containsTodo, hrefOf, isTodo, withTodo } from "@/lib/content";
 import type { CaseStudy, Post } from "@/lib/schemas/content";
 
 const h2 = "m-0 font-serif text-[34px] font-normal";
 const kicker = "font-mono text-[11px] tracking-[0.06em] text-muted";
-const hint = "m-0 rounded-lg border border-dotted border-muted px-3 py-[10px] font-mono text-[13px] leading-[1.55] text-muted";
+const hintBase = "m-0 font-mono text-[13px] leading-[1.55] text-muted";
+/**
+ * The design's dotted box marks a placeholder. Filled text keeps the type but drops the box
+ * (Aswin, 2026-11-24, as for the build-log summaries).
+ */
+const hintFor = (v: string, extra = "") =>
+  `${hintBase} ${containsTodo(v) ? "rounded-lg border border-dotted border-muted px-3 py-[10px]" : ""} ${extra}`.trim();
 const card = "flex flex-col gap-[10px] rounded-xl border border-rule bg-paper p-[18px]";
 
 function Section({ id, title, children, className = "gap-[18px]" }: { id: string; title?: string; children: ReactNode; className?: string }) {
@@ -76,7 +82,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
         <p className="m-0 font-serif text-[26px] leading-[1.35] text-muted">{cs.lede}</p>
         <p className="m-0 flex flex-wrap items-baseline gap-[10px] text-[17px]">
           <span className="font-mono text-[12px] tracking-[0.06em] text-muted">WHAT I BUILT</span>
-          <span className="rounded-md border border-dotted border-muted px-2 py-1 font-mono text-[13px] text-muted">{cs.built}</span>
+          <span className={`font-mono text-[13px] text-muted ${containsTodo(cs.built) ? "rounded-md border border-dotted border-muted px-2 py-1" : ""}`}>{cs.built}</span>
         </p>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-4 border-t border-rule pt-4">
           {cs.facts.map((f) => (
@@ -133,7 +139,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                 ).map(([k, v]) => (
                   <div key={k} className={card}>
                     <span className={kicker}>{k}</span>
-                    <p className={hint}>{v}</p>
+                    <p className={hintFor(v)}>{v}</p>
                   </div>
                 ))}
               </div>
@@ -196,12 +202,12 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
               <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-[14px]">
                 <div className="flex flex-col gap-[10px] rounded-xl border-[1.5px] border-ink bg-paper p-[18px]">
                   <span className="font-mono text-[11px] tracking-[0.06em]">BUILT MYSELF</span>
-                  <p className={`${hint} leading-[1.7]`}>{cs.builtMyself}</p>
+                  <p className={hintFor(cs.builtMyself, "leading-[1.7]")}>{cs.builtMyself}</p>
                 </div>
                 {cs.usedOrReused && (
                   <div className={card}>
                     <span className={kicker}>USED OR REUSED</span>
-                    <p className={`${hint} leading-[1.7]`}>{cs.usedOrReused}</p>
+                    <p className={hintFor(cs.usedOrReused, "leading-[1.7]")}>{cs.usedOrReused}</p>
                   </div>
                 )}
               </div>
@@ -221,7 +227,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                 {cs.safeguards.map((g, i) => (
                   <article key={i} className="flex flex-col gap-3 rounded-xl border border-rule bg-paper p-5">
                     <span className="font-mono text-[12px] text-accent">{`0${i + 1}`}</span>
-                    <p className={hint}>{g.title}</p>
+                    <p className={hintFor(g.title)}>{g.title}</p>
                     <Pair label="STOPS" value={g.stops} />
                     <Pair label="USER SEES" value={g.userSees} />
                   </article>
@@ -238,7 +244,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                 {cs.metrics.map((m) => (
                   <div key={m.kind} className={card}>
                     <span className={kicker}>{m.kind}</span>
-                    <p className={hint}>{m.hint}</p>
+                    <p className={hintFor(m.hint)}>{m.hint}</p>
                   </div>
                 ))}
               </div>
@@ -320,7 +326,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                     v && (
                       <div key={k} className="flex flex-col gap-[10px]">
                         <span className={kicker}>{k}</span>
-                        <p className={`${hint} leading-[1.7]`}>{v}</p>
+                        <p className={hintFor(v, "leading-[1.7]")}>{v}</p>
                       </div>
                     ),
                 )}

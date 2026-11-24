@@ -49,17 +49,17 @@ export const meta = {
   ],
   // D10 / Q2 (Aswin, 2026-11-24): the prototype's flow. Step names are its functions; the two admin gates run
   // inside cli.cmd_build and have no function of their own. Timings are from the live Calendly build on
-  // 6 Nov 2026 (sample_output/calendly-live-2026-11-06 in the prototype repo); steps it didn't time stay todo().
+  // 6 Nov 2026 (sample_output/calendly-live-2026-11-06 in the prototype repo). Untimed steps say so (Q12, Aswin 2026-11-24).
   arch: {
     steps: [
-      { label: "Read the API docs", fn: "source.read_docs(url)", guard: true, ms: todo("[ms]") },
+      { label: "Read the API docs", fn: "source.read_docs(url)", guard: true, ms: "3,675 ms (scan only)" },
       { label: "AI fills the form", fn: "llm.draft_form(docs)", guard: true, ms: "19,795 ms" },
-      { label: "Validate the form", fn: "form.validate_form(form)", guard: true, ms: todo("[ms]") },
-      { label: "Admin confirms host + token", fn: "gate1.connect(token)", guard: true, ms: todo("[ms]") },
+      { label: "Validate the form", fn: "form.validate_form(form)", guard: true, ms: "not timed" },
+      { label: "Admin confirms host + token", fn: "gate1.connect(token)", guard: true, ms: "admin step" },
       { label: "Test run + 8 checks", fn: "engine.run_form(form) → checks.run_checks()", guard: true, ms: "5,700 ms" },
-      { label: "AI fixes, max 3 tries", fn: "loop.test_and_fix()", guard: true, ms: todo("[ms]") },
-      { label: "Admin approves samples", fn: "gate2.approve(samples)", guard: true, ms: todo("[ms]") },
-      { label: "Live in shadow mode", fn: "cli.cmd_sync(connector)", guard: true, ms: todo("[ms]") },
+      { label: "AI fixes, max 3 tries", fn: "loop.test_and_fix()", guard: true, ms: "not needed · passed on attempt 1" },
+      { label: "Admin approves samples", fn: "gate2.approve(samples)", guard: true, ms: "admin step" },
+      { label: "Live in shadow mode", fn: "cli.cmd_sync(connector)", guard: true, ms: "6,979 ms (first sync, 3 requests)" },
     ],
     // The prototype's logs have no run id (Q10), so the trace shows none.
     caption: "Scheduled syncs use no AI.",
@@ -98,13 +98,12 @@ export const meta = {
   ],
   // Q10 (Aswin, 2026-11-24): from the prototype repo's logged runs, never typed-in estimates.
   // Cost: the draft call in the live Calendly build (report.json). Evals: evals/live_results_2026-11-06.md,
-  // 2 cases and no red-team cases, so the two numbers it can't give stay todo().
+  // 2 cases and no red-team cases. "Response time (median)" and "Red-team cases held" are hidden until
+  // there's data for them (Q11, Aswin 2026-11-24).
   perf: {
     items: [
       { source: "LIVE USAGE", name: "Cost per draft", value: "$0.0819" },
-      { source: "LIVE USAGE", name: "Response time (median)", value: todo("[measured]") },
       { source: "OFFLINE EVAL", name: "Eval pass rate", value: "2/2" },
-      { source: "OFFLINE EVAL", name: "Red-team cases held", value: todo("[measured]") },
     ],
     evalCount: "2",
     redTeam: false,
