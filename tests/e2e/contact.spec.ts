@@ -222,7 +222,9 @@ test.describe("SEO and GEO routes", () => {
     const res = await request.get("/sitemap.xml");
     expect(res.headers()["content-type"]).toContain("xml");
     const t = await res.text();
-    for (const p of ["/about", "/work/integration-builder", "/log/integrations-experience-is-agent-experience"]) expect(t).toContain(`https://aswin-a.com${p}`);
+    for (const p of ["/about", "/work", "/log/integrations-experience-is-agent-experience"]) expect(t).toContain(`https://aswin-a.com${p}`);
+    // Hidden case studies stay out of the sitemap (content/case-studies/visibility.ts).
+    expect(t).not.toContain("https://aswin-a.com/work/integration-builder");
   });
 
   for (const [path, type, needle] of [

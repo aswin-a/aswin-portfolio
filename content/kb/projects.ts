@@ -1,6 +1,5 @@
 import type { CvItem } from "@/content/cv";
 import { products } from "@/content/products";
-import { todo } from "@/lib/content";
 import { cvItem, orgName, topicFor } from "@/lib/cv";
 
 export type Project = {
@@ -32,7 +31,7 @@ const siteProduct = products.find((p) => p.slug === "fit-check");
 /** Side projects with a case study: [CV id, KB id, case-study slug, source label, tags]. */
 const SIDE: [string, string, string | null, string | null, string[]][] = [
   ["site", "fit-check", "fit-check", `Case study · ${siteProduct?.name ?? "Job-fit AI on this site"}`, ["ai", "fit check", "guardrails", "citations", "evals", "knowledge base"]],
-  ["jsa", "job-search-agent", "job-search-agent", "Case study · Job-search agent", ["ai agent", "human-in-the-loop", "approval", "workflows", "mcp"]],
+  ["jsa", "job-search-agent", "job-search-agent", "Case study · Job-search agent", ["ai agent", "human-in-the-loop", "approval", "workflows", "mcp", "design"]], // "design": the hero sample maps "Design human-in-the-loop workflows" here; without it the CloudEagle evidence ties and wins the id tie-break
   ["ig", "dhees-instagram-agent", "instagram-agent", "Case study · Dhee's agent", ["ai agent", "business stakeholders", "adoption"]],
   ["web", "dhees-website", null, null, ["website", "seo", "frontend", "astro", "typescript", "cloudflare"]],
 ];
@@ -97,7 +96,11 @@ export const projects: Project[] = [
     title: "CloudEagle.ai — AI integration builder",
     status: cloudeagle?.status ?? "CONCEPT",
     summary: "Safeguards as the centrepiece. A small sandbox lets you try to break it.",
-    evidence: [todo("[evidence]")], // TODO(aswin)
+    // D26 (Aswin, 2026-11-24)
+    evidence: [
+      "The take-home brief asked for AI that generates integration code from an app's API docs (API client, auth, user and usage retrieval, error handling, pagination and logging), plus screens, safeguards and a prototype.",
+      "I delivered design notes, a six-step flow with two human gates, a working prototype repo and a Loom walkthrough, and reframed the brief: \"Don't make customers developers. Make them reviewers.\" The AI fills a declarative, read-only connector form that one hardened engine runs, instead of writing code per app.",
+    ],
     label: "Case study · CloudEagle concept",
     href: "/work/integration-builder",
     tags: ["ai agent", "guardrails", "safeguards", "integrations", "evals"],

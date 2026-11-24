@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { useState } from "react";
 import type { Post } from "@/lib/schemas/content";
 
@@ -45,20 +47,33 @@ export function PostList({ posts }: { posts: Post[] }) {
       <div className="flex flex-col">
         {shown.map((p) => (
           <article key={p.slug} className="flex flex-col gap-[10px] border-t border-rule py-7">
-            <div className="flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] text-muted">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[12px] text-muted">
               <span>{p.tag}</span>
-              <span>{p.date}</span>
-              <span>{p.readTime}</span>
+              {p.comingSoon ? (
+                <ComingSoonPill />
+              ) : (
+                <>
+                  <span>{p.date}</span>
+                  <span>{p.readTime}</span>
+                </>
+              )}
             </div>
             <h2 className="m-0 font-serif text-[32px] font-normal leading-[1.2]">
-              <Link href={`/log/${p.slug}`} className="no-underline">
-                {p.title}
-              </Link>
+              {p.comingSoon ? (
+                <span className="text-muted">{p.title}</span>
+              ) : (
+                <Link href={`/log/${p.slug}`} className="no-underline">
+                  {p.title}
+                </Link>
+              )}
             </h2>
-            <p className="m-0 rounded-lg border border-dotted border-muted px-3 py-[10px] font-mono text-[13px] leading-[1.55] text-muted">
+            <p className="m-0 font-mono text-[13px] leading-[1.55] text-muted">
               {p.summary}
             </p>
-            {p.study && (
+            {p.study && isHiddenStudy(p.study.slug) && (
+              <ComingSoonLink label={p.study.label} className="self-start font-mono text-[12px]" />
+            )}
+            {p.study && !isHiddenStudy(p.study.slug) && (
               <Link
                 href={`/work/${p.study.slug}`}
                 className="self-start rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"

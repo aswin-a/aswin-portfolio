@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { isHiddenStudyHref } from "@/lib/case-study-visibility";
 import type { Ref } from "react";
 import { useMedia } from "@/lib/hooks/use-media";
 import type { ResultEvent } from "@/lib/fit-check/types";
@@ -76,9 +77,13 @@ export function Result({
                     <th scope="row" className={`border-t border-rule ${rowHead}`}>{m.req}</th>
                     <td className={`border-t border-rule ${cell}`}>{m.evidence}</td>
                     <td className="border-t border-rule px-5 py-[18px] align-top">
-                      <Link href={m.href} className="font-mono text-[12px] leading-[1.5] text-accent">
-                        {m.source} →
-                      </Link>
+                      {isHiddenStudyHref(m.href) ? (
+                        <span className="font-mono text-[12px] leading-[1.5] text-muted">{m.source}</span>
+                      ) : (
+                        <Link href={m.href} className="font-mono text-[12px] leading-[1.5] text-accent">
+                          {m.source} →
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -91,9 +96,13 @@ export function Result({
                 <p className="m-0 text-[16px] font-semibold leading-[1.4]">{m.req}</p>
                 <span className={`mt-1 ${stackLabel} text-accent`}>✓ My relevant experience</span>
                 <p className="m-0 text-[15px] leading-[1.55]">{m.evidence}</p>
-                <Link href={m.href} className="font-mono text-[12px] text-accent">
-                  Proof: {m.source} →
-                </Link>
+                {isHiddenStudyHref(m.href) ? (
+                  <span className="font-mono text-[12px] text-muted">Proof: {m.source}</span>
+                ) : (
+                  <Link href={m.href} className="font-mono text-[12px] text-accent">
+                    Proof: {m.source} →
+                  </Link>
+                )}
               </div>
             ))
           )}

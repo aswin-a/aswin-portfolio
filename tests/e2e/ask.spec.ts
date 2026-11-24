@@ -1,4 +1,5 @@
 import { ASK_ATTACKS, ASK_QUESTIONS } from "@/lib/ask/copy";
+import { KB } from "@/lib/kb/snapshot";
 import { expect, FAKE, test, type Page } from "./fixtures";
 
 // Session memory in the shape the hero writes (Milestone 4). Uses the design's HERO_BAD sample.
@@ -103,7 +104,8 @@ test.describe("before a question", () => {
     }
     // The dialog itself stays light; only the scrim darkens.
     await expect(dialog(page)).toHaveCSS("background-color", "rgb(255, 253, 248)");
-    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveAttribute("href", "/work/integration-builder");
+    // The case study is hidden for now (content/case-studies/visibility.ts), so Jump to leaves it out.
+    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveCount(0);
     await expect(dialog(page).getByRole("link", { name: "Build log" })).toHaveAttribute("href", "/log");
     await expect(dialog(page).getByRole("link", { name: "About · resume" })).toHaveAttribute("href", "/about");
   });
@@ -216,10 +218,13 @@ test.describe("answers", () => {
   });
 
   test("todo box for content Aswin still has to supply", async ({ page }) => {
-    // The CloudEagle KB entry still has an [evidence] placeholder; the dotted box lists it.
+    // The box lists placeholders in the cited KB entry. The CloudEagle entry's evidence was filled
+    // (content sheet D26, 2026-11-24), and no design answer cites the one KB entry that still has one.
+    const cited = KB.find((e) => e.id === "cloudeagle")!;
+    test.skip(cited.todos.length === 0, "No KB entry cited by a design Ask answer still has a placeholder");
     await open(page, "/work/integration-builder");
     await dialog(page).getByRole("button", { name: /Is this CloudEagle's product\?/ }).click();
-    const todoBox = status(page).getByText("[evidence]", { exact: true });
+    const todoBox = status(page).getByText(cited.todos[0], { exact: true });
     await expect(todoBox).toBeVisible();
     await expect(todoBox).toHaveCSS("border-top-style", "dotted");
   });

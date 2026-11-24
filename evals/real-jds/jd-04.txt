@@ -1,4 +1,112 @@
-label: TODO(aswin): role title · company
+label: AI Product Manager (Purple Fabric) · Intellect Design Arena
 bad: false
 
-TODO(aswin): paste a real job description here (the full text). Set bad: true for a role that should not be a fit.
+About the job
+
+We're Hiring | AI Product Manager – Purple Fabric (Intellect)
+
+Job Title: AI Product Manager
+
+Business Unit: Purple Fabric (PF)
+
+Experience: 6–12 Years
+
+Job Location: Chennai, India
+
+Employment Type: Full-time
+
+Work Model: On-site
+
+About Purple Fabric
+
+Purple Fabric is Intellect's enterprise AI and decisioning platform, designed to help organizations build, orchestrate, govern, and scale AI-powered solutions. The platform enables enterprises to leverage Agentic AI, intelligent automation, and data-driven decisioning to solve complex business challenges while ensuring security, governance, explainability, and scalability.
+
+We are looking for an experienced and outcome-driven AI Product Manager to drive product strategy, roadmap, and execution for Purple Fabric. The ideal candidate will combine strong product management fundamentals with a practical understanding of Generative AI, Agentic AI, LLMs, and enterprise AI applications.
+
+Role Overview
+
+As an AI Product Manager, you will own the product lifecycle from discovery and conceptualization to development, launch, and continuous improvement. You will work closely with engineering, AI/ML, design, architecture, presales, and business teams to translate customer needs into scalable AI product capabilities.
+
+The role requires someone who can demonstrate 0→1 product creation and 1→N product scaling, with the ability to define product direction, prioritize high-impact use cases, and deliver measurable business outcomes.
+
+Key Responsibilities
+
+1. Product Strategy and Roadmap
+
+Define and execute the product vision, strategy, and roadmap aligned with Purple Fabric's business objectives.
+Identify enterprise AI opportunities, customer pain points, and market trends to shape product priorities.
+Translate business strategy into product requirements, release plans, and measurable outcomes.
+Drive product development from concept to launch and scale successful capabilities across customer segments.
+
+2. AI and Agentic AI Product Management
+
+Define product capabilities involving Generative AI, Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), AI agents, and agent orchestration.
+Identify and prioritize enterprise use cases for AI-powered workflows, intelligent automation, and decision support.
+Work with AI/ML and engineering teams to define agent workflows, tool integrations, context management, and human-in-the-loop controls.
+Understand AI evaluation methods, including accuracy, relevance, groundedness, latency, cost, and reliability.
+Drive product requirements for responsible AI, guardrails, explainability, observability, and governance.
+
+3. Product Discovery and Customer Engagement
+
+Engage with customers, business stakeholders, and internal teams to understand business problems and validate product opportunities.
+Conduct market research, customer interviews, competitive analysis, and product discovery exercises.
+Convert customer feedback and business requirements into product features, user stories, and acceptance criteria.
+Validate product-market fit through prototypes, proof of concepts, pilots, and customer feedback.
+
+4. Product Execution and Cross-Functional Collaboration
+
+Collaborate with engineering, AI/ML, UX/UI, architecture, QA, and delivery teams to drive product development.
+Own and prioritize the product backlog based on customer value, business impact, technical feasibility, and strategic alignment.
+Define product requirements documents (PRDs), user stories, acceptance criteria, and release objectives.
+Manage dependencies, resolve prioritization conflicts, and ensure timely delivery of product milestones.
+Participate in sprint planning, reviews, product demos, and release planning.
+
+5. Enterprise AI Platform and Governance
+
+Drive capabilities that support enterprise-grade AI adoption, including security, access control, data privacy, governance, and auditability.
+Work with architecture and engineering teams to address scalability, integration, deployment flexibility, and performance.
+Understand enterprise AI infrastructure, model lifecycle management, model selection, and cost optimization.
+Ensure AI product capabilities align with enterprise requirements for reliability, compliance, and responsible deployment.
+
+6. Product Launch, Adoption, and Growth
+
+Define go-to-market plans, product positioning, value propositions, and launch strategies in collaboration with Sales, Marketing, and Presales teams.
+Develop product documentation, enablement material, demonstrations, and customer-facing collateral.
+Monitor adoption, customer satisfaction, feature usage, and business impact.
+Use product analytics and customer feedback to improve usability, adoption, and product performance.
+Support product expansion across industries, use cases, and customer segments.
+
+Required Skills and Qualifications
+
+6–12 years of overall experience, with substantial experience in product management for technology products.
+Demonstrated experience owning and delivering AI-powered products or enterprise software products with meaningful AI capabilities.
+Strong understanding of Generative AI, LLMs, RAG, AI agents, and Agentic AI architectures.
+Proven experience in building products from 0→1 and scaling products from 1→N.
+Experience translating customer and business requirements into product strategy, roadmaps, PRDs, and prioritized backlogs.
+Understanding of AI evaluation, model performance, hallucination mitigation, guardrails, and responsible AI practices.
+Strong analytical, problem-solving, prioritization, and decision-making skills.
+Excellent communication, stakeholder management, and cross-functional collaboration skills.
+Ability to work effectively with technical teams while translating complex AI concepts into business value.
+
+Preferred Qualifications
+
+Experience with enterprise AI platforms, AI orchestration frameworks, agentic workflows, or AI-powered SaaS products.
+Exposure to cloud-native platforms, APIs, microservices, enterprise integrations, and data platforms.
+Experience in financial services, banking, payments, lending, fraud detection, or other regulated industries.
+Familiarity with product analytics, experimentation, Agile methodologies, and product-led growth.
+Experience supporting enterprise customer demonstrations, proof of concepts, and go-to-market initiatives.
+
+Success Metrics
+
+Successful delivery of product roadmap milestones and releases.
+Adoption and usage of AI product capabilities by enterprise customers.
+Measurable improvements in customer outcomes and product-market fit.
+Quality and reliability of AI-powered features based on defined evaluation metrics.
+Reduction in time to launch, implementation effort, and cost of AI deployment.
+Customer satisfaction, product retention, and contribution to business growth.
+
+Ideal Candidate Profile
+
+We are looking for a product leader who combines strong product ownership with genuine AI depth. The ideal candidate should be able to explain the architecture and practical limitations of AI-powered products, make informed product trade-offs, and demonstrate how they have taken an AI product from initial concept to production and subsequently scaled it.
+
+Candidates whose experience is limited to generic SaaS product management, AI feature awareness, or workflow automation without meaningful AI product ownership may not be suitable for this role.

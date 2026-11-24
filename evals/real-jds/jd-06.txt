@@ -1,4 +1,46 @@
-label: TODO(aswin): role title · company
-bad: false
+label: Product Manager, Charging Infrastructure and Experience · Ather Energy
+bad: true
 
-TODO(aswin): paste a real job description here (the full text). Set bad: true for a role that should not be a fit.
+Group Company: Ather Energy limited
+Designation: Product Manager
+Office Location: IBC knowledge park
+Position description: Product Manager - Charging Infrastructure and Experience
+Primary Responsibilities:  
+
+1. Vision and roadmap: Own the vision and roadmap for private and semi-private charging across hardware, firmware, cloud and app.
+2. Discovery and PRDs: Run discovery with users, facility managers and builders. Write crisp PRDs grounded in customer research, market analysis and competitor benchmarking, with corner cases covered in firmware and software.
+3. Business cases: Build hypothesis-led business cases with clarity on every data point. Bridge product and business to ensure long-term viability.
+4. Execution: Drive PRDs to launch with cross-functional teams, influencing without authority. Strong ownership and a hustle mindset are essential.
+5. Go-to-market: Partner with brand, creative and business teams to land the product truth across every communication channel. Use storytelling to pitch the product to internal and external audiences.
+6. Reliability: Drive uptime, OTA updates and field-issue resolution with quality and service teams. Address on-ground problems long-term by finding the root cause in a swift manner.
+7. Metrics: Define and track charter metrics - charging session success rate, connection drop-offs and feature adoption (WAU/MAU). Keep instrumentation sharp enough to catch a drop-off before it shows up in CSAT.
+8. Compliance: Work with government relations and legal teams to ensure compliance with BIS, Ministry of Power and DISCOM norms. Also work with teams to drive policies in the right direction conducive to long-term user safety and business sustainability.
+
+Additional Responsibilities: 
+
+1. Technical depth: Apply a deep understanding of IoT systems (electronics, firmware, charging management systems, software and cloud) to bridge engineering and business.
+2. Numbers: Read the story behind the data, spot patterns to define user cohorts and drive monetisation strategies.
+3. Public charging: Drive initiatives on Ather Grid, the public charging network, to improve awareness and monetisation.
+4. AI fluency: Use AI to raise productivity across data analytics, business cases, PRDs, product pitches and communication.
+
+Reporting Team
+
+* Reporting Designation: Product Line Manager
+* Reporting Department: Product Management - Vehicles and Ecosystem
+
+Educational qualifications preferred
+
+* Category: Engineering
+* Field specialization: ECE or EEE
+* Degree: Bachelors or Masters
+
+Required work experience
+
+* Industry: Charging Infrastructure, Deep tech, or IoT
+* Role: Product Management
+* Years of experience: 4-7
+
+Required Competencies: Data analytics, stakeholder management, user experience, market and consumer research, cross-functional team management, and strong business fundamentals.
+Specific requirements
+
+* Travel: Occasional, a few times a quarter if required.

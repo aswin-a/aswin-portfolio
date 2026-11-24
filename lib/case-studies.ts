@@ -1,6 +1,8 @@
 import type { ComponentType } from "react";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { published } from "@/lib/content";
 import { CaseStudySchema, type CaseStudy } from "@/lib/schemas/content";
+import { posts } from "@/lib/posts";
 
 // The 4 products' case studies, in their home order 01–04 (design update 4). The "Next" card follows it.
 export const CASE_STUDY_SLUGS = ["job-search-agent", "fit-check", "integration-builder", "instagram-agent"] as const;
@@ -16,4 +18,22 @@ export async function loadCaseStudy(slug: string): Promise<CaseStudy> {
 export async function caseStudies(): Promise<CaseStudy[]> {
   const all = await Promise.all(CASE_STUDY_SLUGS.map(loadCaseStudy));
   return published(all);
+}
+
+/** Case studies the site links to, for the sitemap, llms.txt and the like. */
+export async function linkedCaseStudies(): Promise<CaseStudy[]> {
+  return (await caseStudies()).filter((cs) => !isHiddenStudy(cs.slug));
+}
+
+/**
+ * True unless `href` points at a case study or build-log post that isn't published (production hides unfinished ones).
+ * Links to those are left out rather than leading to a 404 (Aswin, 2026-11-24).
+ */
+export async function workLinkIsLive(): Promise<(href: string | undefined) => boolean> {
+  const [studies, logPosts] = await Promise.all([caseStudies(), posts()]);
+  const live = new Set([...studies.map((c) => `work/${c.slug}`), ...logPosts.map((p) => `log/${p.slug}`)]);
+  return (href) => {
+    const m = href?.match(/^\/(work|log)\/([^/#?]+)/);
+    return !m || live.has(`${m[1]}/${m[2]}`);
+  };
 }

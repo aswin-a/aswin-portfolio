@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ComingSoonLink } from "@/components/coming-soon";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
@@ -43,7 +45,10 @@ export default async function PostPage({ params }: Props) {
         <article className="flex flex-col gap-4">
           <Body />
         </article>
-        {meta.study && (
+        {meta.study && isHiddenStudy(meta.study.slug) && (
+          <ComingSoonLink label={meta.study.label} className="self-start font-mono text-[12px]" />
+        )}
+        {meta.study && !isHiddenStudy(meta.study.slug) && (
           <Link
             href={`/work/${meta.study.slug}`}
             className="self-start rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"

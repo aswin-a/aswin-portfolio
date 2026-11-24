@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { JD_LABEL } from "./fixtures";
 import { evalMeta } from "@/lib/eval-results";
+import { products } from "@/content/products";
+import { siteMeta } from "@/content/site-meta";
 
 /** The eval numbers the site shows: content/eval-results.json, or the design placeholders before a real run. */
 const EVAL = evalMeta();
@@ -38,14 +40,22 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   const names = grid.locator(":scope > * > span:first-child > span:first-child");
   await expect(names).toHaveText(["agents", "skills", "tools", "orchestration", "memory", "production", "guardrails", "evals", "human in loop", "data privacy", "rag", "mcp server"]);
   await expect(grid.getByText(`${EVAL.evalCaseCount} test JDs and red-team cases, run before every change.`)).toBeVisible();
-  await expect(grid.getByRole("link", { name: /^agents/ })).toHaveAttribute("href", "/work/job-search-agent");
-  await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "#");
+  // agents points at a hidden case study: not a link, its CTA muted with a COMING SOON pill.
+  await expect(grid.getByRole("link", { name: /^agents/ })).toHaveCount(0);
+  await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent/blob/main/skills/tailored-resume/SKILL.md");
   await expect(grid.getByRole("link", { name: /^evals/ })).toHaveAttribute("href", "https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
   await expect(grid.getByRole("link", { name: /^guardrails/ })).toHaveAttribute("href", "#break-my-ai");
   // The arrow is part of the CTA; the planned card is not a link and its CTA is muted.
-  await expect(grid.getByText("Read the job-search study →", { exact: true })).toBeVisible();
+  await expect(grid.getByText("Read the job-search study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  // agents and rag point at hidden case studies; human in loop and data privacy at posts not written yet;
+  // mcp server is planned. All five show the COMING SOON pill.
+  await expect(grid.getByText("COMING SOON", { exact: true })).toHaveCount(5);
+  await expect(grid.getByText("COMING SOON", { exact: true }).first()).toHaveCSS("border-top-style", "dashed");
+  await expect(grid.getByRole("link", { name: /^rag/ })).toHaveCount(0);
+  await expect(grid.getByText("Why no vector DB yet", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(grid.getByText("Read the job-search study →", { exact: true })).toHaveCount(0);
   await expect(grid.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
-  await expect(grid.getByText("Coming soon", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(grid.getByText("Coming soon", { exact: true })).toHaveCount(0);
   await expect(grid.getByText("View the skill →", { exact: true })).toHaveCSS("color", "rgb(31, 76, 134)");
   // shipped: ink border and text; prototype and planned: dashed rule border.
   const pill = (status: string) => grid.getByText(status, { exact: true }).first();
@@ -90,13 +100,26 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(first.getByText("Wait for my approval", { exact: false })).toHaveCSS("color", "rgb(138, 85, 16)");
   await expect(first.getByText("4", { exact: true })).toHaveCSS("border-top-style", "dashed");
   await expect(first.getByText("4", { exact: true })).toHaveCSS("background-color", "rgb(251, 242, 226)");
-  await expect(first.getByRole("link", { name: "Watch the recorded run" })).toHaveAttribute("href", "/work/job-search-agent");
-  await expect(first.getByRole("link", { name: "Watch the recorded run" })).toHaveCSS("background-color", "rgb(27, 26, 23)");
+  // Every case study is hidden for now (content/case-studies/visibility.ts): links to one show muted with COMING SOON.
+  // When both buttons go to the same hidden study, the card shows one line.
+  // The agent is on GitHub (Aswin, 2026-11-24); its case study is hidden.
+  await expect(first.getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent");
+  await expect(first.getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveCSS("background-color", "rgb(27, 26, 23)");
+  await expect(first.getByRole("link")).toHaveCount(1);
+  await expect(first.getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(first.getByText("COMING SOON", { exact: true })).toHaveCount(1);
   await expect(cards.nth(1).getByRole("link", { name: "Try it above ↑" })).toHaveAttribute("href", "#fit-h");
-  await expect(cards.nth(1).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/fit-check");
-  await expect(cards.nth(2).getByText("[e.g. the spec, Figma flows and the clickable prototype]")).toBeVisible();
-  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", "#");
-  await expect(cards.nth(2).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/integration-builder");
+  await expect(cards.nth(1).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
+  await expect(cards.nth(1).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  const builder = products.find((p) => p.slug === "integration-builder")!;
+  await expect(cards.nth(2).getByText(builder.built)).toBeVisible();
+  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary!.href);
+  await expect(cards.nth(2).getByRole("link", { name: /Read the case study/ })).toHaveCount(0);
+  await expect(cards.nth(2).getByText("COMING SOON", { exact: true })).toBeVisible();
+  // The Instagram agent is on GitHub (Aswin, 2026-11-24); its case study is hidden.
+  await expect(cards.nth(3).getByRole("link", { name: "Add to Claude/ChatGPT" })).toHaveAttribute("href", "https://github.com/aswin-a/instagram-content-intelligence-agent");
+  await expect(cards.nth(3).getByRole("link")).toHaveCount(1);
+  await expect(cards.nth(3).getByText("Read the case study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
 });
 
 test("shared Footer: contact and the footer bar on every page, phones included (update 6)", async ({ page }) => {
@@ -149,8 +172,8 @@ test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-l
   await expect(panel.getByText("fetch_url · links only", { exact: true })).toHaveCSS("border-top-style", "dashed");
   await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
   await expect(panel.getByText(`${EVAL.evalCaseCount} test JDs and questions, including bad-fit roles and red-team cases`)).toBeVisible();
-  await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
-  await expect(panel.getByText("No vector DB in v1, on purpose: [your reason]")).toBeVisible();
+  await expect(panel.getByText(`What failed first: ${siteMeta.evalFailedFirst}`)).toBeVisible();
+  await expect(panel.getByText(`No vector DB in v1, on purpose: ${siteMeta.noVectorDbReason}`)).toBeVisible();
   await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
   await expect(panel.getByText(/live usage/)).toHaveCount(0);
 });
@@ -177,9 +200,9 @@ test("removed X-ray-only lines stay gone in X-ray; the page never re-themes", as
 
 test("log: filters show counts, filter posts and the empty state (TIL stays upper-case)", async ({ page }) => {
   await page.goto("/log");
-  await expect(page.getByRole("button", { name: "All 3" })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Essays 1" }).click();
-  await expect(page.getByRole("article")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "All 5" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Essays 2" }).click();
+  await expect(page.getByRole("article")).toHaveCount(2);
   await page.getByRole("button", { name: "Teardowns 0" }).click();
   await expect(page.getByText("No teardowns yet. The first one is in the works.")).toBeVisible();
   await page.getByRole("button", { name: "TIL 0" }).click();
@@ -194,7 +217,7 @@ test("CV: header, stats, timeline lanes and links (update 6)", async ({ page }) 
   await expect(page.getByText("CURRICULUM VITAE", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: "Aswin A" })).toBeVisible();
   await expect(page.getByRole("link", { name: "LinkedIn", exact: true }).first()).toHaveAttribute("href", "https://linkedin.com/in/aswin-a-pm");
-  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "#");
+  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "/resume.pdf");
   await expect(page.getByText("Synced from my master resume · 13 Nov 2026")).toBeVisible();
   await expect(page.getByText("125% growth", { exact: true })).toHaveCSS("font-size", "26px");
   const items = page.getByRole("main").locator("ol > li");
@@ -278,11 +301,11 @@ test("case study: before/after tabs and the X-ray link button", async ({ page })
   await page.getByRole("button", { name: "How I built this (X-ray)" }).click();
   expect(await theme(page)).toBe("xray");
   await expect(page.getByRole("button", { name: "Close How I built this" })).toBeVisible();
-  const trace = page.getByText(/^LOGGED TRACE · run .+ · real run, never a simulation$/);
+  const trace = page.getByText(/^LOGGED TRACE · (run .+ · )?real run, never a simulation$/);
   await expect(trace).toBeVisible();
   await expect(trace.locator("xpath=..")).toHaveCSS("background-color", "rgb(16, 18, 20)");
   await expect(trace.locator("xpath=..").getByText("X-RAY", { exact: true })).toBeVisible();
-  const evals = page.getByText(/^OFFLINE EVAL SET · .+ cases incl\. red-team$/);
+  const evals = page.getByText(/^OFFLINE EVAL SET · .+ cases( incl\. red-team)?$/);
   await expect(evals).toBeVisible();
   await expect(evals.locator("xpath=..").getByText("X-RAY", { exact: true })).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 243, 236)");
@@ -309,7 +332,7 @@ test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before a
   await page.goto("/work/integration-builder");
   await expect(page.getByText("CASE STUDIES / 03 · CLOUDEAGLE.AI")).toBeVisible();
   // Numbering and order follow the home products 01–04 (Aswin, 2026-11-20).
-  await expect(page.getByRole("link", { name: /^NEXT · 04 · IN USE · RECORDED RUN/ })).toHaveAttribute("href", "/work/instagram-agent");
+  await expect(page.getByRole("link", { name: /^NEXT · 04 · IN PROGRESS/ })).toHaveAttribute("href", "/work/instagram-agent");
   await expect(page.getByRole("link", { name: "CASE STUDIES", exact: true })).toHaveAttribute("href", "/work");
   await expect(page.getByText("LAST UPDATED", { exact: true })).toBeVisible();
   const counter = page.locator("#s-break").getByRole("status");
@@ -319,7 +342,7 @@ test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before a
     expect((await page.goto(gone))?.status()).toBe(404);
   }
   await page.goto("/work/instagram-agent");
-  await expect(page.getByText("STATUS · IN USE · RECORDED RUN")).toBeVisible();
+  await expect(page.getByText("STATUS · IN PROGRESS")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Instagram content intelligence agent", level: 1 })).toBeVisible();
   await page.goto("/work/instagram-agent");
   await expect(page.getByRole("link", { name: /^NEXT · 01 · IN USE · RECORDED RUN/ })).toHaveAttribute("href", "/work/job-search-agent");
@@ -338,6 +361,9 @@ test("phone home: compact hood list and Products I've built (update 4)", async (
   await expect(list.locator(":scope > a, :scope > div")).toHaveCount(12);
   await expect(list.getByRole("link", { name: /^production/ })).toHaveAttribute("href", "#break-my-ai");
   await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
+  await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
+  await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
+  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(4);
   // Phone pills are never dashed; shipped is ink.
   await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
   await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
@@ -345,13 +371,19 @@ test("phone home: compact hood list and Products I've built (update 4)", async (
   const work = page.locator("#m-work").locator("xpath=..");
   await expect(page.locator("#m-work")).toHaveText("Products I've built");
   await expect(work.getByText("CASE STUDIES", { exact: true })).toBeVisible();
-  await expect(work.getByRole("link")).toHaveCount(4);
-  await expect(work.getByRole("link").nth(0)).toHaveText("IN USE · RECORDED RUNAI job search and apply agentsearch → tailor → wait for my approval → apply");
+  // Only the fit check's card links (to the hero); the other three go to hidden case studies, so they're plain cards.
+  await expect(work.getByRole("link")).toHaveCount(1);
+  await expect(work.getByRole("link").nth(0)).toHaveAttribute("href", "#fit-h");
+  await expect(work.getByRole("link").nth(0)).toHaveText("LIVE HEREJob-fit AI on this siteTry it above ↑");
+  await expect(work.getByText("AI job search and apply agent", { exact: true }).locator("xpath=..")).toHaveText(
+    "IN USE · RECORDED RUNAI job search and apply agentsearch → tailor → wait for my approval → applyCOMING SOON",
+  );
   await expect(work.getByText("wait for my approval", { exact: true })).toHaveCSS("color", "rgb(138, 85, 16)");
-  await expect(work.getByRole("link").nth(1)).toHaveAttribute("href", "#fit-h");
-  await expect(work.getByRole("link").nth(1)).toHaveText("LIVE HEREJob-fit AI on this siteTry it above ↑");
   await expect(work.getByText("CONCEPT", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  await expect(work.getByRole("link").nth(3)).toHaveText("IN USE · RECORDED RUNInstagram content intelligence agent");
+  await expect(work.getByText("COMING SOON", { exact: true })).toHaveCount(3);
+  await expect(work.getByText("Instagram content intelligence agent", { exact: true }).locator("xpath=..")).toHaveText(
+    "IN PROGRESSInstagram content intelligence agentCOMING SOON",
+  );
   await expect(page.locator("#work-h")).toBeHidden();
 });
 
@@ -362,4 +394,49 @@ test("unknown post slug is a 404", async ({ page }) => {
 test("CV: highlight lists keep their bullets", async ({ page }) => {
   await page.goto("/about");
   await expect(page.getByRole("main").locator("ol > li").nth(4).locator("article ul")).toHaveCSS("list-style-type", "disc");
+});
+
+test("hidden case studies: build log shows COMING SOON, the page stays reachable but unindexed (Aswin, 2026-11-24)", async ({ page }) => {
+  await page.goto("/log");
+  const main = page.getByRole("main");
+  await expect(main.locator('a[href^="/work/"]')).toHaveCount(0);
+  await expect(main.getByText("Case study · CloudEagle concept", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(main.getByText("COMING SOON", { exact: true }).first()).toBeVisible();
+
+  await page.goto("/log/designing-safeguards-for-an-ai-that-writes-integrations");
+  await expect(page.getByRole("main").locator('a[href^="/work/"]')).toHaveCount(0);
+  await expect(page.getByRole("main").getByText("COMING SOON", { exact: true })).toBeVisible();
+
+  const res = await page.goto("/work/integration-builder");
+  expect(res?.status()).toBe(200);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+});
+
+test("coming-soon posts: listed with title, summary and the pill; no page; proof cards show COMING SOON (Aswin, 2026-11-24)", async ({ page }) => {
+  const soon = [
+    ["Shipping ML OCR with a person in the loop", "ml-ocr-with-a-person-in-the-loop", "human in loop", "Read the OCR story"],
+    ["Why I advised against sending patient data to LLMs", "patient-data-and-llms", "data privacy", "Read more"],
+  ] as const;
+  await page.goto("/log");
+  const main = page.getByRole("main");
+  for (const [title, slug] of soon) {
+    const entry = main.locator("article").filter({ hasText: title });
+    await expect(entry.getByRole("link")).toHaveCount(0);
+    await expect(entry.getByRole("heading", { name: title })).toBeVisible();
+    await expect(entry.getByText(title, { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+    await expect(entry.getByText("COMING SOON", { exact: true })).toBeVisible();
+    await expect(main.locator(`a[href="/log/${slug}"]`)).toHaveCount(0);
+  }
+  await expect(page.getByRole("button", { name: /^All/ })).toContainText("5");
+
+  for (const [, slug] of soon) expect((await page.goto(`/log/${slug}`))?.status()).toBe(404);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const grid = page.locator("#uh-h").locator("../..").locator("div.grid");
+  for (const [, slug, card, cta] of soon) {
+    await expect(grid.getByRole("link", { name: new RegExp(`^${card}`) })).toHaveCount(0);
+    await expect(grid.getByText(cta, { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+    await expect(page.locator(`a[href="/log/${slug}"]`)).toHaveCount(0);
+  }
 });

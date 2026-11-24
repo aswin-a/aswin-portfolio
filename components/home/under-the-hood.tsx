@@ -2,7 +2,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { LiveLink } from "@/components/home/live-link";
 import { hood, type HoodItem } from "@/content/hood";
+import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { workLinkIsLive } from "@/lib/case-studies";
+import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
+import { comingSoonPostHrefs } from "@/lib/posts";
 
 /** Status pill colours (Main.dc.html, design update 4). The phone list never uses dashed borders. */
 function pillClass(u: HoodItem, phone = false) {
@@ -12,9 +16,9 @@ function pillClass(u: HoodItem, phone = false) {
   return "border-solid border-rule bg-transparent text-muted";
 }
 
-function CardLink({ card, className, children }: { card: HoodItem; className: string; children: ReactNode }) {
-  // "planned" has no link and isn't clickable.
-  if (!card.href) return <div className={className}>{children}</div>;
+function CardLink({ card, soon, className, children }: { card: HoodItem; soon: boolean; className: string; children: ReactNode }) {
+  // "planned" has no link and isn't clickable; nor is a card whose proof is coming soon.
+  if (!card.href || soon) return <div className={className}>{children}</div>;
   if (card.live) return <LiveLink href={card.href} className={className}>{children}</LiveLink>;
   const href = hrefOf(card.href);
   if (href.startsWith("/")) return <Link href={href} className={className}>{children}</Link>;
@@ -22,8 +26,14 @@ function CardLink({ card, className, children }: { card: HoodItem; className: st
 }
 
 /** Desktop grid (Main.dc.html) and the phone list (Mobile.dc.html, ≤ 640px). */
-export function UnderTheHood() {
-  const cards = published(hood);
+export async function UnderTheHood() {
+  // A card whose proof is an unpublished case study is left out with it (Aswin, 2026-11-24). A hidden
+  // one (content/case-studies/visibility.ts) keeps its card, with "COMING SOON" in place of the link.
+  const isLive = await workLinkIsLive();
+  // Same for a build-log post that isn't written yet (`comingSoon`).
+  const soonPosts = await comingSoonPostHrefs();
+  const hidden = (u: HoodItem) => u.href !== undefined && (isHiddenStudyHref(u.href) || soonPosts.has(u.href));
+  const cards = published(hood).filter((u) => hidden(u) || isLive(u.href));
   return (
     <>
       <section aria-labelledby="uh-h" className="border-t border-rule px-6 py-14 max-[640px]:hidden">
@@ -42,6 +52,7 @@ export function UnderTheHood() {
               <CardLink
                 key={u.name}
                 card={u}
+                soon={hidden(u)}
                 className="box-border flex min-h-[170px] flex-col gap-[10px] rounded-xl border border-rule bg-paper p-[18px] text-ink no-underline"
               >
                 <span className="flex items-center justify-between gap-2">
@@ -51,7 +62,16 @@ export function UnderTheHood() {
                   </span>
                 </span>
                 <span className="text-[15px] leading-[1.5] text-muted">{u.proof}</span>
-                <span className={`mt-auto font-mono text-[12px] ${u.status === "planned" ? "text-muted" : "text-accent"}`}>{u.cta}</span>
+                {hidden(u) ? (
+                  <ComingSoonLink label={plainLabel(u.cta)} className="mt-auto self-start font-mono text-[12px]" />
+                ) : u.status === "planned" ? (
+                  // The planned card's "Coming soon" CTA shows as the same pill (Aswin, 2026-11-24).
+                  <span className="mt-auto self-start">
+                    <ComingSoonPill />
+                  </span>
+                ) : (
+                  <span className="mt-auto font-mono text-[12px] text-accent">{u.cta}</span>
+                )}
               </CardLink>
             ))}
           </div>
@@ -68,10 +88,14 @@ export function UnderTheHood() {
           <CardLink
             key={u.name}
             card={u}
+            soon={hidden(u)}
             className="flex min-h-[52px] items-center justify-between gap-3 rounded-[10px] border border-rule bg-paper px-[14px] py-[10px] text-ink no-underline"
           >
             <span className="font-mono text-[14px]">{u.name}</span>
-            <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
+            <span className="flex items-center gap-[6px]">
+              {hidden(u) && <ComingSoonPill />}
+              <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
+            </span>
           </CardLink>
         ))}
       </section>

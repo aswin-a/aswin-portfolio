@@ -1,5 +1,3 @@
-import { todo } from "@/lib/content";
-
 /** One step of "How it works". A `human` step is where a person decides (amber, "· person decides"). */
 export type FlowStep = { text: string; human?: boolean };
 
@@ -17,7 +15,8 @@ export type Product = {
   built: string;
   flow: FlowStep[];
   tags: string[];
-  primary: { label: string; href: string };
+  /** The main button. None while there is nothing to show (the Instagram agent has no run yet). */
+  primary?: { label: string; href: string };
   secondary: { label: string; href: string };
   /** The short flow on the phone card (Mobile.dc.html), when it has one. */
   phoneFlow?: FlowStep[];
@@ -39,7 +38,7 @@ export const products: Product[] = [
       { text: "Apply" },
     ],
     tags: ["agents", "tools", "orchestration"],
-    primary: { label: "Watch the recorded run", href: "/work/job-search-agent" },
+    primary: { label: "Add to Claude/ChatGPT", href: "https://github.com/aswin-a/linkedin-job-search-agent" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/job-search-agent" },
     phoneFlow: [{ text: "search" }, { text: "tailor" }, { text: "wait for my approval", human: true }, { text: "apply" }],
   },
@@ -67,7 +66,7 @@ export const products: Product[] = [
     status: "CONCEPT",
     name: "AI integration builder",
     pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.",
-    built: todo("[e.g. the spec, Figma flows and the clickable prototype]"), // TODO(aswin)
+    built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // Aswin, 2026-11-24
     flow: [
       { text: "Paste the app’s API docs" },
       { text: "AI drafts the connector" },
@@ -76,13 +75,13 @@ export const products: Product[] = [
       { text: "Deploy" },
     ],
     tags: ["integrations", "guardrails"],
-    primary: { label: "Run it locally", href: todo("[link]") }, // TODO(aswin): how to run the prototype locally
+    primary: { label: "Run it locally", href: "https://github.com/aswin-a/cloudeagle-ai-integration-builder" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/integration-builder" },
   },
   {
     num: "04",
     slug: "instagram-agent",
-    status: "IN USE · RECORDED RUN",
+    status: "IN PROGRESS", // Not run yet (Aswin, 2026-11-24): the design's "IN USE · RECORDED RUN" returns with a real run
     name: "Instagram content intelligence agent",
     pitch: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.",
     built: "The agent’s prompts and analysis steps.",
@@ -94,7 +93,7 @@ export const products: Product[] = [
       { text: "Suggest Dhee’s next posts" },
     ],
     tags: ["agents", "tools"],
-    primary: { label: "Watch the recorded run", href: "/work/instagram-agent" },
+    primary: { label: "Add to Claude/ChatGPT", href: "https://github.com/aswin-a/instagram-content-intelligence-agent" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/instagram-agent" },
   },
 ];

@@ -2,7 +2,8 @@ import { cvHeader } from "@/content/cv";
 import { products } from "@/content/products";
 import { siteMeta } from "@/content/site-meta";
 import { hrefOf, isTodo, published } from "@/lib/content";
-import { caseStudies } from "@/lib/case-studies";
+import { linkedCaseStudies } from "@/lib/case-studies";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { cvMarkdown } from "@/lib/cv";
 import { posts } from "@/lib/posts";
 import { absolute, DESCRIPTIONS, SITE_URL } from "@/lib/seo";
@@ -26,7 +27,7 @@ function header(): string[] {
 }
 
 export async function llmsTxt(): Promise<string> {
-  const [studies, logPosts] = await Promise.all([caseStudies(), posts()]);
+  const [studies, logPosts] = await Promise.all([linkedCaseStudies(), posts()]);
   const elsewhere = [
     ["LinkedIn", siteMeta.linkedin],
     ["GitHub", siteMeta.github],
@@ -39,10 +40,7 @@ export async function llmsTxt(): Promise<string> {
     link("CV", "/about", "roles, side projects, education and skills"),
     link("CV as markdown", "/about.md"),
     "",
-    "## Case studies",
-    "",
-    ...studies.map((cs) => link(cs.title, `/work/${cs.slug}`, cs.lede)),
-    "",
+    ...(studies.length ? ["## Case studies", "", ...studies.map((cs) => link(cs.title, `/work/${cs.slug}`, cs.lede)), ""] : []),
     "## Build log",
     "",
     ...logPosts.map((p) => link(p.title, `/log/${p.slug}`, p.summary)),
@@ -57,14 +55,14 @@ export async function llmsTxt(): Promise<string> {
 }
 
 export async function llmsFullTxt(): Promise<string> {
-  const [studies, logPosts] = await Promise.all([caseStudies(), posts()]);
+  const [studies, logPosts] = await Promise.all([linkedCaseStudies(), posts()]);
   const out = [...header(), "", "## Products I've built", ""];
   for (const p of published(products)) {
     out.push(`### ${p.num} · ${p.name}`, "", p.pitch, "", `What I built: ${p.built}`, "");
     out.push(`How it works: ${p.flow.map((s) => s.text).join(" → ")}`, "", `Tags: ${p.tags.join(", ")}`, "");
-    out.push(`Case study: ${absolute(`/work/${p.slug}`)}`, "");
+    if (!isHiddenStudy(p.slug)) out.push(`Case study: ${absolute(`/work/${p.slug}`)}`, "");
   }
-  out.push("## Case studies", "");
+  if (studies.length) out.push("## Case studies", "");
   for (const cs of studies) {
     out.push(`### ${cs.title}`, "", absolute(`/work/${cs.slug}`), "", cs.lede, "");
     out.push(...cs.facts.map((f) => `- ${f.label}: ${f.value}`), "");

@@ -1,4 +1,3 @@
-import { todo } from "@/lib/content";
 
 /**
  * The CV, word for word from the CV_STATS, CV_GENERAL, CV_ITEMS and CV_SKILLS arrays in
@@ -45,7 +44,7 @@ export const cvHeader = {
   linkedin: { label: "LinkedIn", href: "https://linkedin.com/in/aswin-a-pm", plain: "linkedin.com/in/aswin-a-pm" },
   summary:
     "I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM, and five as a founder across two startups. I own platforms end to end, from APIs and integrations to identity and workflow engines, and now I build AI agents on the same foundations.",
-  downloadPdf: { label: "Download PDF", href: "#" }, // TODO(aswin): static PDF built from this file at build time (SPEC §5)
+  downloadPdf: { label: "Download PDF", href: "/resume.pdf" }, // The general CV in public/resume.pdf (Aswin, 2026-11-24), in place of one built from this file (SPEC §5)
   /** Followed by siteMeta.resumeUpdated (Aswin, 2026-11-23). */
   synced: { label: "Synced from my master resume" },
 };
@@ -66,6 +65,9 @@ export const cvGeneral: CvTopic = {
     { q: "Has he led a team?" },
   ],
 };
+
+/** Items whose design link stays off until it has something real to open (Aswin, 2026-11-24: the Instagram agent has no run yet). */
+export const cvLinkHidden = new Set(["ig"]);
 
 export const cvItems: CvItem[] = [
   {
@@ -91,8 +93,8 @@ export const cvItems: CvItem[] = [
       "Connected Drive and Chrome through MCP connectors and wrote a custom Claude Skill for job-fit scoring",
       "Used to prepare 20+ applications; fit scores checked against LinkedIn’s match score",
     ],
-    link: "View recorded run →",
-    href: "#", // TODO(aswin): recorded run link
+    link: "Add to Claude/ChatGPT →", // Aswin, 2026-11-24: the agent's repo, in place of the design's "View recorded run →"
+    href: "https://github.com/aswin-a/linkedin-job-search-agent",
   },
   {
     id: "ig",
@@ -103,12 +105,12 @@ export const cvItems: CvItem[] = [
     scope: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.",
     highlights: [],
     link: "View recorded run →",
-    href: "#", // TODO(aswin): recorded run link
+    href: "#", // No run yet: the link is hidden on the page (cvLinkHidden, Aswin 2026-11-24)
   },
   {
     id: "web",
     lane: "project",
-    dates: todo("[date]"), // TODO(aswin)
+    dates: "Feb 2026", // Aswin, 2026-11-24
     title: "Dhee’s website",
     org: "Side project · for Dhee’s · Astro, TypeScript, Cloudflare",
     scope: "Designed and built the company’s single-page site with Cursor and v0: recipes, prices, delivery areas and free-sample requests, with ordering over WhatsApp.",

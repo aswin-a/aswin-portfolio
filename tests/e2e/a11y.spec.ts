@@ -9,7 +9,16 @@ import { expect as baseExpect, test, type Locator, type Page } from "./fixtures"
  */
 const expect = baseExpect.configure({ timeout: 15_000 });
 
-const ROUTES = ["/", "/work", ...CASE_STUDY_SLUGS.map((s) => `/work/${s}`), "/log", ...POST_SLUGS.map((s) => `/log/${s}`), "/about"];
+// Posts marked `comingSoon` have no page (Aswin, 2026-11-24).
+const COMING_SOON_POSTS = ["ml-ocr-with-a-person-in-the-loop", "patient-data-and-llms"];
+const ROUTES = [
+  "/",
+  "/work",
+  ...CASE_STUDY_SLUGS.map((s) => `/work/${s}`),
+  "/log",
+  ...POST_SLUGS.filter((s) => !COMING_SOON_POSTS.includes(s)).map((s) => `/log/${s}`),
+  "/about",
+];
 
 /**
  * Text fields the design draws without an outline (`outline: none` in Hero.dc.html, Ask.dc.html and

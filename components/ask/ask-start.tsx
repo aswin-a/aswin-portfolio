@@ -1,4 +1,5 @@
 import { AskLink } from "@/components/ask/ask-link";
+import { isHiddenStudyHref } from "@/lib/case-study-visibility";
 import {
   ASK_BY_PAGE,
   ASK_JUMP_TO,
@@ -92,7 +93,7 @@ export function AskStart({
       <div className="flex flex-col gap-[6px]">
         <p className={LABEL}>Jump to</p>
         <div className="flex flex-wrap gap-2">
-          {ASK_JUMP_TO.map((j) => (
+          {ASK_JUMP_TO.filter((j) => !isHiddenStudyHref(j.href)).map((j) => (
             <AskLink
               key={j.href}
               href={j.href}

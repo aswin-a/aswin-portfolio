@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { caseStudies } from "@/lib/case-studies";
+import { linkedCaseStudies } from "@/lib/case-studies";
 import { posts } from "@/lib/posts";
 import { absolute, isoDate } from "@/lib/seo";
 
 /** Every page, from /content (published entries only). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [studies, logPosts] = await Promise.all([caseStudies(), posts()]);
+  const [studies, logPosts] = await Promise.all([linkedCaseStudies(), posts()]);
   return [
     { url: absolute("/"), changeFrequency: "weekly", priority: 1 },
     { url: absolute("/work"), changeFrequency: "monthly", priority: 0.8 },
