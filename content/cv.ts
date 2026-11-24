@@ -106,12 +106,12 @@ export const cvItems: CvItem[] = [
     scope: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.",
     highlights: [],
     link: "View recorded run →",
-    href: "#", // TODO(aswin): recorded run link
+    href: "#", // No run yet: the link is hidden on the page (cvLinkHidden, Aswin 2026-11-24)
   },
   {
     id: "web",
     lane: "project",
-    dates: todo("[date]"), // TODO(aswin)
+    dates: todo("[date]"),
     title: "Dhee’s website",
     org: "Side project · for Dhee’s · Astro, TypeScript, Cloudflare",
     scope: "Designed and built the company’s single-page site with Cursor and v0: recipes, prices, delivery areas and free-sample requests, with ordering over WhatsApp.",

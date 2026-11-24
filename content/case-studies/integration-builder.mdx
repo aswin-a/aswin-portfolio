@@ -1,7 +1,7 @@
 import { todo } from "@/lib/content";
 import { WORK_ATTACKS } from "./cloudeagle-attacks";
 
-{/* Copy from Work.dc.html, the PRD template. Every todo() is TODO(aswin). */}
+{/* Copy from Work.dc.html, the PRD template. Each todo() is a placeholder until Aswin fills it. */}
 
 export const meta = {
   slug: "integration-builder",
@@ -17,7 +17,7 @@ export const meta = {
     { label: "CONTEXT", value: "Senior PM take-home, CloudEagle.ai" },
     { label: "BUILT WITH", value: "Figma · clickable prototype" },
     { label: "FOCUS", value: "Safeguards" },
-    { label: "TIME SPENT", value: todo("[hours]") }, // TODO(aswin)
+    { label: "TIME SPENT", value: todo("[hours]") },
     { label: "LAST UPDATED", value: "6 Nov 2026" },
   ],
   demo: "https://www.loom.com/share/6f2d467faf8a4565b70f43777cbb12dc",
@@ -131,7 +131,7 @@ export const meta = {
       { text: "Test run + 8 checks, automatic", time: "5.7 s" },
       { text: "Admin approves sample records (Gate 2)", time: todo("[time]") },
     ],
-    manualTotal: todo("[measured]"), // TODO(aswin): measured runs only
+    manualTotal: todo("[measured]"), // measured runs only
     agentTotal: todo("[measured]"),
   },
   v2: "Write actions such as deprovisioning, so the connector can close the loop on a leaver. It waited because writes need plan-only dry runs that list every call, plus per-action approval, before they're safe to put in an admin's hands.", // D23 (Aswin, 2026-11-24)
