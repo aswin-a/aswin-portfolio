@@ -42,7 +42,7 @@ describe("eval cases (SPEC §10)", () => {
       ["jd-02.txt", "Senior Product Manager, Forward Deployed · CertifyOS", false],
       ["jd-03.txt", "Senior Product Manager, Agentic Application · Duck Creek Technologies", false],
       ["jd-04.txt", "AI Product Manager (Purple Fabric) · Intellect Design Arena", false],
-      ["jd-05.txt", "Product Manager (Procurement) · JiBe ERP", true],
+      ["jd-05.txt", "Product Manager (Procurement) · JiBe ERP", false],
       ["jd-06.txt", "Product Manager, Charging Infrastructure and Experience · Ather Energy", true],
     ]);
     // Every real JD fits the site's input limit, or a real eval run would fail on validation.
