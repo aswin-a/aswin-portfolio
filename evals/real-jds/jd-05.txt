@@ -1,5 +1,5 @@
 label: Product Manager (Procurement) · JiBe ERP
-bad: true
+bad: false
 
 Position
 
