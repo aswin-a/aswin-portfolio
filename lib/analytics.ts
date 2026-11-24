@@ -1,8 +1,9 @@
-import posthog from "posthog-js";
+import type { PostHog } from "posthog-js";
 
 /**
- * Product analytics (SPEC §2, §13): PostHog, cookieless. Initialised in instrumentation-client.ts
- * only when NEXT_PUBLIC_POSTHOG_KEY is set. Every event's props are enums, booleans or nothing,
+ * Product analytics (SPEC §2, §13): PostHog, cookieless. Loaded by instrumentation-client.ts only when
+ * NEXT_PUBLIC_POSTHOG_KEY is set, and only once the page is idle: posthog-js is a separate chunk, so it is
+ * never in the first-load bundle (Lighthouse, SPEC §14.8). Events tracked before it loads are queued. Every event's props are enums, booleans or nothing,
  * so a pasted JD, a question or a contact message can never be sent (CLAUDE.md: never stored or logged).
  */
 export type AnalyticsEvents = {
@@ -38,10 +39,31 @@ export const POSTHOG_OPTIONS = {
   mask_all_element_attributes: true,
 } as const;
 
+let client: PostHog | null = null;
+let loading: Promise<void> | null = null;
+const queue: { event: string; props: object }[] = [];
+const QUEUE_MAX = 50;
+
+/** Loads and initialises PostHog once (no-op without a key), then sends the queued events. */
+export function loadAnalytics(): Promise<void> {
+  if (!POSTHOG_KEY || typeof window === "undefined") return Promise.resolve();
+  loading ??= import("posthog-js")
+    .then(({ default: posthog }) => {
+      posthog.init(POSTHOG_KEY, POSTHOG_OPTIONS);
+      client = posthog;
+      for (const { event, props } of queue.splice(0)) posthog.capture(event, props);
+    })
+    .catch(() => {
+      // Analytics never breaks the page.
+    });
+  return loading;
+}
+
 export function track<E extends keyof AnalyticsEvents>(event: E, props: AnalyticsEvents[E]): void {
   if (!POSTHOG_KEY || typeof window === "undefined") return;
   try {
-    posthog.capture(event, props);
+    if (client) client.capture(event, props);
+    else if (queue.length < QUEUE_MAX) queue.push({ event, props });
   } catch {
     // Analytics never breaks the page.
   }

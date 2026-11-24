@@ -103,7 +103,7 @@ export function Nav({ current }: { current: NavCurrent }) {
             </span>
             X-ray
             {showNew && (
-              <span className="rounded-full bg-accent px-[6px] py-px text-[10px] tracking-[0.06em] text-paper">
+              <span className="intro-only rounded-full bg-accent px-[6px] py-px text-[10px] tracking-[0.06em] text-paper">
                 NEW
               </span>
             )}

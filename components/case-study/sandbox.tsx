@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { SandboxReplySchema, type SandboxReply } from "@/lib/ai/schemas";
+import { SandboxReplySchema, type SandboxReply } from "@/lib/ai/sandbox-reply";
 import { postRun } from "@/lib/run-client";
 
 type Attack = { type: string; text: string };

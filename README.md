@@ -2,7 +2,7 @@
 
 A product manager's portfolio that is itself an AI product. Paste a job description and the site checks it against a knowledge base of real roles and projects, then says plainly where Aswin fits and where not. Turn on **X-ray** to see how each answer was built: the steps, the sources, the guardrails and the cost.
 
-Live at **[aswin-a.com](https://aswin-a.com)**.
+The site will live at **aswin-a.com**; it isn't deployed yet.
 
 Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK and Anthropic Claude.
 
@@ -92,6 +92,29 @@ To use the real model, fill in `.env.local`. [`.env.example`](.env.example) expl
 
 To add a real job description to the eval set, fill one of the slots in [`evals/real-jds/`](evals/real-jds); see [`evals/README.md`](evals/README.md).
 
+## Accessibility and performance
+
+- **Lighthouse (mobile, production build, median of 3 runs):** accessibility, best practices and SEO are 100 on every route, with X-ray on too. Performance is 95–96 on every route except home, at 94 (its fit-check hero makes it the heaviest page).
+- **Keyboard:** every control is reachable with Tab and shows the design's focus ring (`2px solid #4F7FC0`, offset 2px). The borderless text fields the design draws without an outline (the job-description box, Break my AI, the Ask inputs) are the only exception. Ask traps focus while it is open and returns it to whatever opened it.
+- **Screen readers:** the fit check's streamed steps, Ask's thinking and answer, Break my AI and the case-study sandbox are polite live regions; the fit-check result heading takes focus when it arrives. Contact-form errors are tied to their fields with `aria-describedby` and `aria-invalid`.
+- **Contrast:** every text colour meets WCAG AA on each surface it is used on, on the light page and inside the dark X-ray panels ([`tests/unit/contrast.test.ts`](tests/unit/contrast.test.ts) reads the tokens from `app/globals.css`).
+- **Reduced motion:** `prefers-reduced-motion` turns off every transition and animation, and smooth scrolling becomes a jump.
+- **Page weight:** PostHog loads only when a key is set, and only once the page is idle, so it is never in the first load. The schemas that run in the browser use `zod/mini`, and the large Newsreader variable font is not preloaded (measured: a preload lowered the mobile score).
+
+[`tests/e2e/a11y.spec.ts`](tests/e2e/a11y.spec.ts) checks the keyboard, focus, live-region, reduced-motion and artboard-attribute rules on every route.
+
+## Deploying
+
+The site is built for Vercel. In outline:
+
+1. Import the GitHub repository as a Vercel project (framework: Next.js, install command `pnpm install`).
+2. Set every variable from [`.env.example`](.env.example) for the Production environment. Leave `AI_FAKE` unset: it is refused in production.
+3. Apply [`supabase/migrations`](supabase/migrations) to the Supabase project, in order.
+4. Verify the sending domain in Resend, add the domain to the Turnstile widget, and set a spend limit on the Anthropic workspace.
+5. Point the domain's DNS at Vercel.
+
+A production build (`VERCEL_ENV=production`) runs `check:content` over the built pages and fails while any `TODO(aswin)` or `[placeholder]` would render, so fill the content first: `pnpm check:content` lists what's left.
+
 ## Project layout
 
 ```
@@ -132,9 +155,9 @@ Done:
 - Contact form, analytics and SEO
 - Quality: unit tests, Playwright with screenshot baselines, Promptfoo evals and CI
 - Design updates 1–7
+- Launch checks: Lighthouse, accessibility pass, README
 
-Still to come:
-- Launch checks
+Still to come: the remaining content and the deployment itself.
 
 Some content is still placeholder text, marked `TODO(aswin)` or `[bracketed]`. `pnpm check:content` lists it.
 

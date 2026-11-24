@@ -30,8 +30,10 @@ const SiteContext = createContext<SiteState | null>(null);
 
 export function XrayProvider({ children }: { children: ReactNode }) {
   const xray = useSyncExternalStore(xrayStore.subscribe, xrayStore.get, () => false);
-  // Server snapshot is "seen", so the banner never renders on the server or during hydration.
-  const introSeen = useSyncExternalStore(introStore.subscribe, introStore.get, () => true);
+  // Server snapshot is "not seen": the banner and the Nav's "NEW" pill are in the server HTML, so a first
+  // visit has no layout shift. For a returning visitor THEME_INIT_SCRIPT sets data-intro-seen before first
+  // paint and the .intro-only CSS hides them until hydration removes them.
+  const introSeen = useSyncExternalStore(introStore.subscribe, introStore.get, () => false);
 
   const setXray = useCallback((on: boolean) => {
     if (on !== xrayStore.get()) track("xray_toggled", { on });
