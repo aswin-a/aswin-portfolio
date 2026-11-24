@@ -56,7 +56,8 @@ describe("check:content source report: case studies by study", () => {
   });
   it("matches what the real studies still miss", () => {
     const gaps = skeletonGaps(readFileSync("content/case-studies/fit-check.mdx", "utf8"));
-    expect(gaps).toContain("TIME SPENT");
+    expect(gaps).toContain("before/after: manual steps");
+    expect(gaps).not.toContain("TIME SPENT");
     expect(gaps).not.toContain("repo");
     expect(gaps).not.toContain("decision 1");
   });

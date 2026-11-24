@@ -36,10 +36,11 @@ describe("eval cases (SPEC §10)", () => {
     for (const c of cases) expect(c.assert.map((a) => a.value)).toContain("file://assertions.ts:validSchema");
   });
   it("real-JD slots: TODO(aswin) placeholders are skipped; filled ones are read with label and bad flag", () => {
-    // The repo's slots: J1, J2, J4 and J5 are filled (Aswin, 2026-11-24); J3 and J6 are still placeholders.
+    // The repo's slots: J1–J5 are filled (Aswin, 2026-11-24); J6 is still a placeholder.
     expect(readRealJds().map((j) => [j.file, j.label, j.bad])).toEqual([
       ["jd-01.txt", "Senior Product Manager (Platform & AI) · Wrike", false],
       ["jd-02.txt", "Senior Product Manager, Forward Deployed · CertifyOS", false],
+      ["jd-03.txt", "Senior Product Manager, Agentic Application · Duck Creek Technologies", false],
       ["jd-04.txt", "AI Product Manager (Purple Fabric) · Intellect Design Arena", false],
       ["jd-05.txt", "Product Manager (Procurement) · JiBe ERP", true],
     ]);

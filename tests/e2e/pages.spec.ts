@@ -183,9 +183,9 @@ test("removed X-ray-only lines stay gone in X-ray; the page never re-themes", as
 
 test("log: filters show counts, filter posts and the empty state (TIL stays upper-case)", async ({ page }) => {
   await page.goto("/log");
-  await expect(page.getByRole("button", { name: "All 3" })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Essays 1" }).click();
-  await expect(page.getByRole("article")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "All 5" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Essays 2" }).click();
+  await expect(page.getByRole("article")).toHaveCount(2);
   await page.getByRole("button", { name: "Teardowns 0" }).click();
   await expect(page.getByText("No teardowns yet. The first one is in the works.")).toBeVisible();
   await page.getByRole("button", { name: "TIL 0" }).click();

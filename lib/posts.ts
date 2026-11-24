@@ -6,6 +6,8 @@ export const POST_SLUGS = [
   "why-job-search-agent-asks-before-it-applies",
   "designing-safeguards-for-an-ai-that-writes-integrations",
   "integrations-experience-is-agent-experience",
+  "ml-ocr-with-a-person-in-the-loop",
+  "patient-data-and-llms",
 ] as const;
 
 type MdxModule = { default: ComponentType; meta: unknown };

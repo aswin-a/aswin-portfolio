@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import { published } from "@/lib/content";
 import { CaseStudySchema, type CaseStudy } from "@/lib/schemas/content";
+import { posts } from "@/lib/posts";
 
 // The 4 products' case studies, in their home order 01–04 (design update 4). The "Next" card follows it.
 export const CASE_STUDY_SLUGS = ["job-search-agent", "fit-check", "integration-builder", "instagram-agent"] as const;
@@ -19,13 +20,14 @@ export async function caseStudies(): Promise<CaseStudy[]> {
 }
 
 /**
- * True unless `href` points at a case study that isn't published (production hides unfinished ones).
+ * True unless `href` points at a case study or build-log post that isn't published (production hides unfinished ones).
  * Links to those are left out rather than leading to a 404 (Aswin, 2026-11-24).
  */
 export async function workLinkIsLive(): Promise<(href: string | undefined) => boolean> {
-  const live = new Set((await caseStudies()).map((c) => c.slug));
+  const [studies, logPosts] = await Promise.all([caseStudies(), posts()]);
+  const live = new Set([...studies.map((c) => `work/${c.slug}`), ...logPosts.map((p) => `log/${p.slug}`)]);
   return (href) => {
-    const m = href?.match(/^\/work\/([^/#?]+)/);
-    return !m || live.has(m[1]);
+    const m = href?.match(/^\/(work|log)\/([^/#?]+)/);
+    return !m || live.has(`${m[1]}/${m[2]}`);
   };
 }
