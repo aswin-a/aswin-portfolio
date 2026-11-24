@@ -47,14 +47,15 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   await expect(grid.getByRole("link", { name: /^guardrails/ })).toHaveAttribute("href", "#break-my-ai");
   // The arrow is part of the CTA; the planned card is not a link and its CTA is muted.
   await expect(grid.getByText("Read the job-search study", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  // agents and rag both point at hidden case studies.
-  await expect(grid.getByText("COMING SOON", { exact: true })).toHaveCount(2);
+  // agents and rag point at hidden case studies; human in loop and data privacy at posts not written yet;
+  // mcp server is planned. All five show the COMING SOON pill.
+  await expect(grid.getByText("COMING SOON", { exact: true })).toHaveCount(5);
   await expect(grid.getByText("COMING SOON", { exact: true }).first()).toHaveCSS("border-top-style", "dashed");
   await expect(grid.getByRole("link", { name: /^rag/ })).toHaveCount(0);
   await expect(grid.getByText("Why no vector DB yet", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
   await expect(grid.getByText("Read the job-search study →", { exact: true })).toHaveCount(0);
   await expect(grid.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
-  await expect(grid.getByText("Coming soon", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(grid.getByText("Coming soon", { exact: true })).toHaveCount(0);
   await expect(grid.getByText("View the skill →", { exact: true })).toHaveCSS("color", "rgb(31, 76, 134)");
   // shipped: ink border and text; prototype and planned: dashed rule border.
   const pill = (status: string) => grid.getByText(status, { exact: true }).first();
@@ -362,7 +363,7 @@ test("phone home: compact hood list and Products I've built (update 4)", async (
   await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
   await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
   await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
-  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(2);
+  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(4);
   // Phone pills are never dashed; shipped is ink.
   await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
   await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
@@ -409,4 +410,33 @@ test("hidden case studies: build log shows COMING SOON, the page stays reachable
   const res = await page.goto("/work/integration-builder");
   expect(res?.status()).toBe(200);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+});
+
+test("coming-soon posts: listed with title, summary and the pill; no page; proof cards show COMING SOON (Aswin, 2026-11-24)", async ({ page }) => {
+  const soon = [
+    ["Shipping ML OCR with a person in the loop", "ml-ocr-with-a-person-in-the-loop", "human in loop", "Read the OCR story"],
+    ["Why I advised against sending patient data to LLMs", "patient-data-and-llms", "data privacy", "Read more"],
+  ] as const;
+  await page.goto("/log");
+  const main = page.getByRole("main");
+  for (const [title, slug] of soon) {
+    const entry = main.locator("article").filter({ hasText: title });
+    await expect(entry.getByRole("link")).toHaveCount(0);
+    await expect(entry.getByRole("heading", { name: title })).toBeVisible();
+    await expect(entry.getByText(title, { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+    await expect(entry.getByText("COMING SOON", { exact: true })).toBeVisible();
+    await expect(main.locator(`a[href="/log/${slug}"]`)).toHaveCount(0);
+  }
+  await expect(page.getByRole("button", { name: /^All/ })).toContainText("5");
+
+  for (const [, slug] of soon) expect((await page.goto(`/log/${slug}`))?.status()).toBe(404);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const grid = page.locator("#uh-h").locator("../..").locator("div.grid");
+  for (const [, slug, card, cta] of soon) {
+    await expect(grid.getByRole("link", { name: new RegExp(`^${card}`) })).toHaveCount(0);
+    await expect(grid.getByText(cta, { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+    await expect(page.locator(`a[href="/log/${slug}"]`)).toHaveCount(0);
+  }
 });

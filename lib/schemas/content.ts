@@ -78,6 +78,12 @@ export const PostSchema = z.object({
   summary: z.string(),
   /** The related case study. Optional since Platform & API work was removed (Aswin, 2026-11-20). */
   study: z.object({ label: z.string(), slug: z.string() }).optional(),
+  /**
+   * Not written yet (Aswin, 2026-11-24): the build log lists its title and summary with a
+   * "COMING SOON" pill, and links to it show the pill. It has no page, and the sitemap, RSS and
+   * llms.txt leave it out. `date` and `readTime` aren't shown.
+   */
+  comingSoon: z.boolean().optional(),
 });
 export type Post = z.infer<typeof PostSchema>;
 

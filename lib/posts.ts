@@ -17,8 +17,21 @@ export async function loadPost(slug: string): Promise<{ meta: Post; Body: Compon
   return { meta: PostSchema.parse(mod.meta), Body: mod.default };
 }
 
-/** Posts in the design's order, minus unproven ones in production. */
+async function allPosts(): Promise<Post[]> {
+  return published(await Promise.all(POST_SLUGS.map(async (s) => (await loadPost(s)).meta)));
+}
+
+/** Readable posts in the design's order, minus unproven ones in production. Coming-soon posts aren't included. */
 export async function posts(): Promise<Post[]> {
-  const all = await Promise.all(POST_SLUGS.map(async (s) => (await loadPost(s)).meta));
-  return published(all);
+  return (await allPosts()).filter((p) => !p.comingSoon);
+}
+
+/** Posts in the design's order, coming-soon ones included: the build log lists both. */
+export async function logEntries(): Promise<Post[]> {
+  return allPosts();
+}
+
+/** `/log/{slug}` paths of coming-soon posts: links to them show "COMING SOON". */
+export async function comingSoonPostHrefs(): Promise<Set<string>> {
+  return new Set((await allPosts()).filter((p) => p.comingSoon).map((p) => `/log/${p.slug}`));
 }

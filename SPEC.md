@@ -114,6 +114,8 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 - Each link that would go to it shows its label (without the arrow) in muted text, with a dashed "COMING SOON" pill like the proof grid's "planned" pill. Product cards whose two buttons both go to the same hidden study show one line. Phone cards for hidden studies aren't links.
 - Source chips (fit check, Ask) that cite a hidden study show their label as plain muted text. Ask's "Jump to" leaves it out. It's left out of the sitemap, `llms.txt` and `llms-full.txt`.
 - All four are hidden at launch. To publish one, add its slug to the list.
+- **Coming-soon posts** (same day): a build-log post with `comingSoon: true` is listed on `/log` with its tag, title (muted, not a link), summary and the pill, and has no page. The sitemap, RSS and `llms.txt` leave it out. Proof cards that link to it show the pill. These are "Shipping ML OCR with a person in the loop" (human in loop) and "Why I advised against sending patient data to LLMs" (data privacy).
+- The planned "mcp server" card shows the same COMING SOON pill in place of its "Coming soon" CTA.
 
 **Ask my work** (`Ask.dc.html`, `MobileAsk.dc.html`)
 - Opens from the Nav button, the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it. Focus is trapped while open and returns to the trigger on close.

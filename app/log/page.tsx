@@ -5,12 +5,12 @@ import { Nav } from "@/components/nav";
 import { DESCRIPTIONS, pageMetadata } from "@/lib/seo";
 import { siteMeta } from "@/content/site-meta";
 import { hrefOf, withTodo } from "@/lib/content";
-import { posts } from "@/lib/posts";
+import { logEntries } from "@/lib/posts";
 
 export const metadata: Metadata = pageMetadata({ title: "Build log", description: DESCRIPTIONS.log, path: "/log" });
 
 export default async function BuildLog() {
-  const all = await posts();
+  const all = await logEntries();
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
       <Nav current="log" />
