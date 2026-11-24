@@ -5,7 +5,12 @@ name: CI
 on:
   push:
     branches: [main]
+  # A PR that changes only the eval results is the Evals workflow's own PR. GitHub doesn't run
+  # pull_request workflows for PRs made with the built-in token (it waits for an approval that then
+  # expires), so Evals starts this workflow on that branch itself (workflow_dispatch below).
   pull_request:
+    paths-ignore:
+      - content/eval-results.json
   workflow_dispatch:
     inputs:
       update-snapshots:

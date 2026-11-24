@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { JD_LABEL } from "./fixtures";
+import { evalMeta } from "@/lib/eval-results";
+
+/** The eval numbers the site shows: content/eval-results.json, or the design placeholders before a real run. */
+const EVAL = evalMeta();
 
 const theme = async (page: import("@playwright/test").Page) =>
   (await page.locator("html").getAttribute("data-xray")) === null ? null : "xray";
@@ -33,7 +37,7 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   await expect(grid).toHaveCSS("row-gap", "14px");
   const names = grid.locator(":scope > * > span:first-child > span:first-child");
   await expect(names).toHaveText(["agents", "skills", "tools", "orchestration", "memory", "production", "guardrails", "evals", "human in loop", "data privacy", "rag", "mcp server"]);
-  await expect(grid.getByText("[25] test JDs and red-team cases, run before every change.")).toBeVisible();
+  await expect(grid.getByText(`${EVAL.evalCaseCount} test JDs and red-team cases, run before every change.`)).toBeVisible();
   await expect(grid.getByRole("link", { name: /^agents/ })).toHaveAttribute("href", "/work/job-search-agent");
   await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "#");
   await expect(grid.getByRole("link", { name: /^evals/ })).toHaveAttribute("href", "https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
@@ -144,7 +148,7 @@ test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-l
   for (const c of chips) await expect(panel.locator("span.rounded-md").getByText(c, { exact: true })).toBeVisible();
   await expect(panel.getByText("fetch_url · links only", { exact: true })).toHaveCSS("border-top-style", "dashed");
   await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
-  await expect(panel.getByText("[25] test JDs and questions, including bad-fit roles and red-team cases")).toBeVisible();
+  await expect(panel.getByText(`${EVAL.evalCaseCount} test JDs and questions, including bad-fit roles and red-team cases`)).toBeVisible();
   await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
   await expect(panel.getByText("No vector DB in v1, on purpose: [your reason]")).toBeVisible();
   await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
