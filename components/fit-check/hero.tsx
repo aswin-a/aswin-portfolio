@@ -67,9 +67,12 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
   const setFocusTarget = useCallback((el: HTMLElement | null) => {
     focusRef.current = el;
   }, []);
+  // The streamed steps hand focus on too: once the result or fallback arrives, its heading takes focus,
+  // so a screen reader announces the verdict, not only "done · 7 steps" (accessibility pass, M8).
   useEffect(() => {
     const active = document.activeElement;
-    if (!active || active === document.body) focusRef.current?.focus({ preventScroll: true });
+    const handOff = active instanceof HTMLElement && active.hasAttribute("data-focus-handoff");
+    if (!active || active === document.body || handOff) focusRef.current?.focus({ preventScroll: true });
   }, [phase]);
 
   const run = useCallback(async (text: string, runRole: string, runDrill: Drill | null = null) => {
@@ -260,6 +263,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
           {showSteps && (
             <div
               ref={phase === "running" ? setFocusTarget : undefined}
+              data-focus-handoff=""
               tabIndex={-1}
               role="status"
               aria-live="polite"

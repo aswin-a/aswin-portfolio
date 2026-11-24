@@ -1,4 +1,6 @@
-import { z } from "zod";
+// zod/mini: the same validation as classic Zod in a fraction of the bundle. These schemas run in the
+// browser too (stream and response parsing), so they stay out of the classic API (Lighthouse, SPEC §14.8).
+import * as z from "zod/mini";
 
 /**
  * The fit check's event stream (SPEC §7): `step` events in pipeline order, then one terminal
@@ -25,9 +27,9 @@ export const DRILLS = ["kb", "rate"] as const;
 export type Drill = (typeof DRILLS)[number];
 
 export const FitRequestSchema = z.object({
-  jd: z.string().trim().min(1).max(JD_MAX_CHARS),
+  jd: z.string().check(z.trim(), z.minLength(1), z.maxLength(JD_MAX_CHARS)),
   /** Failure drill: forces that failure on the server (SPEC §7). */
-  drill: z.enum(DRILLS).optional(),
+  drill: z.optional(z.enum(DRILLS)),
 });
 export type FitRequest = z.infer<typeof FitRequestSchema>;
 
@@ -40,9 +42,9 @@ export const StepEventSchema = z.object({
   /** `running` when a step starts; `done` or `skipped` when it ends. */
   status: z.enum(["running", "done", "skipped"]),
   /** Short outcome shown on the right: "6 requirements", "pass", "skipped". */
-  detail: z.string().optional(),
+  detail: z.optional(z.string()),
   /** Measured duration. Only the real endpoint sets it; the UI shows "[ms]" until then. */
-  ms: z.number().nonnegative().optional(),
+  ms: z.optional(z.number().check(z.nonnegative())),
 });
 export type StepEvent = z.infer<typeof StepEventSchema>;
 
@@ -54,8 +56,8 @@ export type FitGap = z.infer<typeof FitGapSchema>;
 /** Live usage for this run. Only the real endpoint sets it; it is never faked. */
 export const RunTraceSchema = z.object({
   runId: z.string(),
-  costUsd: z.number().nonnegative(),
-  ms: z.number().nonnegative(),
+  costUsd: z.number().check(z.nonnegative()),
+  ms: z.number().check(z.nonnegative()),
   /** "provider · model", e.g. "Anthropic · claude-sonnet-5-5". */
   model: z.string(),
   /** The rest feeds X-ray's "This run" (design update 3); every value is the logged row's (SPEC §10). */
@@ -63,12 +65,12 @@ export const RunTraceSchema = z.object({
   startedAt: z.string(),
   branch: z.enum(["link", "text"]),
   /** Requirements jd.parse found. */
-  requirements: z.number().int().nonnegative(),
-  sourcesRetrieved: z.number().int().nonnegative(),
-  sourcesCited: z.number().int().nonnegative(),
+  requirements: z.int().check(z.nonnegative()),
+  sourcesRetrieved: z.int().check(z.nonnegative()),
+  sourcesCited: z.int().check(z.nonnegative()),
   /** All input tokens, cached included. */
-  tokensIn: z.number().int().nonnegative(),
-  tokensOut: z.number().int().nonnegative(),
+  tokensIn: z.int().check(z.nonnegative()),
+  tokensOut: z.int().check(z.nonnegative()),
   /** Each guard ran and the cards it returned pass it. */
   guards: z.object({ citations: z.boolean(), honesty: z.boolean() }),
 });
@@ -78,14 +80,14 @@ export type RunTrace = z.infer<typeof RunTraceSchema>;
 export const ResultEventSchema = z.object({
   type: z.literal("result"),
   /** Short role title from jd.parse. Not in SPEC §7 yet (approved addition, M4). */
-  role: z.string().optional(),
+  role: z.optional(z.string()),
   verdict: z.string(),
   note: z.string(),
   matches: z.array(FitMatchSchema),
   gaps: z.array(FitGapSchema),
   /** Retries used, of the one allowed (SPEC §7). */
-  retries: z.number().int().min(0).max(1),
-  trace: RunTraceSchema.optional(),
+  retries: z.int().check(z.gte(0), z.lte(1)),
+  trace: z.optional(RunTraceSchema),
 });
 export type ResultEvent = z.infer<typeof ResultEventSchema>;
 
@@ -97,7 +99,7 @@ export const TraceLineSchema = z.object({
   bad: z.boolean(),
   /** True for lines that end in a duration ("· [ms]" until measured). */
   timed: z.boolean(),
-  ms: z.number().nonnegative().optional(),
+  ms: z.optional(z.number().check(z.nonnegative())),
 });
 export type TraceLine = z.infer<typeof TraceLineSchema>;
 
@@ -106,9 +108,9 @@ export const FallbackEventSchema = z.object({
   type: z.literal("fallback"),
   /** `error` → the error state; `limited` → the rate-limited state; `budget` → the monthly AI budget is spent. */
   reason: z.enum(["error", "limited", "budget"]),
-  drill: z.enum(DRILLS).optional(),
-  runId: z.string().optional(),
-  trace: z.array(TraceLineSchema).optional(),
+  drill: z.optional(z.enum(DRILLS)),
+  runId: z.optional(z.string()),
+  trace: z.optional(z.array(TraceLineSchema)),
 });
 export type FallbackEvent = z.infer<typeof FallbackEventSchema>;
 

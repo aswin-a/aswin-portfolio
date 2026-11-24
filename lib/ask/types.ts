@@ -1,4 +1,6 @@
-import { z } from "zod";
+// zod/mini: the same validation as classic Zod in a fraction of the bundle. These schemas run in the
+// browser too (stream and response parsing), so they stay out of the classic API (Lighthouse, SPEC §14.8).
+import * as z from "zod/mini";
 
 /** `kind` values from SPEC §8. */
 export const ASK_KINDS = ["fit", "gap", "none", "refuse", "conflict", "clarify", "unknown"] as const;
@@ -18,16 +20,16 @@ export const AskAnswerSchema = z.object({
   /** Guard name shown in X-ray, or "none · answered from the knowledge base". */
   guard: z.string(),
   /** Content Aswin still has to supply, shown in the dotted box (Ask.dc.html `todo`). Empty when none. */
-  todo: z.string().optional(),
+  todo: z.optional(z.string()),
   /** Live run metadata for the X-ray line. Only the real endpoint sets it; it is never faked. */
-  trace: z.object({ runId: z.string(), costUsd: z.number(), ms: z.number() }).optional(),
+  trace: z.optional(z.object({ runId: z.string(), costUsd: z.number(), ms: z.number() })),
 });
 export type AskAnswer = z.infer<typeof AskAnswerSchema>;
 
 /** A fit check's context, carried into Ask for this session only (SPEC §5). */
 export const SessionMemorySchema = z.object({
   role: z.string(),
-  matchCount: z.number().int().nonnegative(),
+  matchCount: z.int().check(z.nonnegative()),
   gaps: z.array(z.object({ req: z.string(), closest: z.string(), close: z.string() })),
 });
 export type SessionMemory = z.infer<typeof SessionMemorySchema>;
@@ -59,7 +61,7 @@ export const AskStepEventSchema = z.object({
   type: z.literal("step"),
   tool: z.enum(ASK_TOOLS),
   status: z.enum(["running", "done"]),
-  ms: z.number().optional(),
+  ms: z.optional(z.number()),
 });
 export type AskStepEvent = z.infer<typeof AskStepEventSchema>;
 

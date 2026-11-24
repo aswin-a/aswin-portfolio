@@ -13,7 +13,7 @@ export function IntroBanner() {
   if (!show) return null;
 
   return (
-    <div role="region" aria-label="About X-ray mode" className="border-b border-rule bg-accent-tint">
+    <div role="region" aria-label="About X-ray mode" className="intro-only border-b border-rule bg-accent-tint">
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-x-6 gap-y-[10px] px-6 py-3 max-[640px]:flex-col max-[640px]:flex-nowrap max-[640px]:items-stretch max-[640px]:px-5 max-[640px]:py-[14px]">
         <p className="m-0 text-[15px] leading-[1.5]">
           <b className="font-semibold">New here? Try X-ray.</b>{" "}

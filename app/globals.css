@@ -121,6 +121,11 @@
   a:hover {
     opacity: 0.82;
   }
+  /* Newsreader's italic is a separate, non-preloaded instance (app/layout.tsx): serif italics use it. */
+  .font-serif :is(em, i, .italic),
+  .font-serif.italic {
+    font-family: var(--font-newsreader-italic), Georgia, serif;
+  }
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
@@ -143,6 +148,13 @@
 }
 :root[data-xray] .xray-only {
   display: revert;
+}
+
+/* The intro banner and the Nav's "NEW" pill: server-rendered, hidden before first paint once dismissed
+   or while X-ray is on (THEME_INIT_SCRIPT), so they never shift the page on load. */
+:root[data-intro-seen] .intro-only,
+:root[data-xray] .intro-only {
+  display: none;
 }
 
 /* Case study: smooth scroll for the rail, sticky rail from 900px (Work.dc.html). */
