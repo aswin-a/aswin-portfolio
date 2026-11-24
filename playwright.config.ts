@@ -3,8 +3,13 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/e2e",
   use: { baseURL: "http://localhost:3100" },
+  // Visual baselines (M7): reviewed against the artboards, then committed. `pnpm test:e2e:update` rewrites them.
+  snapshotPathTemplate: "{testDir}/__screenshots__/{arg}{ext}",
+  expect: { toHaveScreenshot: { animations: "disabled", caret: "hide", scale: "css", maxDiffPixelRatio: 0.002 } },
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   webServer: {
-    command: "pnpm build && pnpm start -p 3100",
+    // E2E_PREBUILT=1 (CI): .next was already built with this same env, so only start it.
+    command: process.env.E2E_PREBUILT ? "pnpm start -p 3100" : "pnpm build && pnpm start -p 3100",
     // The real /api/run with the deterministic fake model; no keys, no network (lib/ai/fake.ts).
     // Empty values override any .env.local, so the e2e server never calls a real service.
     // webServer.env replaces the environment, so keep the rest of it (PATH, HOME, …).

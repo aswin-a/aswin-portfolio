@@ -13,7 +13,7 @@ export const test = base.extend({
   },
 });
 
-export { expect, type Page } from "@playwright/test";
+export { expect, type Locator, type Page } from "@playwright/test";
 
 /** Markers the AI_FAKE server honours (lib/ai/fake.ts, lib/run/hooks.ts). */
 export const FAKE = {

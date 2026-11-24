@@ -36,7 +36,7 @@ test("home: 12 proof cards in the design's order, pills and CTAs (update 4)", as
   await expect(grid.getByText("[25] test JDs and red-team cases, run before every change.")).toBeVisible();
   await expect(grid.getByRole("link", { name: /^agents/ })).toHaveAttribute("href", "/work/job-search-agent");
   await expect(grid.getByRole("link", { name: /^skills/ })).toHaveAttribute("href", "#");
-  await expect(grid.getByRole("link", { name: /^evals/ })).toHaveAttribute("href", "#");
+  await expect(grid.getByRole("link", { name: /^evals/ })).toHaveAttribute("href", "https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
   await expect(grid.getByRole("link", { name: /^guardrails/ })).toHaveAttribute("href", "#break-my-ai");
   // The arrow is part of the CTA; the planned card is not a link and its CTA is muted.
   await expect(grid.getByText("Read the job-search study →", { exact: true })).toBeVisible();

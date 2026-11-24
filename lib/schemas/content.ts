@@ -75,3 +75,23 @@ export const PostSchema = z.object({
   study: z.object({ label: z.string(), slug: z.string() }).optional(),
 });
 export type Post = z.infer<typeof PostSchema>;
+
+/**
+ * content/eval-results.json (SPEC §10): written only by `pnpm evals:results` after a real-model
+ * eval run (CI opens a PR with it). `{ "lastRun": null }` until the first run: the site then shows
+ * the design's placeholders. These are offline eval numbers, never live usage.
+ */
+export const EvalResultsSchema = z.union([
+  z.object({ lastRun: z.null() }).strict(),
+  z
+    .object({
+      lastRun: z.iso.datetime(),
+      cases: z.number().int().positive(),
+      passed: z.number().int().nonnegative(),
+      passRate: z.number().min(0).max(1),
+      redTeam: z.object({ held: z.number().int().nonnegative(), total: z.number().int().nonnegative() }),
+      models: z.object({ fit: z.string(), chat: z.string() }),
+    })
+    .refine((r) => r.passed <= r.cases && r.redTeam.held <= r.redTeam.total && r.redTeam.total <= r.cases, "counts don't add up"),
+]);
+export type EvalResults = z.infer<typeof EvalResultsSchema>;

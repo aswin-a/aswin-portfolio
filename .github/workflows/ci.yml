@@ -1,0 +1,94 @@
+# Lint, typecheck, unit tests, the eval harness (fake model), build and e2e (SPEC §14.7).
+# Uses no secrets: the e2e server runs the real /api/run under AI_FAKE (playwright.config.ts).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      update-snapshots:
+        description: "Regenerate the visual baselines on this runner and upload them (commit them yourself after review)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.18.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      # The fake model: checks the eval harness, produces no eval numbers.
+      - run: pnpm evals --fake
+      - run: pnpm build
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # The same empty values playwright.config.ts gives the server, so the build matches it.
+    env:
+      AI_FAKE: "1"
+      CONTACT_PHONE: ""
+      CONTACT_PHONE_DISPLAY: ""
+      CONTACT_HOURS: ""
+      CONTACT_RESPONSE_TIME: ""
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.18.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - run: pnpm test:e2e
+        if: ${{ !inputs.update-snapshots }}
+        env:
+          E2E_PREBUILT: "1"
+      # Fonts can rasterise differently on GitHub's runner than on a laptop. This regenerates the
+      # baselines here, for review and a manual commit; it never commits anything itself.
+      - run: pnpm test:e2e:update
+        if: ${{ inputs.update-snapshots }}
+        env:
+          E2E_PREBUILT: "1"
+      - uses: actions/upload-artifact@v7
+        if: ${{ inputs.update-snapshots }}
+        with:
+          name: visual-baselines
+          path: tests/e2e/__screenshots__/
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

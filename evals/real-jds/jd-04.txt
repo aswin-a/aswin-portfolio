@@ -1,0 +1,4 @@
+label: TODO(aswin): role title · company
+bad: false
+
+TODO(aswin): paste a real job description here (the full text). Set bad: true for a role that should not be a fit.

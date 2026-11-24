@@ -238,7 +238,10 @@ test.describe("fit check", () => {
     await expect(item("Build")).toHaveText(/^[0-9a-f]{7} · \d{1,2} \w+ \d{4}$/);
     await expect(item("Prompt")).toHaveText(/^\d{4}-\d{2}-\d{2}\.\d+$/);
     await expect(item("Knowledge base")).toHaveText(/^Synced from master resume /);
-    await expect(hero(page).getByRole("link", { name: /^View on GitHub/ })).toBeVisible();
+    await expect(hero(page).getByRole("link", { name: "View on GitHub →" })).toHaveAttribute("href", "https://github.com/aswin-a/aswin-portfolio/tree/main/evals");
+    // Offline eval numbers come only from content/eval-results.json; before the first real run, the design's placeholders (M7).
+    await expect(item("Offline eval")).toHaveText("[passed]/[total] cases · [date]");
+    await expect(item("Red-team cases")).toHaveText("[held]/[total] held");
     const runPanel = hero(page).getByRole("heading", { name: "This run" }).locator("xpath=../..");
     await expect(runPanel).toHaveCSS("background-color", "rgb(16, 18, 20)");
     await expect(runPanel.getByText("X-RAY", { exact: true })).toHaveCSS("font-size", "10px");
