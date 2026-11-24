@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { JD_LABEL } from "./fixtures";
 import { evalMeta } from "@/lib/eval-results";
+import { products } from "@/content/products";
+import { siteMeta } from "@/content/site-meta";
 
 /** The eval numbers the site shows: content/eval-results.json, or the design placeholders before a real run. */
 const EVAL = evalMeta();
@@ -94,8 +96,9 @@ test("home: Products I've built, with How it works and the human step in amber (
   await expect(first.getByRole("link", { name: "Watch the recorded run" })).toHaveCSS("background-color", "rgb(27, 26, 23)");
   await expect(cards.nth(1).getByRole("link", { name: "Try it above ↑" })).toHaveAttribute("href", "#fit-h");
   await expect(cards.nth(1).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/fit-check");
-  await expect(cards.nth(2).getByText("[e.g. the spec, Figma flows and the clickable prototype]")).toBeVisible();
-  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", "#");
+  const builder = products.find((p) => p.slug === "integration-builder")!;
+  await expect(cards.nth(2).getByText(builder.built)).toBeVisible();
+  await expect(cards.nth(2).getByRole("link", { name: "Run it locally" })).toHaveAttribute("href", builder.primary.href);
   await expect(cards.nth(2).getByRole("link", { name: "Read the case study →" })).toHaveAttribute("href", "/work/integration-builder");
 });
 
@@ -150,7 +153,7 @@ test("home: 'How I built this' has no toggle and shows only in X-ray, as plain-l
   await expect(panel.getByRole("heading", { level: 4 })).toHaveText(["Architecture", "Guardrails", "Evals", "Memory and production", "Trade-offs and what’s next"]);
   await expect(panel.getByText(`${EVAL.evalCaseCount} test JDs and questions, including bad-fit roles and red-team cases`)).toBeVisible();
   await expect(panel.getByText("What failed first: [what broke, and the fix]")).toBeVisible();
-  await expect(panel.getByText("No vector DB in v1, on purpose: [your reason]")).toBeVisible();
+  await expect(panel.getByText(`No vector DB in v1, on purpose: ${siteMeta.noVectorDbReason}`)).toBeVisible();
   await expect(panel.getByText("as an MCP server you can add to Claude")).toBeVisible();
   await expect(panel.getByText(/live usage/)).toHaveCount(0);
 });
