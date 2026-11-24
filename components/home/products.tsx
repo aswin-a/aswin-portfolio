@@ -1,12 +1,20 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { products, type Product } from "@/content/products";
+import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
 
 /** `/` paths use client navigation; anchors and placeholder links stay plain. */
 function A({ href, className, children }: { href: string; className: string; children: ReactNode }) {
   if (href.startsWith("/")) return <Link href={href} className={className}>{children}</Link>;
   return <a href={href} className={className}>{children}</a>;
+}
+
+/** The phone card links where its button goes, or is plain text while that's a hidden case study. */
+function PhoneCard({ href, className, children }: { href: string; className: string; children: ReactNode }) {
+  if (isHiddenStudyHref(href)) return <div className={className}>{children}</div>;
+  return <A href={href} className={className}>{children}</A>;
 }
 
 const accentStatus = (status: string) => status === "LIVE HERE" || status.startsWith("IN USE");
@@ -55,18 +63,29 @@ export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { heading
                     {p.built}
                   </p>
                   <div className="mt-auto flex flex-wrap gap-[10px] pt-[6px]">
-                    <A
-                      href={href(p.primary.href)}
-                      className="inline-flex min-h-11 items-center rounded-[10px] bg-btn-bg px-4 py-2 text-[14px] font-semibold text-btn-ink no-underline"
-                    >
-                      {p.primary.label}
-                    </A>
-                    <A
-                      href={href(p.secondary.href)}
-                      className="inline-flex min-h-11 items-center px-1 font-mono text-[13px] text-accent no-underline"
-                    >
-                      {p.secondary.label}
-                    </A>
+                    {isHiddenStudyHref(p.primary.href) ? (
+                      <ComingSoonLink label={plainLabel(p.primary.label)} className="min-h-11 text-[14px] font-semibold" />
+                    ) : (
+                      <A
+                        href={href(p.primary.href)}
+                        className="inline-flex min-h-11 items-center rounded-[10px] bg-btn-bg px-4 py-2 text-[14px] font-semibold text-btn-ink no-underline"
+                      >
+                        {p.primary.label}
+                      </A>
+                    )}
+                    {/* A hidden study shows one "coming soon" line, even when both links go to it. */}
+                    {isHiddenStudyHref(p.secondary.href) ? (
+                      p.secondary.href !== p.primary.href && (
+                        <ComingSoonLink label={plainLabel(p.secondary.label)} className="min-h-11 px-1 font-mono text-[13px]" />
+                      )
+                    ) : (
+                      <A
+                        href={href(p.secondary.href)}
+                        className="inline-flex min-h-11 items-center px-1 font-mono text-[13px] text-accent no-underline"
+                      >
+                        {p.secondary.label}
+                      </A>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -113,7 +132,7 @@ export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { heading
           Products I&apos;ve built
         </H>
         {items.map((p) => (
-          <A
+          <PhoneCard
             key={p.slug}
             href={phoneHref(p)}
             className="flex flex-col gap-[6px] rounded-xl border border-rule bg-paper px-4 py-[14px] no-underline"
@@ -132,7 +151,12 @@ export function ProductsSection({ headingLevel = 2, anchorBase = "" }: { heading
             ) : (
               p.primary.href.startsWith("#") && <span className="font-mono text-[12px] text-muted">{p.primary.label}</span>
             )}
-          </A>
+            {isHiddenStudyHref(phoneHref(p)) && (
+              <span className="self-start">
+                <ComingSoonPill />
+              </span>
+            )}
+          </PhoneCard>
         ))}
       </section>
     </>

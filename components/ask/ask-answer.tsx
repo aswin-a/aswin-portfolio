@@ -1,4 +1,5 @@
 import { AskLink } from "@/components/ask/ask-link";
+import { isHiddenStudyHref } from "@/lib/case-study-visibility";
 import { XrayPill } from "@/components/xray-panel";
 import { ASK_BUDGET, ASK_ERROR, ASK_LABELS, ASK_LIMITED, CONTACT_SOURCE } from "@/lib/ask/copy";
 import type { AskAnswer, AskResult, AskSource } from "@/lib/ask/types";
@@ -60,7 +61,12 @@ export function AskAnswerView({
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {card.sources.map((s) => (
+        {card.sources.map((s) =>
+          isHiddenStudyHref(s.href) ? (
+            <span key={s.label} className="rounded-[6px] bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-muted">
+              {s.label}
+            </span>
+          ) : (
           <AskLink
             key={s.label}
             href={s.href}
@@ -69,7 +75,8 @@ export function AskAnswerView({
           >
             {s.label} →
           </AskLink>
-        ))}
+          ),
+        )}
       </div>
       {result.status === "ok" && (
         <div className="xray-only">

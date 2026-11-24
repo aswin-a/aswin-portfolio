@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
 import { cvHeader } from "@/content/cv";
@@ -12,13 +12,27 @@ import { rssXml } from "@/lib/rss";
 import { logCrawl } from "@/lib/server/log-crawl";
 import { isoDate, personJsonLd, profilePageJsonLd, SITE_URL } from "@/lib/seo";
 
+// Which case studies are linked (content/case-studies/visibility.ts). Each test sets it; none by default.
+const live = vi.hoisted(() => ({ slugs: [] as string[] }));
+vi.mock("@/content/case-studies/visibility", () => ({
+  get LIVE_CASE_STUDIES() {
+    return live.slugs;
+  },
+}));
+beforeEach(() => {
+  live.slugs = [];
+});
+
 // MDX can't be imported by Vitest; the loaders are stubbed with the real slugs.
-vi.mock("@/lib/case-studies", () => {
+vi.mock("@/lib/case-studies", async () => {
+  const { isHiddenStudy } = await import("@/lib/case-study-visibility");
   const CASE_STUDY_SLUGS = ["job-search-agent", "fit-check", "integration-builder", "instagram-agent"];
+  const caseStudies = async () =>
+    CASE_STUDY_SLUGS.map((slug) => ({ slug, title: `Study ${slug}`, lede: "Lede", facts: [{ label: "Built", value: "x" }], repo: "#" }));
   return {
     CASE_STUDY_SLUGS,
-    caseStudies: async () =>
-      CASE_STUDY_SLUGS.map((slug) => ({ slug, title: `Study ${slug}`, lede: "Lede", facts: [{ label: "Built", value: "x" }], repo: "#" })),
+    caseStudies,
+    linkedCaseStudies: async () => (await caseStudies()).filter((cs) => !isHiddenStudy(cs.slug)),
   };
 });
 vi.mock("@/lib/posts", () => {
@@ -55,10 +69,17 @@ describe("sitemap.xml", () => {
     const urls = (await sitemap()).map((e) => e.url);
     expect(SITE_URL).toBe(`https://${siteMeta.domain}`);
     for (const p of ["/", "/work", "/log", "/about", "/about.md"]) expect(urls).toContain(new URL(p, SITE_URL).toString());
-    for (const s of CASE_STUDY_SLUGS) expect(urls).toContain(`${SITE_URL}/work/${s}`);
     for (const s of POST_SLUGS) expect(urls).toContain(`${SITE_URL}/log/${s}`);
     expect(urls.every((u) => u.startsWith(SITE_URL))).toBe(true);
     expect(urls.some((u) => u.includes("/api/"))).toBe(false);
+  });
+  it("lists only the case studies that are live, never a hidden one", async () => {
+    let urls = (await sitemap()).map((e) => e.url);
+    for (const s of CASE_STUDY_SLUGS) expect(urls).not.toContain(`${SITE_URL}/work/${s}`);
+    live.slugs = ["integration-builder"];
+    urls = (await sitemap()).map((e) => e.url);
+    expect(urls).toContain(`${SITE_URL}/work/integration-builder`);
+    expect(urls).not.toContain(`${SITE_URL}/work/fit-check`);
   });
 });
 
@@ -67,17 +88,27 @@ describe("llms.txt and llms-full.txt", () => {
     const t = await llmsTxt();
     expect(t.startsWith(`# ${cvHeader.name}\n\n> `)).toBe(true);
     expect(t).toContain(`(${SITE_URL}/about)`);
-    expect(t).toContain(`(${SITE_URL}/work/fit-check)`);
+    expect(t).not.toContain("/work/");
+    expect(t).not.toContain("## Case studies");
     expect(t).toContain(`(${SITE_URL}/log/a-post)`);
     expect(t).toContain(`(${SITE_URL}/llms-full.txt)`);
   });
   it("llms-full.txt carries products, case studies, posts and the whole CV", async () => {
     const t = await llmsFullTxt();
     expect(t).toContain("## Products I've built");
-    expect(t).toContain("Study integration-builder");
+    expect(t).not.toContain("Study integration-builder");
+    expect(t).not.toContain("Case study: ");
     expect(t).toContain("Summary A");
     expect(t).toContain(cvHeader.summary);
     expect(t).toContain("## Experience");
+  });
+  it("links and describes a case study once it's live", async () => {
+    live.slugs = ["fit-check"];
+    expect(await llmsTxt()).toContain(`(${SITE_URL}/work/fit-check)`);
+    const full = await llmsFullTxt();
+    expect(full).toContain("Study fit-check");
+    expect(full).toContain(`Case study: ${SITE_URL}/work/fit-check`);
+    expect(full).not.toContain("Study integration-builder");
   });
 });
 

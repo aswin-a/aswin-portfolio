@@ -103,7 +103,8 @@ test.describe("before a question", () => {
     }
     // The dialog itself stays light; only the scrim darkens.
     await expect(dialog(page)).toHaveCSS("background-color", "rgb(255, 253, 248)");
-    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveAttribute("href", "/work/integration-builder");
+    // The case study is hidden for now (content/case-studies/visibility.ts), so Jump to leaves it out.
+    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveCount(0);
     await expect(dialog(page).getByRole("link", { name: "Build log" })).toHaveAttribute("href", "/log");
     await expect(dialog(page).getByRole("link", { name: "About · resume" })).toHaveAttribute("href", "/about");
   });

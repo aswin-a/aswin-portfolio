@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { LiveLink } from "@/components/home/live-link";
 import { hood, type HoodItem } from "@/content/hood";
+import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
 
 /** Status pill colours (Main.dc.html, design update 4). The phone list never uses dashed borders. */
@@ -14,7 +16,7 @@ function pillClass(u: HoodItem, phone = false) {
 
 function CardLink({ card, className, children }: { card: HoodItem; className: string; children: ReactNode }) {
   // "planned" has no link and isn't clickable.
-  if (!card.href) return <div className={className}>{children}</div>;
+  if (!card.href || isHiddenStudyHref(card.href)) return <div className={className}>{children}</div>;
   if (card.live) return <LiveLink href={card.href} className={className}>{children}</LiveLink>;
   const href = hrefOf(card.href);
   if (href.startsWith("/")) return <Link href={href} className={className}>{children}</Link>;
@@ -51,7 +53,11 @@ export function UnderTheHood() {
                   </span>
                 </span>
                 <span className="text-[15px] leading-[1.5] text-muted">{u.proof}</span>
-                <span className={`mt-auto font-mono text-[12px] ${u.status === "planned" ? "text-muted" : "text-accent"}`}>{u.cta}</span>
+                {u.href && isHiddenStudyHref(u.href) ? (
+                  <ComingSoonLink label={plainLabel(u.cta)} className="mt-auto self-start font-mono text-[12px]" />
+                ) : (
+                  <span className={`mt-auto font-mono text-[12px] ${u.status === "planned" ? "text-muted" : "text-accent"}`}>{u.cta}</span>
+                )}
               </CardLink>
             ))}
           </div>
@@ -71,7 +77,10 @@ export function UnderTheHood() {
             className="flex min-h-[52px] items-center justify-between gap-3 rounded-[10px] border border-rule bg-paper px-[14px] py-[10px] text-ink no-underline"
           >
             <span className="font-mono text-[14px]">{u.name}</span>
-            <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
+            <span className="flex items-center gap-[6px]">
+              {u.href && isHiddenStudyHref(u.href) && <ComingSoonPill />}
+              <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
+            </span>
           </CardLink>
         ))}
       </section>

@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { caseStudies } from "@/lib/case-studies";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { posts } from "@/lib/posts";
 import { creativeWorkJsonLd, pageMetadata } from "@/lib/seo";
 
@@ -20,7 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cs = (await caseStudies()).find((c) => c.slug === slug);
   if (!cs) return { title: "Case study" };
-  return pageMetadata({ title: `Case study — ${cs.title}`, description: cs.lede, path: `/work/${cs.slug}`, type: "article" });
+  const meta = pageMetadata({ title: `Case study — ${cs.title}`, description: cs.lede, path: `/work/${cs.slug}`, type: "article" });
+  // A hidden case study stays reachable by URL but out of search indexes (content/case-studies/visibility.ts).
+  return isHiddenStudy(cs.slug) ? { ...meta, robots: { index: false, follow: false } } : meta;
 }
 
 export default async function CaseStudyRoute({ params }: Props) {

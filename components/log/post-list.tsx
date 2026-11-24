@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ComingSoonLink } from "@/components/coming-soon";
+import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { useState } from "react";
 import type { Post } from "@/lib/schemas/content";
 
@@ -58,7 +60,10 @@ export function PostList({ posts }: { posts: Post[] }) {
             <p className="m-0 rounded-lg border border-dotted border-muted px-3 py-[10px] font-mono text-[13px] leading-[1.55] text-muted">
               {p.summary}
             </p>
-            {p.study && (
+            {p.study && isHiddenStudy(p.study.slug) && (
+              <ComingSoonLink label={p.study.label} className="self-start font-mono text-[12px]" />
+            )}
+            {p.study && !isHiddenStudy(p.study.slug) && (
               <Link
                 href={`/work/${p.study.slug}`}
                 className="self-start rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"
