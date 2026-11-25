@@ -2,6 +2,96 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-25 (update 9): A real mobile layout. Phone header and menu, bottom dock for X-ray and Ask, compact fit check, expandable product cards
+
+Changed: `Mobile.dc.html`, `Hero.dc.html`, `MobileAsk.dc.html` and `canvas.json` (Mobile board h 5400). **New** state boards:
+- `MobileFitStates.dc.html` (2400×3200): the fit check at 390px in 5 states.
+- `MobileNavStates.dc.html` (1550×1060): three 390×844 scrollable phone frames, showing first visit, menu open and X-ray on.
+
+Desktop `Nav`, `Main` and the other pages are unchanged.
+**The mobile layout applies below 640px.** The prototype forces it with `compact`; the build uses the breakpoint.
+
+### 1. Mobile header (replaces the desktop Nav and the X-ray intro banner on phones)
+- A **sticky** `<header>` (top 0, z 30, bg, bottom rule) containing `<nav aria-label="Main">`, 52px tall, padding `0 8px 0 20px`.
+  - Left: "Aswin" (serif 21px) plus "pm · builds for agents" (mono 11px muted), linking home.
+  - Right: a `Menu ☰` / `Close ✕` button (mono 13px, 44×44 minimum) with `aria-expanded` and `aria-controls="m-menu"`.
+- **Menu panel** (`#m-menu`): absolutely positioned under the bar, full width, bg, bottom rule, shadow `0 16px 32px rgba(27,26,23,.12)`, padding `4px 20px 20px`.
+  - Rows (52px tall, 18px text, rule dividers, mono mark on the right): Case studies → · Build log → · CV → · Contact ↓.
+  - Contact smooth-scrolls to `#contact`. Every row closes the menu.
+  - Below the rows: an **X-ray switch** row with "X-ray" (16px 600) and "Shows how the AI works: sources, guardrails, cost." (13px muted). It's a `role="switch"` `aria-checked` toggle, 52×32: accent track when on, rule track when off, 26px paper knob at `left: 23px` / `3px`.
+- The old full-width "New here? Try X-ray." banner is **gone on mobile**. It's replaced by the dock hint (§2).
+
+### 2. Bottom dock (new, mobile only)
+- `position: sticky; bottom: 16px; z-index: 25`, centred, `pointer-events: none` on the wrapper (`auto` on its children). Hidden while Ask is open.
+- **Dock pill:** max-width 340px, 52px tall, radius 999px, bg `#101214`, shadow `0 10px 28px rgba(16,18,20,.28)`.
+  - Left: the X-ray toggle (`aria-pressed`), with a mini 26×16 track (`#8DBBF2` when on, `#3A4047` when off; knob `#101214` / `#A3A9B0`) and the label `X-ray` / **`X-ray on`** (mono 13px `#E9E6DF`).
+  - Then a 1px `#3A4047` divider.
+  - Right: an `Ask my work ↑` button (flex 1; 15px 600 `#FFFDF8`; arrow in mono `#A3A9B0`). It opens Ask and keeps any fit-check context.
+- **One-time hint** above the dock, shown until it's dismissed or X-ray is turned on:
+  - paper bg, accent border, radius 12px, shadow, max-width 340px, a small rotated-square tail pointing at the X-ray toggle
+  - text: "**New: X-ray.** Turn it on to see how the AI works here." plus a "Got it" button
+  - `role="status"`
+  - Remember the dismissal in `localStorage`, wrapped in try/catch.
+
+### 3. Hero.dc.html: compact (mobile) layout
+- New prop `compact`. In the build, compact means `< 640px`.
+- Spacing tokens, compact vs desktop:
+
+| Token | Compact | Desktop |
+|---|---|---|
+| section padding | `28px 16px 36px` | `72px 24px 64px` |
+| gap | 20px | 28px |
+| H1 | 32px | clamp(32px, 4vw, 46px) |
+| subline | 18px | 20px |
+| panel radius / padding / gap | 16px / 16px / 16px | 20px / clamp(18px,3vw,32px) / 22px |
+| card padding | 16px | `20px 22px` |
+| JD label | 17px | 21px |
+| textarea | 4 rows, 16px | 5 rows, 17px |
+| Break label | 16px | 18px |
+| steps font | 13px | 14px |
+| verdict H2 | 28px | 40px |
+| result CTAs | column, stretched (full width) | row, centred |
+
+- **Desktop note:** the JD card and the Break-my-AI input card now use padding `20px 22px` (they were 22px and 20px).
+- **JD box, compact:**
+  - A full-width "Check fit" button under the textarea (top rule above it).
+  - Then "No JD handy? Try a sample role:".
+  - Then the sample chips in **one horizontally scrolling row**: `overflow-x: auto`, edge-bleed `margin: 0 -16px; padding: 0 16px 4px`, hidden scrollbar, chips `flex: none; white-space: nowrap`, min-height 40px.
+- **Steps, compact:** a vertical stepper (`<ol>`). Each step has:
+  - A 22px dot:
+    - done: accent border on accentTint, `✓`
+    - current: 1.5px accent, `•`
+    - pending or skipped: dashed rule; skipped shows `–`
+  - A connector line, then the label (15px).
+  - A mono 12px line `{tool} · {status}`. A skipped fetch reads "Fetching the job post" with the status "skipped, text was pasted".
+  - Desktop keeps the old one-line rows.
+- **Break my AI, compact:** the same pattern as the JD box: a full-width "Run attack" button, "Or try a known attack:", and a horizontally scrolling chip row.
+- All inner grids now use `minmax(min(Npx, 100%), 1fr)`, so nothing overflows at 390px.
+- **Link label change (desktop too):** "Download resume" → **"See my CV"** (it links to the CV page).
+- `MobileFitStates` shows the compact Hero states: empty, running, result, bad fit, and X-ray on with Break my AI.
+
+### 4. Mobile "Products I've built": expandable cards
+- The 4 plain links are replaced by `<article>` cards (padding 16px, radius 12px, paper; rule border, accent when open). Each card has:
+  - a header row: the number (mono 12px muted) and an `Expand ↓` / `Collapse ↑` button (mono 13px accent, `aria-expanded`)
+  - the name (18px 600) and a short pitch (15px muted). The pitches are shorter than on desktop; see `MOB_WORK`.
+  - two mono 13px accent links: the primary one ("Watch the run →" / "Try it above ↑" → `#fit-h` / "Run it locally →") and "Read the case study →"
+  - **When expanded:** a top rule, the `HOW IT WORKS` label, the same numbered stepper as desktop (human steps in amber with "· person decides"), then `WHAT I BUILT` plus that text.
+- One card open at a time; **all start closed** (`openWork: -1`).
+- The status labels (`IN USE · RECORDED RUN` etc.) are still in the data but **not shown** on these cards.
+
+### 5. Mobile hood groups (from update 8)
+- Only the cue text changed: `Show 3 ↓` / `Hide ↑` → `Expand ↓` / `Collapse ↑`, matching the product cards.
+
+### 6. MobileAsk.dc.html
+- Its backdrop now uses the new mobile header ("Aswin" + "Menu ☰") and the compact Hero, instead of the desktop Nav.
+
+### Spec impact
+- **Responsive rule:** below 640px, render the mobile header, menu and dock, the compact Hero, the hood accordion and the expandable product cards. At 640px and above, use the existing desktop layout. One component tree with breakpoint variants; no separate mobile routes.
+- **Nav component:** add a `MobileNav` (header, menu panel, X-ray switch) and a `MobileDock`. X-ray state stays global (one store). The menu traps focus while open and closes on Escape and on route change.
+- **The dock must not cover content:** add bottom padding on mobile equal to the dock height + 16px + the safe-area inset (`env(safe-area-inset-bottom)`).
+- **Ask:** the dock opens the same Ask sheet as `⌘K` / the desktop button, with the fit-check context.
+- **Tests:** a Playwright mobile project (390×844) covering the menu, the dock X-ray toggle, the hint dismissal persisting, horizontal chip scrolling, the stepper, and single-open accordions.
+
 ## 2026-11-25 (update 8): Mobile "How I build agentic products, with proof" becomes 4 expandable groups
 
 Changed artboard: `Mobile.dc.html` only. Nothing else changed, including the Mobile "Products I've built" list and desktop `Main.dc.html`.

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fit check on mobile — key states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 2400px; min-height: 3200px; box-sizing: border-box; padding: 80px; background: #EDE9E0; color: #1B1A17; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: grid; grid-template-columns: repeat(5, 390px); gap: 80px 64px; align-items: start">
+<sc-for list="{{states}}" as="s" hint-placeholder-count="7">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 16px; color: #5C574E">{{s.num}} · STATE</p>
+<h2 style="margin: 0; font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: 34px">{{s.name}}</h2>
+<p style="margin: 0; max-width: 390px; font-size: 18px; line-height: 1.45; color: #5C574E">{{s.note}}</p>
+</div>
+<div style="width: 390px; border: 1px solid #D6D0C3; border-radius: 28px; overflow: hidden; background: #F6F3EC">
+<dc-import name="Hero" initial="{{s.id}}" still="{{ true }}" compact="{{ true }}" hint-size="390px,1400px"></dc-import>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2400,"height":3200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      states: [
+        { id: 'empty', num: '01', name: 'Empty', note: 'Check fit is full width under the box, and sample roles scroll sideways in one row instead of wrapping.' },
+        { id: 'running', num: '02', name: 'Running', note: 'The role summary and progress bar sit on top; the steps stay readable at a smaller size.' },
+        { id: 'result', num: '03', name: 'Result', note: 'Matches and gaps stack as labelled rows. Talk to Aswin and Ask my work are full width, one per line.' },
+        { id: 'badfit', num: '04', name: 'Bad fit', note: 'Same layout; the honest “not something Aswin has done” rows carry the page.' },
+        { id: 'break', num: '05', name: 'X-ray on: Break my AI', note: 'Same pattern as the JD box: Run attack is full width under the input, and known attacks scroll sideways in one row.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
