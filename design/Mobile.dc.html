@@ -36,6 +36,9 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </div>
 </sc-if>
 </header>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{toggleMenu}}" style="position: absolute; inset: 0; z-index: 20; background: rgba(27, 26, 23, 0.4)"></div>
+</sc-if>
 
 <div id="top"></div>
 <dc-import name="Hero" initial="result" compact="{{ true }}" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-xray="{{xrayOn}}" hint-size="390px,2500px"></dc-import>
@@ -130,7 +133,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </div>
 </div>
 </sc-if>
-<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="home" context="{{askCtx}}" on-close="{{closeAsk}}" on-forget="{{forgetCtx}}" hint-size="0px,0px"></dc-import>
+<dc-import name="Ask" open="{{askOpen}}" sheet="{{ true }}" xray="{{xray}}" page="home" context="{{askCtx}}" on-close="{{closeAsk}}" on-forget="{{forgetCtx}}" hint-size="0px,0px"></dc-import>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"startMenu":{"editor":"boolean","default":false},"startXray":{"editor":"boolean","default":false},"introSeen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":4300}}'>
@@ -192,7 +195,7 @@ class Component extends DCLogic {
         }
       })),
       switchBg: x ? t.accent : t.rule, switchKnob: x ? '23px' : '3px',
-      showDock: !s.askOpen,
+      showDock: !s.askOpen && !s.menuOpen,
       dockBg: '#101214', dockTrack: x ? '#8DBBF2' : '#3A4047', dockKnob: x ? '12px' : '2px', dockKnobBg: x ? '#101214' : '#A3A9B0',
       dockXLabel: x ? 'X-ray on' : 'X-ray',
       openAskDock: () => this.setState({ askOpen: true, menuOpen: false, askCtx: this.state.askCtx ? Object.assign({}, this.state.askCtx, { focus: null }) : null }),

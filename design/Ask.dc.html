@@ -12,16 +12,16 @@
 <style>body{margin:0}</style>
 </helmet>
 <sc-if value="{{open}}" hint-placeholder-val="{{ true }}">
-<div style="position: {{position}}; inset: 0; z-index: 50; min-height: {{minH}}; box-sizing: border-box; display: flex; justify-content: center; align-items: {{align}}; padding: {{pad}}; background: {{scrim}}; font-family: {{t.sans}}; color: {{t.ink}}">
-<div role="dialog" aria-modal="true" aria-label="Ask my work" style="width: 100%; max-width: {{maxW}}; box-sizing: border-box; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: {{radius}}; box-shadow: 0 24px 60px rgba(20, 18, 15, 0.22); display: flex; flex-direction: column; overflow: hidden">
-
+<div onClick="{{scrimClick}}" style="position: {{position}}; inset: 0; z-index: 50; min-height: {{minH}}; box-sizing: border-box; display: flex; justify-content: center; align-items: {{align}}; padding: {{pad}}; background: {{scrim}}; font-family: {{t.sans}}; color: {{t.ink}}">
+<div role="dialog" aria-modal="true" aria-label="Ask my work" style="width: 100%; max-width: {{maxW}}; height: {{dlgH}}; max-height: {{dlgMaxH}}; padding-bottom: {{safeB}}; box-sizing: border-box; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: {{radius}}; box-shadow: 0 24px 60px rgba(20, 18, 15, 0.22); display: flex; flex-direction: column; overflow: hidden">
+<sc-if value="{{isSheet}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display: block; flex: none; width: 36px; height: 4px; margin: 8px auto 0; border-radius: 999px; background: {{t.rule}}"></span></sc-if>
 <form onSubmit="{{submit}}" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid {{t.rule}}">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{t.muted}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
 <input type="text" value="{{query}}" onChange="{{onQuery}}" disabled="{{thinking}}" aria-busy="{{thinking}}" aria-label="Ask a question about Aswin's work" placeholder="{{placeholder}}" style="opacity: {{inputOpacity}}; flex: 1; min-width: 0; min-height: 44px; border: 0; outline: none; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 17px">
 <button type="submit" disabled="{{thinking}}" style="min-height: 40px; padding: 6px 14px; border-radius: 8px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 14px; font-weight: 600; cursor: pointer; opacity: {{inputOpacity}}">{{askLabel}}</button>
 <button type="button" onClick="{{close}}" aria-label="Close" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: {{t.muted}}; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </form>
-
+<div style="flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain">
 <sc-if value="{{thinking}}" hint-placeholder-val="{{ false }}">
 <div role="status" aria-live="polite" style="padding: 18px; display: flex; flex-direction: column; gap: 10px; font-family: {{t.mono}}; font-size: 13px">
 <p style="margin: 0; color: {{t.muted}}">› {{asked}}</p>
@@ -115,9 +115,10 @@
 
 </div>
 </div>
+</div>
 </sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"open":{"editor":"boolean","default":true},"xray":{"editor":"boolean","default":false},"sheet":{"editor":"boolean","default":false},"page":{"editor":"enum","options":["home","work","log","about"],"default":"home"},"context":{"editor":null},"topic":{"editor":null},"autoAsk":{"editor":null},"onClose":{"editor":null},"onForget":{"editor":null},"$preview":{"width":1280,"height":760}}'>
+<script type="text/x-dc" data-dc-script data-props='{"open":{"editor":"boolean","default":true},"xray":{"editor":"boolean","default":false},"sheet":{"editor":"boolean","default":false},"contained":{"editor":"boolean","default":false},"page":{"editor":"enum","options":["home","work","log","about"],"default":"home"},"context":{"editor":null},"topic":{"editor":null},"autoAsk":{"editor":null},"onClose":{"editor":null},"onForget":{"editor":null},"$preview":{"width":1280,"height":760}}'>
 var ASK_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function askTokens(x) {
   var c = x
@@ -247,13 +248,18 @@ class Component extends DCLogic {
     }
     return {
       t: t, d: d, xray: x, open: open,
-      position: sheet ? 'absolute' : 'fixed',
-      minH: sheet ? '100%' : '0px',
+      isSheet: sheet,
+      position: sheet && this.props.contained ? 'absolute' : 'fixed',
+      dlgH: sheet ? (this.props.contained ? '85%' : '85dvh') : 'auto',
+      dlgMaxH: sheet ? 'none' : '80vh',
+      safeB: sheet ? 'env(safe-area-inset-bottom, 0px)' : '0px',
+      scrimClick: (e) => { if (e && e.target === e.currentTarget && this.props.onClose) this.props.onClose(); },
+      minH: sheet && this.props.contained ? '100%' : '0px',
       align: sheet ? 'flex-end' : 'flex-start',
       pad: sheet ? '0px' : '10vh 20px 20px',
       maxW: sheet ? '100%' : '680px',
       radius: sheet ? '18px 18px 0 0' : '14px',
-      scrim: x ? 'rgba(0, 0, 0, 0.6)' : 'rgba(27, 26, 23, 0.38)',
+      scrim: x ? 'rgba(0, 0, 0, 0.6)' : 'rgba(27, 26, 23, 0.4)',
       query: this.state.query,
       noAnswer: !a && !this.state.thinking, hasAnswer: !!a && !this.state.thinking,
       thinking: !!this.state.thinking, asked: this.state.asked,

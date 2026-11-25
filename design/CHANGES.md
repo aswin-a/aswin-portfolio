@@ -2,6 +2,36 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-25 (update 10): Ask becomes a real bottom sheet on phones; menu gets a scrim
+
+Changed: `Ask.dc.html`, `Mobile.dc.html`, `MobileAsk.dc.html`. Nothing else changed (canvas sizes too).
+
+### 1. Ask.dc.html: sheet and dialog behaviour
+- **Tap outside to close:** clicking the scrim itself (not the dialog) calls `onClose`. The check is `e.target === e.currentTarget`.
+- **Scrim colour (light):** `rgba(27,26,23,0.38)` → `0.4`. In X-ray it stays `rgba(0,0,0,0.6)`.
+- **Scrollable body:** everything under the header now sits in a wrapper `div` with `flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain`. The header stays put and the conversation scrolls; scrolling doesn't leak to the page behind.
+- **Desktop dialog:** `max-height: 80vh`, height auto.
+- **Sheet (phone) mode** (`sheet`):
+  - Height `85dvh`, with `max-height: none`.
+  - `padding-bottom: env(safe-area-inset-bottom, 0px)`.
+  - A **grab handle** at the top (36×4px, rule colour, radius 999px, `margin: 8px auto 0`, `aria-hidden`).
+  - `position: fixed`.
+- New prop **`contained`**: only for artboards inside a phone frame (MobileAsk). It switches the sheet to `position: absolute`, height `85%` and `min-height: 100%`. **The build never uses `contained`**; real phones use the fixed `85dvh` sheet.
+
+### 2. Mobile.dc.html
+- Ask now opens as a **sheet** on mobile (`sheet={{ true }}`), so the dock's "Ask my work" brings up the bottom sheet.
+- **Menu scrim:** while the menu is open, a full-page scrim `rgba(27,26,23,0.4)` (z 20, under the header's z 30) sits behind the panel. Tapping it closes the menu.
+- **The dock hides while the menu is open** (`showDock = !askOpen && !menuOpen`).
+
+### 3. MobileAsk.dc.html
+- Passes `contained={{ true }}` so the sheet renders inside the 390×844 frame. It's a canvas artboard only.
+
+### Spec impact
+- **Ask on mobile is a bottom sheet:** 85dvh tall, safe-area padding, a grab handle, scroll locked to the sheet. Closes on scrim tap, on Escape, and on swipe-down.
+  - **Swipe-down isn't shown in the design: ask Aswin before adding it.**
+- On every viewport: focus trap while Ask is open, focus returns to the opener on close, and the body doesn't scroll behind the sheet or dialog.
+- **Mobile menu:** add the scrim. Tapping it closes the menu, as do Escape and route changes. Hide the dock while the menu is open.
+
 ## 2026-11-25 (update 9): A real mobile layout. Phone header and menu, bottom dock for X-ray and Ask, compact fit check, expandable product cards
 
 Changed: `Mobile.dc.html`, `Hero.dc.html`, `MobileAsk.dc.html` and `canvas.json` (Mobile board h 5400). **New** state boards:
