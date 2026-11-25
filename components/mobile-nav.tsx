@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { NavCurrent } from "@/components/nav";
 import { useSite } from "@/components/xray-provider";
 
@@ -22,13 +21,10 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * on any row and on route change (SPEC §5).
  */
 export function MobileNav({ current, headerRef }: { current: NavCurrent; headerRef: RefObject<HTMLElement | null> }) {
-  const { xray, toggleXray } = useSite();
+  const { xray, toggleXray, menuOpen: open, setMenuOpen } = useSite();
   const buttonRef = useRef<HTMLButtonElement>(null);
-  // The menu is open on the path it was opened on, so a route change closes it.
-  const pathname = usePathname();
-  const [openOn, setOpenOn] = useState<string | null>(null);
-  const open = openOn === pathname;
-  const close = useCallback(() => setOpenOn(null), []);
+  // The open state lives in the provider (the dock hides while it's open); a route change closes it.
+  const close = useCallback(() => setMenuOpen(false), [setMenuOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -69,6 +65,7 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
   };
 
   return (
+    <>
     <header
       ref={headerRef}
       className="sticky top-0 z-30 hidden border-b border-rule bg-bg font-sans text-ink max-[640px]:block"
@@ -81,7 +78,7 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
         <button
           ref={buttonRef}
           type="button"
-          onClick={() => setOpenOn(open ? null : pathname)}
+          onClick={() => setMenuOpen(!open)}
           aria-expanded={open}
           aria-controls="m-menu"
           className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 border-0 bg-transparent px-3 font-mono text-[13px] text-ink"
@@ -141,5 +138,10 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
         </div>
       )}
     </header>
+    {/* Behind the open menu: a scrim over the page, under the header (design update 10). A tap closes the menu. */}
+    {open && (
+      <div aria-hidden="true" onClick={close} className="fixed inset-0 z-20 hidden bg-[var(--menu-scrim)] max-[640px]:block" />
+    )}
+    </>
   );
 }

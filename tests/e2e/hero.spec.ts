@@ -156,10 +156,10 @@ test.describe("fit check", () => {
     await page.goto("/?xray=1");
     await paste(page, `${HERO_SAMPLES[0].jd} ${FAKE.hold}`);
     await expect(running(page).getByText("fetch_url · skipped: text was pasted")).toBeVisible();
-    await expect(running(page).getByText("6 requirements", { exact: true })).toBeVisible();
+    await expect(running(page).getByText("6 requirements", { exact: true }).filter({ visible: true })).toBeVisible();
     await expect(hero(page).getByText(/^trace run_/)).toHaveCount(0);
     await expect(running(page).getByText("jd.parse(text) → requirements[]")).toHaveCount(0);
-    await expect(running(page).getByText("running…")).toHaveCount(1);
+    await expect(running(page).getByText("running…").filter({ visible: true })).toHaveCount(1);
     // The fit check is still usable with the red-team panel below it.
     await expect(breakPanel(page)).toBeVisible();
   });

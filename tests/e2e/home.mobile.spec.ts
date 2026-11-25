@@ -298,3 +298,68 @@ test.describe("product cards (update 9)", () => {
     await expect(toggles.nth(2)).toHaveAttribute("aria-expanded", "false");
   });
 });
+
+test.describe("Ask sheet and menu scrim (update 10)", () => {
+  const sheet = (page: Page) => page.getByRole("dialog", { name: "Ask my work" });
+  const handle = (page: Page) => sheet(page).locator("> span[aria-hidden]").first();
+
+  test("the menu dims the page behind it; a tap on the scrim closes it; the dock hides meanwhile", async ({ page }) => {
+    await page.goto("/");
+    await menuButton(page).click();
+    const scrim = page.locator("div[aria-hidden].fixed.inset-0");
+    await expect(scrim).toBeVisible();
+    await expect(scrim).toHaveCSS("background-color", "rgba(27, 26, 23, 0.4)");
+    await expect(scrim).toHaveCSS("z-index", "20");
+    await expect(dockAsk(page)).toHaveCount(0);
+    await page.mouse.click(200, 700);
+    await expect(menu(page)).toHaveCount(0);
+    await expect(dockAsk(page)).toBeVisible();
+  });
+
+  test("the dock opens a bottom sheet: 85dvh, grab handle, scrolls inside, closes on a scrim tap", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
+    await dockAsk(page).click();
+    const box = (await sheet(page).boundingBox())!;
+    expect(Math.round(box.height)).toBe(Math.round(844 * 0.85));
+    expect(Math.round(box.y + box.height)).toBe(844);
+    await expect(sheet(page)).toHaveCSS("border-top-left-radius", "18px");
+    await expect(handle(page)).toHaveCSS("width", "36px");
+    await expect(handle(page)).toHaveCSS("height", "4px");
+    await expect(handle(page)).toHaveCSS("background-color", "rgb(226, 220, 208)");
+    const scroller = sheet(page).locator("[data-ask-scroll]");
+    await expect(scroller).toHaveCSS("overflow-y", "auto");
+    // The page behind stays where it was.
+    expect(await page.evaluate(() => document.body.style.position)).toBe("fixed");
+    await page.mouse.click(200, 40);
+    await expect(sheet(page)).toHaveCount(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(600);
+    await expect(dockAsk(page)).toBeFocused();
+  });
+
+  test("swipe down closes the sheet; a short drag springs back (Aswin, 2026-11-25)", async ({ page }) => {
+    await page.goto("/");
+    await dockAsk(page).click();
+    const h = (await handle(page).boundingBox())!;
+    const x = h.x + h.width / 2, y = h.y + h.height / 2;
+    // Short and slow: stays open, back in place.
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(x, y + i * 4);
+      await page.waitForTimeout(30);
+    }
+    await page.mouse.up();
+    await expect(sheet(page)).toBeVisible();
+    await expect.poll(async () => Math.round((await sheet(page).boundingBox())!.y + (await sheet(page).boundingBox())!.height)).toBe(844);
+    // Past 25% of its height: closes.
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x, y + 120, { steps: 6 });
+    await page.waitForTimeout(200);
+    await page.mouse.move(x, y + 300, { steps: 6 });
+    await page.mouse.up();
+    await expect(sheet(page)).toHaveCount(0);
+  });
+});

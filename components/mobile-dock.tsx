@@ -9,12 +9,14 @@
  * area: at the end of the page it rests in its own space, so it never covers the footer (SPEC §5).
  */
 export function MobileDock({
+  hidden,
   xray,
   showHint,
   onToggleXray,
   onDismissHint,
   onAsk,
 }: {
+  hidden: boolean;
   xray: boolean;
   showHint: boolean;
   onToggleXray: () => void;
@@ -22,7 +24,11 @@ export function MobileDock({
   onAsk: () => void;
 }) {
   return (
-    <div className="pointer-events-none sticky bottom-[calc(16px+env(safe-area-inset-bottom))] z-25 mb-[calc(16px+env(safe-area-inset-bottom))] hidden flex-col items-center gap-[10px] px-4 max-[640px]:flex">
+    <div
+      className={`pointer-events-none sticky bottom-[calc(16px+env(safe-area-inset-bottom))] z-25 mb-[calc(16px+env(safe-area-inset-bottom))] hidden flex-col items-center gap-[10px] px-4 ${
+        hidden ? "" : "max-[640px]:flex"
+      }`}
+    >
       {showHint && (
         <div
           role="status"

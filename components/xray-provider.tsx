@@ -25,6 +25,9 @@ type SiteState = {
    * or with a topic and a question to ask straight away (the CV page, design update 6).
    */
   openAsk: (options?: AskOpenOptions) => void;
+  /** The phone menu (design updates 9 and 10). Open on the page it was opened on, so a route change closes it. */
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
 };
 
 const SiteContext = createContext<SiteState | null>(null);
@@ -58,6 +61,10 @@ export function XrayProvider({ children }: { children: ReactNode }) {
   );
   const closeAsk = useCallback(() => setAsk(null), []);
 
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const menuOpen = menuPath === pathname;
+  const setMenuOpen = useCallback((open: boolean) => setMenuPath(open ? pathname : null), [pathname]);
+
   // ⌘K / Ctrl+K opens Ask from anywhere; Esc closes it.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -74,22 +81,23 @@ export function XrayProvider({ children }: { children: ReactNode }) {
   }, [askOpen, openAsk, closeAsk]);
 
   const value = useMemo(
-    () => ({ xray, introSeen, setXray, toggleXray, dismissIntro, openAsk }),
-    [xray, introSeen, setXray, toggleXray, dismissIntro, openAsk],
+    () => ({ xray, introSeen, setXray, toggleXray, dismissIntro, openAsk, menuOpen, setMenuOpen }),
+    [xray, introSeen, setXray, toggleXray, dismissIntro, openAsk, menuOpen, setMenuOpen],
   );
   return (
     <SiteContext.Provider value={value}>
       {children}
-      {/* Phone dock (design update 9): the hint shows on home only, like the Nav's "NEW" pill. */}
-      {!askOpen && (
-        <MobileDock
+      {/* Phone dock (design update 9): the hint shows on home only, like the Nav's "NEW" pill.
+          Hidden while Ask or the menu is open (design update 10). */}
+      {/* Kept mounted while hidden, so focus can return to "Ask my work ↑" when Ask closes. */}
+      <MobileDock
+          hidden={askOpen || menuOpen}
           xray={xray}
           showHint={pathname === "/" && !introSeen && !xray}
           onToggleXray={toggleXray}
           onDismissHint={dismissIntro}
           onAsk={() => openAsk()}
         />
-      )}
       {askOpen && <AskDialog {...ask.options} onClose={closeAsk} />}
     </SiteContext.Provider>
   );

@@ -16,7 +16,9 @@
   --btn-bg: #1b1a17;
   --btn-ink: #fffdf8;
   --focus: #4f7fc0;
-  --scrim: rgba(27, 26, 23, 0.38);
+  --scrim: rgba(27, 26, 23, 0.4);
+  /* The phone menu's scrim (Mobile.dc.html, design update 10); X-ray doesn't change it. */
+  --menu-scrim: rgba(27, 26, 23, 0.4);
   --ask-shadow: 0 24px 60px rgba(20, 18, 15, 0.22);
   /* The case-study video frame is dark in both themes (Work.dc.html). */
   --video-bg: #1b1a17;
