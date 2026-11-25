@@ -12,7 +12,8 @@ const MEMORY = {
   ],
 };
 
-const askButton = (page: Page) => page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: /^Ask my work/ });
+// The desktop Nav's button, or below 640px the phone dock's "Ask my work ↑" (design update 9).
+const askButton = (page: Page) => page.getByRole("button", { name: /^Ask my work/ }).first();
 const dialog = (page: Page) => page.getByRole("dialog", { name: "Ask my work" });
 const input = (page: Page) => page.getByRole("textbox", { name: "Ask a question about Aswin's work" });
 const status = (page: Page) => dialog(page).getByRole("status");
@@ -333,9 +334,10 @@ test.describe("layout", () => {
     expect(Math.round(box.y + box.height)).toBe(844);
     await expect(dialog(page)).toHaveCSS("border-top-left-radius", "18px");
     await expect(dialog(page)).toHaveCSS("border-bottom-left-radius", "0px");
-    // The phone artboard's fixed "Ask my work" bottom button is a prototype control: not built.
-    await page.keyboard.press("Escape");
+    // The dock hides while Ask is open and comes back on close (design update 9).
     await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toBeVisible();
   });
 });
 

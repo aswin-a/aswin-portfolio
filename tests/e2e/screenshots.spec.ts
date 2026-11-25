@@ -76,7 +76,8 @@ for (const [name, width, height] of SIZES) {
       test(`screen ${file}`, async ({ page }) => {
         await page.setViewportSize({ width, height });
         await page.goto(xray ? "/?xray=1" : "/");
-        await page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: /^Ask my work/ }).click();
+        // The desktop Nav's button, or below 640px the phone dock's (design update 9).
+        await page.getByRole("button", { name: /^Ask my work/ }).first().click();
         const dialog = page.getByRole("dialog", { name: "Ask my work" });
         if (state === "thinking") {
           // Held in compose (real kb.search done, model call running).
@@ -125,7 +126,7 @@ for (const [name, width, height] of SIZES) {
         if (jd) {
           await page.getByLabel(JD_LABEL).fill(jd);
           await page.getByRole("button", { name: "Check fit" }).click();
-          if (state === "running") await hero.getByRole("status").getByText(/evidence\.map/).waitFor();
+          if (state === "running") await hero.getByRole("status").getByText(/evidence\.map/).filter({ visible: true }).waitFor();
           else await stateHeading(page).waitFor();
         } else if (pick) {
           await hero.getByRole("button", { name: pick, exact: true }).click();

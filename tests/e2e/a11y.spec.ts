@@ -103,7 +103,8 @@ test.describe("keyboard", () => {
     await expect(filter).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/about");
-    const card = page.locator("[aria-expanded]").first();
+    // The CV's first area card (the phone Menu button also has aria-expanded, hidden at this width).
+    const card = page.getByRole("main").locator("[aria-expanded]").first();
     await card.focus();
     await expect(card).toHaveAttribute("aria-expanded", "false");
     await page.keyboard.press("Enter");
