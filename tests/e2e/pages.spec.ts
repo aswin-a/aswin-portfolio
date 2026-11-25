@@ -349,23 +349,59 @@ test("case study: CASE STUDIES breadcrumb and LAST UPDATED (update 4)", async ({
   await expect(page.getByRole("heading", { name: "Job-fit AI on this site", level: 1 })).toBeVisible();
 });
 
-test("phone home: compact hood list and Products I've built (update 4)", async ({ page }) => {
+test("phone home: hood accordion of 4 groups (update 8) and Products I've built (update 4)", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const hood = page.locator("#m-hood");
   await expect(hood).toHaveText("How I build agentic products, with proof");
   await expect(hood).toHaveCSS("font-size", "28px");
-  await expect(page.getByText("Each part links to where you can see it working.", { exact: true })).toBeVisible();
+  await expect(page.getByText("12 parts in 4 groups. Open one to see the proof and where to check it.", { exact: true })).toBeVisible();
   const list = hood.locator("xpath=..");
-  await expect(list.locator(":scope > a, :scope > div")).toHaveCount(12);
-  await expect(list.getByRole("link", { name: /^production/ })).toHaveAttribute("href", "#break-my-ai");
-  await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
-  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(4);
+  const headers = list.locator("button[aria-controls]");
+  await expect(headers).toHaveCount(4);
+  await expect(headers.locator(":scope > span:first-child > span:first-child")).toHaveText([
+    "Agent building blocks", "Running it reliably", "Trust and checking", "Data and context",
+  ]);
+  // The first group is open by default; one open at a time.
+  await expect(headers.nth(0)).toHaveAttribute("aria-expanded", "true");
+  await expect(headers.nth(0)).toContainText("Hide ↑");
+  await expect(headers.nth(1)).toHaveAttribute("aria-expanded", "false");
+  await expect(headers.nth(1)).toContainText("Show 3 ↓");
+  await expect(page.locator("#m-hood-panel-0")).toBeVisible();
+  await expect(page.locator("#m-hood-panel-1")).toBeHidden();
+  await expect(headers.nth(0).locator("xpath=..")).toHaveCSS("border-top-color", "rgb(31, 76, 134)");
+  // Chips: live here dot filled accent, shipped filled ink, the rest hollow.
+  const dot = (name: string) => list.locator("button span", { hasText: new RegExp(`^${name}$`) }).locator("span[aria-hidden]");
+  await expect(dot("tools")).toHaveCSS("background-color", "rgb(31, 76, 134)");
+  await expect(dot("human in loop")).toHaveCSS("background-color", "rgb(27, 26, 23)");
+  await expect(dot("rag")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+
+  // Keyboard: Enter opens group 2 and closes group 1; Space on the open group closes it.
+  await headers.nth(1).focus();
+  await page.keyboard.press("Enter");
+  await expect(headers.nth(1)).toHaveAttribute("aria-expanded", "true");
+  await expect(headers.nth(0)).toHaveAttribute("aria-expanded", "false");
+  const panel1 = page.locator("#m-hood-panel-1");
+  await expect(panel1.getByRole("link", { name: "Try Break my AI →" })).toHaveAttribute("href", "#break-my-ai");
+  await expect(panel1.getByText("Rate limit, budget cap, and a precomputed fallback when either trips.")).toBeVisible();
+  await page.keyboard.press("Space");
+  for (let i = 0; i < 4; i++) await expect(headers.nth(i)).toHaveAttribute("aria-expanded", "false");
+
+  await headers.nth(3).click();
+  const panel3 = page.locator("#m-hood-panel-3");
+  await expect(panel3.getByText("Coming soon", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(panel3.getByRole("link")).toHaveCount(0); // data privacy and rag are COMING SOON, mcp server is planned
+  await expect(panel3.getByText("COMING SOON", { exact: true })).toHaveCount(2);
   // Phone pills are never dashed; shipped is ink.
-  await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
-  await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
+  await expect(panel3.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
+  await expect(panel3.getByText("shipped", { exact: true })).toHaveCSS("color", "rgb(27, 26, 23)");
+
+  // A live CTA turns X-ray on.
+  await headers.nth(0).click();
+  await page.locator("#m-hood-panel-0").getByRole("link", { name: "See the calls in X-ray →" }).click();
+  await expect(page).toHaveURL(/#top$/);
+  expect(await theme(page)).toBe("xray");
+  await page.goto("/");
 
   const work = page.locator("#m-work").locator("xpath=..");
   await expect(page.locator("#m-work")).toHaveText("Products I've built");
