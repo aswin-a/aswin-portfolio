@@ -2,7 +2,7 @@
 
 import { track } from "@/lib/analytics";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { AskAnswerView } from "@/components/ask/ask-answer";
 import { AskStart } from "@/components/ask/ask-start";
@@ -24,12 +24,22 @@ export type AskFocus = number | "q";
  */
 export type AskOpenOptions = { focus?: AskFocus; topic?: CvTopic; autoAsk?: string };
 
+/** Swipe-down on the phone sheet (Aswin, 2026-11-25): close past 25% of its height or on a quick flick. */
+const SWIPE_CLOSE_RATIO = 0.25;
+const SWIPE_FLICK_PX_PER_MS = 0.5;
+const SWIPE_START_PX = 8;
+const SHEET_QUERY = "(max-width: 640px)";
+
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** A question in flight (`result` null: the thinking state) or answered. `steps` are the run's real step events. */
 type Asked = { question: string; steps: AskStepEvent[]; result: AskResult | null };
 
-/** "Ask my work" command bar (Ask.dc.html); a bottom sheet at ≤ 640 px (MobileAsk.dc.html), via the [@media(max-width:640px)] classes. */
+/**
+ * "Ask my work" command bar (Ask.dc.html); a bottom sheet at ≤ 640 px (Ask.dc.html `sheet`, design update 10),
+ * via the [@media(max-width:640px)] classes. A tap on the scrim closes it; the input row stays put and the
+ * rest scrolls inside the dialog; the page behind never scrolls.
+ */
 export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpenOptions & { onClose: () => void }) {
   const page = askPageFor(usePathname());
   const topic = givenTopic ?? (page === "about" ? cvGeneral : undefined);
@@ -78,6 +88,7 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
   }, [thinking]);
 
   // Modal: the rest of the page is inert and doesn't scroll; focus returns to the trigger on close.
+  // overflow: hidden on <html> isn't enough for touch scrolling on iOS, so the body is also pinned in place.
   useEffect(() => {
     const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const root = dialogRef.current?.closest("[data-ask-root]");
@@ -89,8 +100,14 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
       }
     }
     const html = document.documentElement;
+    const body = document.body;
     const overflow = html.style.overflow;
+    const saved = { position: body.style.position, top: body.style.top, width: body.style.width };
+    const scrollY = window.scrollY;
     html.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
     inputRef.current?.focus();
     const ids = requestId;
     const abort = abortRef;
@@ -99,6 +116,8 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
       abort.current?.abort();
       made.forEach((el) => el.removeAttribute("inert"));
       html.style.overflow = overflow;
+      Object.assign(body.style, saved);
+      window.scrollTo({ top: scrollY, behavior: "instant" });
       if (trigger?.isConnected) trigger.focus({ preventScroll: true });
     };
   }, []);
@@ -141,6 +160,63 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
     inputRef.current?.focus();
   };
 
+  // Swipe down to close the phone sheet, from the grab handle or the input row (Aswin, 2026-11-25).
+  // The conversation area scrolls as normal and never starts a swipe.
+  const drag = useRef<{ id: number; y0: number; t0: number; active: boolean } | null>(null);
+  // A swipe that ends over the ✕ or the Ask button isn't a click on it.
+  const swipeEndedAt = useRef(-Infinity);
+  const [dragY, setDragY] = useState(0);
+  // The spring-back animates only after a release; otherwise the sheet has no transition at all.
+  const [settling, setSettling] = useState(false);
+  const swipe = {
+    onPointerDown: (e: ReactPointerEvent) => {
+      if (!window.matchMedia(SHEET_QUERY).matches || (e.pointerType === "mouse" && e.button !== 0)) return;
+      // A mouse press on the handle or the row's empty space mustn't start a text selection, which the
+      // browser would then drag (and cancel the swipe). Controls keep their normal press.
+      if (!(e.target as HTMLElement).closest("input, button")) e.preventDefault();
+      drag.current = { id: e.pointerId, y0: e.clientY, t0: performance.now(), active: false };
+    },
+    onPointerMove: (e: ReactPointerEvent) => {
+      const d = drag.current;
+      if (!d || e.pointerId !== d.id) return;
+      const delta = e.clientY - d.y0;
+      if (!d.active) {
+        if (delta < -SWIPE_START_PX) drag.current = null; // an upward move isn't a swipe
+        if (delta <= SWIPE_START_PX) return;
+        d.active = true;
+        window.getSelection()?.removeAllRanges();
+        setSettling(false);
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }
+      // Under reduced motion the sheet stays still; the release rule still applies.
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setDragY(reduce ? 0 : Math.max(0, delta));
+    },
+    onPointerUp: (e: ReactPointerEvent) => {
+      const d = drag.current;
+      drag.current = null;
+      if (!d || e.pointerId !== d.id || !d.active) return;
+      const delta = e.clientY - d.y0;
+      const speed = delta / Math.max(1, performance.now() - d.t0);
+      const height = dialogRef.current?.offsetHeight ?? 0;
+      swipeEndedAt.current = performance.now();
+      if (delta > height * SWIPE_CLOSE_RATIO || (speed > SWIPE_FLICK_PX_PER_MS && delta > SWIPE_START_PX * 3)) onClose();
+      else {
+        setSettling(true);
+        setDragY(0);
+      }
+    },
+    onPointerCancel: () => {
+      drag.current = null;
+      setSettling(true);
+      setDragY(0);
+    },
+  };
+
+  // The scrim closes Ask only when the press both started and ended on it (not a text selection
+  // dragged out of the dialog).
+  const pressOnScrim = useRef(false);
+
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key !== "Tab" || !dialogRef.current) return;
     const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
@@ -160,20 +236,44 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
     <div
       data-ask-root=""
       onKeyDown={onKeyDown}
-      // The scrim doesn't close the dialog (only Esc and ✕ do); keep focus where it was.
+      // A tap or click on the scrim itself closes Ask (design update 10). Mouse down on it keeps focus where it was.
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) e.preventDefault();
+        pressOnScrim.current = e.target === e.currentTarget;
+        if (pressOnScrim.current) e.preventDefault();
       }}
-      className={"fixed inset-0 z-50 box-border flex items-start justify-center overflow-y-auto bg-scrim px-5 pt-[10vh] pb-5 font-sans text-ink [@media(max-width:640px)]:px-0 [@media(max-width:640px)]:pt-0 [@media(max-width:640px)]:pb-0"}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && pressOnScrim.current) onClose();
+        pressOnScrim.current = false;
+      }}
+      className={"fixed inset-0 z-50 box-border flex items-start justify-center bg-scrim px-5 pt-[10vh] pb-5 font-sans text-ink [@media(max-width:640px)]:items-end [@media(max-width:640px)]:px-0 [@media(max-width:640px)]:pt-0 [@media(max-width:640px)]:pb-0"}
     >
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Ask my work"
-        className={"box-border flex w-full max-w-[680px] flex-col overflow-hidden rounded-[14px] border border-rule bg-paper shadow-ask [@media(max-width:640px)]:mt-auto [@media(max-width:640px)]:max-w-full [@media(max-width:640px)]:rounded-[18px_18px_0_0]"}
+        onClickCapture={(e) => {
+          if (performance.now() - swipeEndedAt.current > 300) return;
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onTransitionEnd={() => setSettling(false)}
+        style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
+        className={`box-border flex max-h-[80vh] w-full max-w-[680px] flex-col overflow-hidden rounded-[14px] border border-rule bg-paper shadow-ask [@media(max-width:640px)]:h-[85dvh] [@media(max-width:640px)]:max-h-none [@media(max-width:640px)]:max-w-full [@media(max-width:640px)]:rounded-[18px_18px_0_0] [@media(max-width:640px)]:pb-[env(safe-area-inset-bottom,0px)] ${
+          settling ? "transition-transform duration-200" : ""
+        }`}
       >
-        <form onSubmit={onSubmit} className="flex items-center gap-[10px] border-b border-rule px-[14px] py-3">
+        {/* Sheet only: the grab handle (design update 10). It and the input row start a swipe down. */}
+        <span
+          aria-hidden="true"
+          {...swipe}
+          className="mx-auto mt-2 hidden h-1 w-9 flex-none touch-none rounded-full bg-rule [@media(max-width:640px)]:block"
+        />
+        <form
+          onSubmit={onSubmit}
+          {...swipe}
+          className="flex flex-none items-center gap-[10px] border-b border-rule px-[14px] py-3 [@media(max-width:640px)]:touch-none"
+        >
           <svg
             width="18"
             height="18"
@@ -221,6 +321,8 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
             </svg>
           </button>
         </form>
+        {/* Everything under the input row scrolls here; the page behind doesn't (design update 10). */}
+        <div data-ask-scroll="" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {asked?.result ? (
           <AskAnswerView question={asked.question} result={asked.result} onAgain={again} onNavigate={onClose} />
         ) : asked ? (
@@ -228,6 +330,7 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
         ) : (
           <AskStart page={page} topic={topic} memory={memory} onAsk={submitQuestion} onForget={forget} onNavigate={onClose} />
         )}
+        </div>
       </div>
     </div>,
     document.body,

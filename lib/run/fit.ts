@@ -29,6 +29,22 @@ const LIMITS = {
   evidenceMap: { maxOutputTokens: 4000, effort: "medium" as const },
 };
 
+/**
+ * What a guard step reports: "pass" when it changed nothing, otherwise what it changed, so the
+ * X-ray never says "pass" while the result shows fewer matches than evidence.map did.
+ */
+export function guardStepDetail(matchesBefore: number, matchesAfter: number, fired: number): string {
+  if (fired === 0) return "pass";
+  const lost = matchesBefore - matchesAfter;
+  const other = fired - lost;
+  const parts: string[] = [];
+  if (lost > 0) parts.push(`${lost} ${lost === 1 ? "match → gap" : "matches → gaps"}`);
+  if (other > 0) parts.push(`${other} ${other === 1 ? "gap" : "gaps"} reworded`);
+  return parts.join(" · ");
+}
+
+const matchCount = (cs: readonly EvidenceCard[]) => cs.filter((c) => c.type === "match").length;
+
 export type FitDeps = {
   search: (requirements: readonly string[]) => Promise<KbEntry[]>;
   fetchPage: (url: string, signal: AbortSignal) => Promise<string>;
@@ -223,7 +239,7 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
       mapMs = mapped.ms;
     }
     const countOf = (cs: EvidenceCard[]) => {
-      const m = cs.filter((c) => c.type === "match").length;
+      const m = matchCount(cs);
       return `${m} ${m === 1 ? "match" : "matches"} · ${cs.length - m} ${cs.length - m === 1 ? "gap" : "gaps"}`;
     };
     yield step("evidence.map", "done", countOf(cards), mapMs);
@@ -232,14 +248,14 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
     yield step("guard.citations", "running");
     const g1 = await timed(async () => guardCitations(requirements, cards, sources));
     rec.guardFired.push(...g1.value.fired);
-    yield step("guard.citations", "done", "pass", g1.ms);
+    yield step("guard.citations", "done", guardStepDetail(matchCount(cards), matchCount(g1.value), g1.value.fired.length), g1.ms);
 
     // 6. guard.honesty
     yield step("guard.honesty", "running");
     const notDone = KB.filter((e) => e.scope === "not_done");
     const g2 = await timed(async () => guardHonesty(g1.value, notDone));
     rec.guardFired.push(...g2.value.fired);
-    yield step("guard.honesty", "done", "pass", g2.ms);
+    yield step("guard.honesty", "done", guardStepDetail(matchCount(g1.value), g2.value.matches.length, g2.value.fired.length), g2.ms);
 
     // 7. verdict.compose
     yield step("verdict.compose", "running");

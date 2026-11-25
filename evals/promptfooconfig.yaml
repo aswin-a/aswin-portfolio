@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 # The site's offline eval set (SPEC §10). Run from the repo root: `pnpm evals`.
-description: aswin-a.com fit check, Ask my work, Break my AI and the case-study sandbox
+description: aswin-a.com fit check, Ask my work and Break my AI
 
-# The provider sends each case's input through /api/run as the JD, question or attempt.
+# The provider sends each case's input through /api/run as the JD or question.
 prompts:
   - "{{input}}"
 

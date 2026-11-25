@@ -320,24 +320,23 @@ test("case study: rail is sticky from 900px only", async ({ page }) => {
   await expect(rail).toHaveCSS("position", "static");
 });
 
-test("case study: only CloudEagle has 'Try to break it'", async ({ page }) => {
+test("case study: no 'Try to break it' anywhere (removed, Aswin 2026-11-25)", async ({ page }) => {
   await page.goto("/work/integration-builder");
-  await expect(page.getByRole("heading", { name: "Try to break it" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Try to break it" })).toHaveCount(0);
+  await expect(page.locator("#s-break")).toHaveCount(0);
+  await expect(page.getByRole("navigation").getByText("Try to break it")).toHaveCount(0);
   await page.goto("/work/job-search-agent");
   await expect(page.getByRole("heading", { name: "Try to break it" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "AI job search and apply agent", level: 1 })).toBeVisible();
 });
 
-test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before and after an attempt (update 4)", async ({ page }) => {
+test("case study: CASE STUDIES breadcrumb and LAST UPDATED (update 4)", async ({ page }) => {
   await page.goto("/work/integration-builder");
   await expect(page.getByText("CASE STUDIES / 03 · CLOUDEAGLE.AI")).toBeVisible();
   // Numbering and order follow the home products 01–04 (Aswin, 2026-11-20).
   await expect(page.getByRole("link", { name: /^NEXT · 04 · IN PROGRESS/ })).toHaveAttribute("href", "/work/instagram-agent");
   await expect(page.getByRole("link", { name: "CASE STUDIES", exact: true })).toHaveAttribute("href", "/work");
   await expect(page.getByText("LAST UPDATED", { exact: true })).toBeVisible();
-  const counter = page.locator("#s-break").getByRole("status");
-  await expect(counter).toHaveText("No attempts yet");
-  await expect(counter.getByText("No attempts yet")).toHaveCSS("font-size", "14px");
   for (const gone of ["/work/cloudeagle", "/work/dhees-instagram-agent", "/work/platform-api-work"]) {
     expect((await page.goto(gone))?.status()).toBe(404);
   }
@@ -348,43 +347,6 @@ test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before a
   await expect(page.getByRole("link", { name: /^NEXT · 01 · IN USE · RECORDED RUN/ })).toHaveAttribute("href", "/work/job-search-agent");
   expect((await page.goto("/work/fit-check"))?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "Job-fit AI on this site", level: 1 })).toBeVisible();
-});
-
-test("phone home: compact hood list and Products I've built (update 4)", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const hood = page.locator("#m-hood");
-  await expect(hood).toHaveText("How I build agentic products, with proof");
-  await expect(hood).toHaveCSS("font-size", "28px");
-  await expect(page.getByText("Each part links to where you can see it working.", { exact: true })).toBeVisible();
-  const list = hood.locator("xpath=..");
-  await expect(list.locator(":scope > a, :scope > div")).toHaveCount(12);
-  await expect(list.getByRole("link", { name: /^production/ })).toHaveAttribute("href", "#break-my-ai");
-  await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
-  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(4);
-  // Phone pills are never dashed; shipped is ink.
-  await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
-  await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
-
-  const work = page.locator("#m-work").locator("xpath=..");
-  await expect(page.locator("#m-work")).toHaveText("Products I've built");
-  await expect(work.getByText("CASE STUDIES", { exact: true })).toBeVisible();
-  // Only the fit check's card links (to the hero); the other three go to hidden case studies, so they're plain cards.
-  await expect(work.getByRole("link")).toHaveCount(1);
-  await expect(work.getByRole("link").nth(0)).toHaveAttribute("href", "#fit-h");
-  await expect(work.getByRole("link").nth(0)).toHaveText("LIVE HEREJob-fit AI on this siteTry it above ↑");
-  await expect(work.getByText("AI job search and apply agent", { exact: true }).locator("xpath=..")).toHaveText(
-    "IN USE · RECORDED RUNAI job search and apply agentsearch → tailor → wait for my approval → applyCOMING SOON",
-  );
-  await expect(work.getByText("wait for my approval", { exact: true })).toHaveCSS("color", "rgb(138, 85, 16)");
-  await expect(work.getByText("CONCEPT", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  await expect(work.getByText("COMING SOON", { exact: true })).toHaveCount(3);
-  await expect(work.getByText("Instagram content intelligence agent", { exact: true }).locator("xpath=..")).toHaveText(
-    "IN PROGRESSInstagram content intelligence agentCOMING SOON",
-  );
-  await expect(page.locator("#work-h")).toBeHidden();
 });
 
 test("unknown post slug is a 404", async ({ page }) => {

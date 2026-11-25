@@ -1,16 +1,15 @@
 import { MockLanguageModelV4 } from "ai/test";
-import { WORK_ATTACKS, WORK_SAFE } from "@/content/case-studies/cloudeagle-attacks";
 import { ASK_QUESTIONS, CTX_QUESTION, gapQuestion } from "@/lib/ask/copy";
 import { ASK_ANSWERS } from "@/lib/ask/fixtures";
 import { HERO_SAMPLES, heroSummary } from "@/lib/fit-check/copy";
 import { BREAK_REPLIES, HERO_BAD, HERO_FIT } from "@/lib/fit-check/fixtures";
-import type { AskOutput, EvidenceCard, JdParse, SandboxOutput } from "./schemas";
-import { ASK_SYSTEM, EVIDENCE_MAP_SYSTEM, JD_PARSE_SYSTEM, SANDBOX_SYSTEM } from "./prompts";
+import type { AskOutput, EvidenceCard, JdParse } from "./schemas";
+import { ASK_SYSTEM, EVIDENCE_MAP_SYSTEM, JD_PARSE_SYSTEM } from "./prompts";
 
 /**
  * AI_FAKE=1 only (tests and e2e; refused in production): a deterministic stand-in for Claude that
- * replays the design's sample outputs (HERO_FIT / HERO_BAD, ASK_ANSWERS, the Break my AI replies,
- * WORK_ATTACKS) through the real pipeline, guards and route. It bills nothing, so its runs show
+ * replays the design's sample outputs (HERO_FIT / HERO_BAD, ASK_ANSWERS and the Break my AI replies)
+ * through the real pipeline, guards and route. It bills nothing, so its runs show
  * a real, measured cost of $0 and the model "Fake · test model (AI_FAKE)".
  *
  * Test markers anywhere in the visitor's text:
@@ -144,12 +143,6 @@ function ask(user: string): AskOutput {
   return { kind: f.kind, text: f.text, sourceIds, guard };
 }
 
-function sandbox(user: string): SandboxOutput {
-  const a = between(user, "attempt").trim();
-  const hit = WORK_ATTACKS.find((w) => w.text === a);
-  return hit ? { verdict: hit.verdict, reason: hit.reason, guard: hit.guard } : { ...WORK_SAFE };
-}
-
 export function fakeModel(): MockLanguageModelV4 {
   return new MockLanguageModelV4({
     provider: "fake",
@@ -169,7 +162,6 @@ export function fakeModel(): MockLanguageModelV4 {
       if (system.startsWith(JD_PARSE_SYSTEM.slice(0, 40))) out = jdParse(user);
       else if (system.startsWith(EVIDENCE_MAP_SYSTEM.slice(0, 40))) out = evidenceMap(user);
       else if (system.startsWith(ASK_SYSTEM.slice(0, 40))) out = ask(user);
-      else if (system.startsWith(SANDBOX_SYSTEM.slice(0, 40))) out = sandbox(user);
       else throw new FakeModelError("fake: unknown prompt");
       const text = JSON.stringify(out);
       return {

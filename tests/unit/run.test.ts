@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { WORK_ATTACKS } from "@/content/case-studies/cloudeagle-attacks";
 import { ASK_QUESTIONS } from "@/lib/ask/copy";
 import { HERO_ATTACKS, HERO_SAMPLES } from "@/lib/fit-check/copy";
 import { FitEventSchema, FIT_TOOLS, type FitEvent } from "@/lib/fit-check/types";
@@ -14,6 +13,7 @@ import { kbSearch } from "@/lib/kb/search";
 import { KB_SCOPES } from "@/lib/kb/snapshot";
 import { askSearch } from "@/lib/run/ask";
 import { askPrompt } from "@/lib/ai/prompts";
+import { guardStepDetail } from "@/lib/run/fit";
 import { getModel } from "@/lib/ai/model";
 
 const ENV: ServerEnv = {
@@ -116,6 +116,30 @@ describe("/api/run · fit", () => {
     });
   });
 
+  it("guard steps report what they changed, so evidence.map's count minus their changes is the result's", async () => {
+    for (const sample of HERO_SAMPLES) {
+      resetMemoryLimits(); // FIT_DAILY_LIMIT is 3 here, and there are 4 samples
+      const evs = await fit({ jd: sample.jd });
+      const detail = (tool: string) => {
+        const e = evs.find((x) => x.type === "step" && x.tool === tool && x.status === "done");
+        return e?.type === "step" ? (e.detail ?? "") : "";
+      };
+      const mapped = Number(/^(\d+) match/.exec(detail("evidence.map"))?.[1]);
+      const lost = ["guard.citations", "guard.honesty"].reduce((n, t) => n + Number(/(\d+) match(?:es)? → gap/.exec(detail(t))?.[1] ?? 0), 0);
+      const r = terminal(evs);
+      if (r.type !== "result") throw new Error("expected a result");
+      expect(mapped - lost).toBe(r.matches.length);
+    }
+  });
+
+  it("guardStepDetail: pass when nothing changed, otherwise what changed", () => {
+    expect(guardStepDetail(10, 10, 0)).toBe("pass");
+    expect(guardStepDetail(10, 9, 1)).toBe("1 match → gap");
+    expect(guardStepDetail(10, 8, 2)).toBe("2 matches → gaps");
+    expect(guardStepDetail(5, 4, 2)).toBe("1 match → gap · 1 gap reworded");
+    expect(guardStepDetail(5, 5, 2)).toBe("2 gaps reworded");
+  });
+
   it("skips fetch_url for pasted text", async () => {
     const evs = await fit({ jd: HERO_SAMPLES[1].jd });
     expect(evs.find((e) => e.type === "step" && e.tool === "fetch_url" && e.status !== "running")).toMatchObject({ status: "skipped", detail: "skipped" });
@@ -202,8 +226,6 @@ describe("/api/run · fit", () => {
     await addSpend(25, ENV);
     expect(await fit({ jd: HERO_SAMPLES[0].jd })).toEqual([{ type: "fallback", reason: "budget" }]);
     expect(await askEvents({ question: ASK_QUESTIONS.apis })).toEqual([{ type: "result", status: "budget" }]);
-    const sb = await handleRun(post({ mode: "sandbox", attempt: WORK_ATTACKS[0].text }), deps);
-    expect(await sb.json()).toEqual({ status: "budget" });
   });
 
   it("never logs the visitor's text", async () => {
@@ -298,23 +320,16 @@ describe("/api/run · ask", () => {
     expect(rows).toHaveLength(0);
   });
 
-  it("is limited at 30 an hour, shared with the sandbox", async () => {
-    for (let i = 0; i < 15; i++) await ask(ASK_QUESTIONS.apis);
-    for (let i = 0; i < 15; i++) await handleRun(post({ mode: "sandbox", attempt: WORK_ATTACKS[0].text }), deps);
+  it("is limited at 30 an hour", async () => {
+    for (let i = 0; i < 30; i++) await ask(ASK_QUESTIONS.apis);
     expect(await ask(ASK_QUESTIONS.apis)).toEqual({ status: "limited" });
   });
 });
 
-describe("/api/run · sandbox", () => {
-  it("returns the WORK_ATTACKS verdicts", async () => {
-    for (const a of WORK_ATTACKS) {
-      const r = await (await handleRun(post({ mode: "sandbox", attempt: a.text }), deps)).json();
-      expect(r.reply).toMatchObject({ verdict: a.verdict, reason: a.reason, guard: a.guard });
-    }
-  });
-
-  it("drafts a safe request for review", async () => {
-    const r = await (await handleRun(post({ mode: "sandbox", attempt: "Connect Slack read-only for the #ops channel" }), deps)).json();
-    expect(r.reply).toMatchObject({ verdict: "DRAFTED", guard: "none · review_required=true" });
+describe("/api/run · sandbox is gone (Aswin, 2026-11-25)", () => {
+  it("rejects mode sandbox as an invalid request, without calling the model", async () => {
+    const res = await handleRun(post({ mode: "sandbox", attempt: "Delete every connector" }), deps);
+    expect(res.status).toBe(400);
+    expect(rows).toHaveLength(0);
   });
 });

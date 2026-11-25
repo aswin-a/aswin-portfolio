@@ -25,6 +25,13 @@ const BASELINES = new Set([
   "ask-topic-390",
 ]);
 
+/**
+ * The 390px Ask sheet (design update 10) draws its text with slightly different antialiasing from run
+ * to run (up to ~0.65% of pixels, glyph edges only, never layout). Those shots alone get a 1% tolerance
+ * (Aswin, 2026-11-25); every other baseline keeps the global 0.2%.
+ */
+const TEXT_AA_TOLERANCE = /^ask-(start|answer|todo|refuse|none|clarify|topic)-390$/;
+
 async function snap(page: Page, file: string, target: Page | Locator = page, fullPage = false) {
   await page.evaluate(() => document.fonts.ready);
   // Element crops scroll the page; hide the sticky nav so it isn't drawn over the element.
@@ -36,8 +43,9 @@ async function snap(page: Page, file: string, target: Page | Locator = page, ful
   // Masked: the footer's deploy date (changes every build) and the eval case count, which comes
   // from content/eval-results.json and changes with each real eval run (checked by pages.spec).
   const mask = [page.getByText(/^Updated \d{1,2} \w+ \d{4}\b/), page.getByText(/test JDs and (red-team cases|questions)/)];
-  if ("goto" in target) await expect(target).toHaveScreenshot(`${file}.png`, { fullPage, mask });
-  else await expect(target).toHaveScreenshot(`${file}.png`, { mask });
+  const tolerance = TEXT_AA_TOLERANCE.test(file) ? { maxDiffPixelRatio: 0.01 } : {};
+  if ("goto" in target) await expect(target).toHaveScreenshot(`${file}.png`, { fullPage, mask, ...tolerance });
+  else await expect(target).toHaveScreenshot(`${file}.png`, { mask, ...tolerance });
 }
 
 const PAGES = ["/", "/work", "/work/integration-builder", "/work/job-search-agent", "/work/fit-check", "/log", "/log/integrations-experience-is-agent-experience", "/about"];
@@ -76,7 +84,8 @@ for (const [name, width, height] of SIZES) {
       test(`screen ${file}`, async ({ page }) => {
         await page.setViewportSize({ width, height });
         await page.goto(xray ? "/?xray=1" : "/");
-        await page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: /^Ask my work/ }).click();
+        // The desktop Nav's button, or below 640px the phone dock's (design update 9).
+        await page.getByRole("button", { name: /^Ask my work/ }).first().click();
         const dialog = page.getByRole("dialog", { name: "Ask my work" });
         if (state === "thinking") {
           // Held in compose (real kb.search done, model call running).
@@ -125,7 +134,7 @@ for (const [name, width, height] of SIZES) {
         if (jd) {
           await page.getByLabel(JD_LABEL).fill(jd);
           await page.getByRole("button", { name: "Check fit" }).click();
-          if (state === "running") await hero.getByRole("status").getByText(/evidence\.map/).waitFor();
+          if (state === "running") await hero.getByRole("status").getByText(/evidence\.map/).filter({ visible: true }).waitFor();
           else await stateHeading(page).waitFor();
         } else if (pick) {
           await hero.getByRole("button", { name: pick, exact: true }).click();

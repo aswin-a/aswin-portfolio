@@ -23,8 +23,10 @@ Scope: **v1 only.** No vector database, no embeddings.
 | `Work.dc.html` | CloudEagle case study, the PRD template for every product's case study | `/work/[slug]` |
 | `BuildLog.dc.html` | Build log index with category filters | `/log` |
 | `About.dc.html` | CV (design update 6): header with Download PDF / Copy as plain text, 4 stat cards, Ask box, experience timeline (roles, side projects, education; Zelthy's expandable groups), skills, certificates | `/about` |
-| `Mobile.dc.html` | Home at 390 px (recruiter arriving from LinkedIn) | Responsive behaviour of `/` |
-| `MobileAsk.dc.html` | Ask my work as a phone bottom sheet | Responsive behaviour of Ask |
+| `Mobile.dc.html` | Home at 390 px (recruiter arriving from LinkedIn): phone header and menu, bottom dock, compact hero, hood accordion, expandable product cards (design update 9) | Responsive behaviour of `/`; the phone header, menu and dock on every page |
+| `MobileFitStates.dc.html` | The compact fit check at 390 px in 5 states: empty, running, result, bad fit, X-ray on with Break my AI (design update 9) | Acceptance reference for the hero below 640px |
+| `MobileNavStates.dc.html` | Three 390×844 phone frames: first visit, menu open, X-ray on (design update 9) | Acceptance reference for `components/mobile-nav.tsx` and `components/mobile-dock.tsx` |
+| `MobileAsk.dc.html` | Ask my work as a phone bottom sheet. Its `contained` prop only fits the sheet inside the canvas phone frame; the build never uses it (design update 10) | Responsive behaviour of Ask |
 | `canvas.json` | Artboard titles, sizes and order | Reference only |
 
 How to read them:
@@ -78,7 +80,7 @@ Check the current docs for each library before using its API.
 
 Home uses `amberText`, `amberBorder` and `amberBg` too (design update 4: the human step in "Products I've built"), with the same values.
 
-Also: focus ring `2px solid #4F7FC0`, offset 2px; Ask scrim `rgba(27,26,23,0.38)` light / `rgba(0,0,0,0.6)` X-ray; Ask shadow `0 24px 60px rgba(20,18,15,0.22)`.
+Also: focus ring `2px solid #4F7FC0`, offset 2px; Ask scrim `rgba(27,26,23,0.4)` light (design update 10) / `rgba(0,0,0,0.6)` X-ray; Ask shadow `0 24px 60px rgba(20,18,15,0.22)`.
 Font roles: `serif` = Newsreader (headlines, ledes), `sans` = IBM Plex Sans (body, buttons), `mono` = IBM Plex Mono (labels, metadata, traces).
 Implement both sets as CSS variables (the panel set under its own names), so every component reads tokens and never hard-codes hex. There is no `data-theme="xray"` whole-page switch. Provide an `XrayPanel` component (X-ray panel tokens, `border: 1px solid` panel `rule`, the X-RAY pill pinned top-right: `top 10px; right 12px; padding 2px 8px; radius 999px; 1px solid #8DBBF2`, IBM Plex Mono 10px, `letter-spacing 0.1em`) and an `xray` flag in React context that X-ray-only content reads.
 
@@ -88,7 +90,7 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 
 | Route | Source | Notes |
 | --- | --- | --- |
-| `/` | `Main.dc.html` + `Hero.dc.html`, mobile per `Mobile.dc.html` | Sections in order (design update 4): Nav, X-ray intro banner, Hero (fit check), "How I build agentic products, with proof" (12 cards), "Products I've built" (4 products), From the build log, the shared Footer (Contact + footer bar, §5), Ask overlay. Before / after AI is no longer on home (it stays inside the case study) |
+| `/` | `Main.dc.html` + `Hero.dc.html`, mobile per `Mobile.dc.html` | Sections in order (design update 4): Nav (the phone header below 640px, design update 9), X-ray intro banner (desktop only; the dock hint replaces it below 640px), Hero (fit check), "How I build agentic products, with proof" (12 cards; 4 accordion groups below 640px, design update 8), "Products I've built" (4 products; expandable cards below 640px, design update 9), From the build log, the shared Footer (Contact + footer bar, §5), Ask overlay. Before / after AI is no longer on home (it stays inside the case study) |
 | `/work/[slug]` | `Work.dc.html` | The nav label is "Case studies"; the route stays `/work`. The only case studies are the 4 products in `content/products.ts`, numbered and ordered as on home, all from the same PRD template: `job-search-agent` (01), `fit-check` (02), `integration-builder` (03, the CloudEagle.ai take-home; breadcrumb "03 · CLOUDEAGLE.AI"), `instagram-agent` (04). The "Next" card follows that order. Products 01 and 04 show a recorded run (video or trace replay), not a live agent. Platform & API work is removed (Aswin, 2026-11-20) |
 | `/work` | Not designed | **Gap:** default to the "Products I've built" section of `Main.dc.html` (the 4 product cards) as a standalone page with Nav and footer. Flag it to Aswin |
 | `/log` | `BuildLog.dc.html` | Filters: All, Build notes, Teardowns, Essays, TIL, with counts |
@@ -105,21 +107,33 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 - The toggle in Nav reveals the X-ray panels on every page; it does not re-theme the page. The toggle itself shows the state (on: dark button, accent track). The Ask scrim still darkens in X-ray.
 - X-ray-only content: the "This run" and "Build details" panels, the Break my AI panel (hero), "How I built this" (hero), drill traces, the Ask answer trace, the case-study logged trace, the eval table, and the guard chips.
 - It persists across page navigation and reloads within the session (sessionStorage), and can be set by `?xray=1`.
-- Intro banner on home: "New here? Try X-ray." with "Turn on X-ray" and "Got it". Shown until dismissed or X-ray is turned on; the Nav shows a "NEW" pill while the banner is showing. Remember dismissal in localStorage.
+- Intro banner on home (≥ 640px): "New here? Try X-ray." with "Turn on X-ray" and "Got it". Shown until dismissed or X-ray is turned on; the Nav shows a "NEW" pill while the banner is showing. Remember dismissal in localStorage. Below 640px the banner is gone; the dock hint (below) replaces it and shares the same dismissal.
 - "How I build agentic products, with proof" cards marked "live here" turn X-ray on and scroll to their anchor: the hero (`#top`) or the Break my AI panel (`#break-my-ai`). That panel only exists while X-ray is on, so X-ray turns on first, then the page scrolls. The "planned" card has no link.
 - **Shared Footer on every page** (`Footer.dc.html`, design update 6): one component, rendered at the end of every page. It holds the "Talk to Aswin." contact section (`section#contact`, padding `72px 24px 88px`, or `48px 20px 56px` below 640px; links LinkedIn, GitHub, CV; the contact form, §9) and then the footer bar: "This site is an AI product. Turn on X-ray to see how it works." and "Updated {date} · © 2026 Aswin · {domain}", the same on phones (the one-line phone footer is gone). The `#contact` anchor works from every page. Above the LinkedIn / GitHub / CV links sit the direct contact options (design update 7): "WhatsApp me" (opens `https://wa.me/{digits}?text=…` in a new tab; the text is "Hi Aswin, I found your portfolio. I’m hiring for a {role} role." when the form has a role, else "Hi Aswin, I found your portfolio."), "Call me" (`tel:+{digits}`) and the line "{phone} · calls {hours} · WhatsApp anytime", plus " · role added to the message" when the role was pre-filled from the fit check. Phone, hours and response time come from config (§13), never code; the phone number is shown only on the page, never in JSON-LD, `llms*.txt` or the markdown twins unless Aswin says yes. `{date}` is filled at build time (the build's date, `BUILD_DATE`, formatted like "20 Nov 2026"), never hard-coded. There is no per-page contact or footer code.
 
+**Phone layout (design update 9)**
+- **Responsive rule:** below 640px, render the mobile header, menu and dock, the compact Hero, the hood accordion and the expandable product cards. At 640px and above, use the existing desktop layout. One component tree with breakpoint variants; no separate mobile routes.
+- **Every page** gets the phone header, menu and dock below 640px (Aswin, 2026-11-25; the design draws them on home only). The menu marks the current page with `aria-current="page"`.
+- **`MobileNav`** (`components/mobile-nav.tsx`): a sticky `<header>` (z 30) with `<nav aria-label="Main">`, 52px tall: "Aswin" + "pm · builds for agents" linking home, and a `Menu ☰` / `Close ✕` button (`aria-expanded`, `aria-controls="m-menu"`). The menu panel `#m-menu` has the rows Case studies → · Build log → · CV → · Contact ↓ (Contact smooth-scrolls to `#contact`; every row closes the menu) and an X-ray `role="switch"` with "Shows how the AI works: sources, guardrails, cost." The menu traps focus while open and closes on Escape and on route change. While it's open, a scrim `rgba(27,26,23,0.4)` (z 20, under the header) covers the page behind the panel; tapping it closes the menu (design update 10).
+- **`MobileDock`** (`components/mobile-dock.tsx`): a sticky bottom pill (bottom 16px, z 25) with the X-ray toggle (`aria-pressed`, "X-ray" / "X-ray on") and "Ask my work ↑". Hidden while Ask or the menu is open (design update 10). It opens the same Ask sheet as ⌘K and the desktop button, with the fit-check context. X-ray state stays global (one store).
+- **Dock hint:** "New: X-ray. Turn it on to see how the AI works here." with "Got it" (`role="status"`), above the dock on home, until dismissed or X-ray is turned on. The dismissal is the intro banner's localStorage flag (try/catch).
+- **The dock must not cover content:** on phones the page has bottom padding equal to the dock height + 16px + `env(safe-area-inset-bottom)`.
+- **Compact Hero** (`Hero.dc.html` `compact`, `MobileFitStates.dc.html`): the spacing tokens in design update 9 §3; a full-width "Check fit" / "Run attack" under the input, then a horizontally scrolling chip row; the running steps as a vertical stepper (`<ol>`) with `{tool} · {status}` lines. Desktop keeps one-line step rows. The result's "Download resume" link is now **"See my CV"** on all sizes. Update 9's desktop spacing tweaks (JD card padding `20px 22px`, Break input card padding `20px 22px`, verdict line-height 1.15) are **not** applied: desktop stays as built (Aswin, 2026-11-25).
+- **Phone product cards:** `<article>` cards with `Expand ↓` / `Collapse ↑` (`aria-expanded`), one open at a time, all closed at first. Each shows number, name, `phonePitch`, the primary link and "Read the case study →"; expanded, `HOW IT WORKS` (the desktop stepper) and `WHAT I BUILT`. Status labels aren't shown. The primary links keep the desktop targets and labels with a trailing arrow ("Add to Claude/ChatGPT →", "Try it above ↑", "Run it locally →"), and product 03 keeps the name "AI integration builder" (Aswin, 2026-11-25). Links to hidden case studies show the COMING SOON treatment, as on desktop.
+
 **Hidden case studies** (Aswin, 2026-11-24; not in the design)
 - A case study not listed in `content/case-studies/visibility.ts` is hidden. Its page at `/work/{slug}` stays reachable by URL, with `noindex`, but nothing on the site links to it.
-- Each link that would go to it shows its label (without the arrow) in muted text, with a dashed "COMING SOON" pill like the proof grid's "planned" pill. Product cards whose two buttons both go to the same hidden study show one line. Phone cards for hidden studies aren't links.
+- Each link that would go to it shows its label (without the arrow) in muted text, with a dashed "COMING SOON" pill like the proof grid's "planned" pill. Product cards whose two buttons both go to the same hidden study show one line.
 - Source chips (fit check, Ask) that cite a hidden study show their label as plain muted text. Ask's "Jump to" leaves it out. It's left out of the sitemap, `llms.txt` and `llms-full.txt`.
 - All four are hidden at launch. To publish one, add its slug to the list.
 - **Coming-soon posts** (same day): a build-log post with `comingSoon: true` is listed on `/log` with its tag, title (muted, not a link), summary and the pill, and has no page. The sitemap, RSS and `llms.txt` leave it out. Proof cards that link to it show the pill. These are "Shipping ML OCR with a person in the loop" (human in loop) and "Why I advised against sending patient data to LLMs" (data privacy).
 - The planned "mcp server" card shows the same COMING SOON pill in place of its "Coming soon" CTA.
 
 **Ask my work** (`Ask.dc.html`, `MobileAsk.dc.html`)
-- Opens from the Nav button, the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it. Focus is trapped while open and returns to the trigger on close.
-- Desktop: centred modal, max-width 680, top padding 10vh. ≤ 640 px: bottom sheet (`sheet` mode), radius 18 18 0 0.
+- Opens from the Nav button, the phone dock's "Ask my work ↑" (design update 9), the hero's "Ask my work" button, gap cards, and the keyboard shortcut ⌘K / Ctrl+K. Esc closes it, and so does a tap or click on the scrim outside the dialog, on every viewport (design update 10). Focus is trapped while open and returns to the trigger on close.
+- Desktop: centred modal, max-width 680, top padding 10vh, `max-height: 80vh` (height auto). ≤ 640 px: bottom sheet (`sheet` mode), radius 18 18 0 0, `position: fixed`, height `85dvh`, `padding-bottom: env(safe-area-inset-bottom, 0px)`, and a 36×4px grab handle (rule colour, `aria-hidden`) at the top (design update 10).
+- **Scrolling inside Ask** (design update 10): the input row stays put; everything under it scrolls in its own area (`flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain`). The page behind the dialog or sheet never scrolls while Ask is open, on any viewport.
+- **Swipe down to close the sheet** (Aswin, 2026-11-25; not in the design): dragging down from the grab handle or the input row moves the sheet with the finger. Released past 25% of its height, or after a quick downward flick, it closes; otherwise it springs back. The conversation area doesn't start a swipe, so it scrolls as normal. Under `prefers-reduced-motion` the sheet doesn't follow the finger; the same release rule closes it or leaves it.
 - Suggested questions change by page (`ASK_BY_PAGE`: home, work, log, about). The question texts in `ASK_ANSWERS` are the exact suggested-question copy.
 - "Jump to" links as designed. **No "Break my AI" chips in Ask** (Aswin, 2026-11-23, overriding `Ask.dc.html`): Break my AI lives on the hero only. The attack questions still get their guarded answers when typed.
 - **Topic mode (design update 6):** Ask accepts an optional `topic` (`{label, questions}`) and an initial question (`autoAsk`). With a topic, a box "ASKING ABOUT · {label}" lists the topic's questions as tappable rows. An initial question is asked as soon as Ask opens. The CV page opens Ask this way: "Ask about this role →" (the item's questions, label "{title} · {company}"), the Ask box's own question and its 3 chips (topic "My experience"). Topic questions are **suggested prompts only**: they go to the live endpoint like any other question; the prototype's canned `a` answers are never shown.
@@ -128,6 +142,8 @@ Global rules seen in every artboard: touch targets ≥ 44 px, `prefers-reduced-m
 **Contact in the nav (design update 7):** a 4th link "Contact" after CV, `href="#contact"`. It smooth-scrolls to `#contact` on the current page (every page has the Footer); if the element isn't there it falls back to the normal link. `prefers-reduced-motion` makes the scroll a jump.
 
 **Contact pre-fill:** "Talk to Aswin about this role" in the hero scrolls to `#contact` (the shared Footer) and pre-fills the Role field, showing "pre-filled from your fit check". Only the fit check sets the role; other pages leave it empty.
+
+**Home proof section on phones (design update 8):** desktop and mobile share `content/hood.ts`. At ≥ 640px "How I build agentic products, with proof" is the 12-card grid (`Main.dc.html`); below 640px it is an accordion of the 4 groups (`Mobile.dc.html`), in order: Agent building blocks, Running it reliably, Trust and checking, Data and context. Each group card's header is one `<button>` with `aria-expanded` and `aria-controls` pointing to its panel id, and shows the group name, the cue "Expand ↓" / "Collapse ↑" (design update 9), the group summary and a chip per part (status dot: filled accent for `live here`, filled ink for `shipped`, hollow muted otherwise). One group is open at a time; the first is open by default; tapping the open group closes it (all closed is allowed). Enter and Space work as for any button. An open group lists its parts with name, status pill, proof and CTA (`live here` CTAs turn X-ray on; the planned `mcp server` shows "Coming soon" as plain muted text, no link). The production CTA reads "Try Break my AI →" on both (§5).
 
 **CV page** (`About.dc.html`, design update 6): "Copy as plain text" copies the CV as plain text (`cvPlainText()` in the design), built from `content/cv.ts`, and shows "Copied ✓" for 2 s. "Download PDF" will serve a static PDF built from the same content at build time; until then it is a placeholder `#` link. Zelthy's 7 area cards each open independently (`aria-expanded`); an open card spans the full row with an accent border and "Hide N points ↑". Below 640px the dates column is hidden and the dates show inside each card.
 
@@ -159,13 +175,14 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 | # | Tool | What runs | UI label (the step line is always `{tool} · {label}`; the call forms below are reference only and are no longer shown) |
 | --- | --- | --- | --- |
 | 1 | `fetch_url` | Only if the input starts with `http(s)://`: server-side fetch with timeout, HTML → text. Otherwise skipped | "Fetching the job post" / "skipped: text was pasted" · X-ray: `fetch_url(url) → page text` / `branch: input is text → skip fetch_url` |
-| 2 | `jd.parse` | LLM (`FIT_CHECK_MODEL`), structured output: `requirements: string[]` (≤ 8) | "Reading the job description" · `jd.parse(text) → requirements[]` |
+| 2 | `jd.parse` | LLM (`FIT_CHECK_MODEL`), structured output: `requirements: string[]` (≤ 10) | "Reading the job description" · `jd.parse(text) → requirements[]` |
 | 3 | `kb.search` | Deterministic search (§6) | "Searching roles, projects and the not-done list" · `kb.search(scope=["roles","projects","not_done"])` |
 | 4 | `evidence.map` | LLM, structured output: for each requirement either a match `{req, evidence, sourceId}` or a gap `{req, closest, close}` | "Matching each requirement to evidence" · `evidence.map(requirements, sources)` |
 | 5 | `guard.citations` | Deterministic: every match cites a KB `sourceId` that exists; otherwise it becomes a gap | "Every claim cites a source" · `guard.citations(cards)` |
 | 6 | `guard.honesty` | Deterministic: verdict counts match the cards, no percentages or scores, not-done topics never appear as matches | "Gaps stated, score not inflated" · `guard.honesty(verdict, gaps)` |
 | 7 | `verdict.compose` | Deterministic template: "Strong on {m} of {n} requirements." when m/n ≥ 0.5, else "Not a strong fit: {m} of {n} requirements." Note line as in the design | "Writing the verdict" · `verdict.compose(cards)` |
 
+- **Guard step detail** (approved addition, 2026-11-25): `guard.citations` and `guard.honesty` end with `pass` only when they changed nothing; otherwise with what they changed, e.g. `1 match → gap` or `1 gap reworded`, so the X-ray's `evidence.map` count and the result's count never disagree silently. The design shows only `pass`.
 - **Transport:** NDJSON or SSE events: an optional `{type:"start", runId}`, then `{type:"step", tool, status, detail, ms}` (`status`: `running` | `done` | `skipped`), then exactly one terminal event: `{type:"result", …}` or `{type:"fallback", reason, drill?, runId?, trace?}`. `reason` is `error` (the error state), `limited` (the rate-limited state) or `budget` (the monthly budget is spent, §10). `trace` is the X-ray fallback trace (`HERO_DRILL_TRACE` shape: `[{mark, text, bad, timed, ms?}]`). The running state in the design ("Agent · streaming from the live run") must reflect these real events, never a timer. Zod schemas: `lib/fit-check/types.ts`.
 - **Retry:** one retry on a failed LLM or `kb.search` call. If `kb.search` still fails, `guard.no_sources` stops the run and the UI shows the fallback state ("The knowledge base didn't answer, so the AI won't guess.").
 - **Result shape** = `HERO_FIT` / `HERO_BAD` in `Hero.dc.html`: `verdict`, `note`, `matches[{req, evidence, source, href}]`, `gaps[{req, closest, close}]`, plus `role` (a short role title that `jd.parse` extracts; the hero shows it, stores it in session memory and pre-fills Contact with it; until it arrives, and in the fallback states, the hero shows `heroSummary` of the pasted JD: a link's first token without `http(s)://` and `www.`, cut to 64 characters, or the text's first line or sentence, cut to 72), `retries` (0 or 1) and `trace {runId, costUsd, ms, model}`. Not-done gaps use "Not something Aswin has done." and leave `close` empty.
@@ -190,11 +207,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
   - **Pending state (design update 4):** while an attempt runs, its entry shows `RUNNING…`, "Checking the guardrails… {step}", a progress bar and "guardrail: … · trace: …"; the input, chips and drills are disabled and the button reads "Running…". `{step}` and the bar come from the real step events of the run (`kb.search`, `compose`, `guardrails`), never a timer.
   - **Drills are logged** (no drill buttons in v1, design update 5; the entry type stays): each failure drill adds a `DRILL` entry (its reply, "See the fallback above ↑" and "fallback path: {path} · trace {run id}") once the drill's real fallback event arrives. DRILL entries are not counted in attempts, held or the tally.
   - A failed, rate-limited or budget-stopped attempt isn't logged or counted; its pending entry is removed and it shows Ask's error, limit or budget line below the input. Ask's budget line: "Ask my work is paused for this month: the AI budget is spent. Aswin is one message away."
-- **Case study "Try to break it"** (`Work.dc.html`) uses `mode: "sandbox"` with a prompt that plays the CloudEagle integration builder and returns `{verdict: BLOCKED|FLAGGED|CLARIFIED|DRAFTED, reason, guard}`. The six preset attacks and their expected verdicts are `WORK_ATTACKS`; they are also eval cases. Its counter reads "No attempts yet" before the first attempt, then "{stopped} held up of {attempts}" (design update 4). The verdict and guard must agree, or the attempt fails closed as an error. States the design doesn't show (approved M5), one line under the input; a failed attempt isn't logged or counted:
-  - Loading: "Running against the builder…"
-  - Error: "The builder couldn't answer this time. Try again."
-  - Limit: "That's the limit for attempts this hour. Aswin is one message away."
-  - Budget: "Live attempts are paused for this month."
+- **Case study "Try to break it"** (`Work.dc.html`) is removed (Aswin, 2026-11-25): no section on the integration-builder page, no `mode: "sandbox"` in `/api/run`, no sandbox eval cases. The design still shows it; the code doesn't build it.
 
 ## 9. Contact form — `/api/contact`
 
@@ -223,7 +236,7 @@ Approved where the design is silent (Aswin, 2026-11-23):
 
 ## 10. Limits, cost, logging, evals
 
-- **Rate limits (Upstash, hashed IP):** fit checks per visitor per day = `FIT_DAILY_LIMIT` (default 10); Ask = 30/hour, shared by Ask my work, Break my AI and the sandbox; failure drills = `FIT_DAILY_LIMIT` per day in their own bucket (the rate drill makes no LLM call and uses no bucket). Over the limit → the hero's "limited" state, no LLM call ("llm.call skipped · nothing billed").
+- **Rate limits (Upstash, hashed IP):** fit checks per visitor per day = `FIT_DAILY_LIMIT` (default 10); Ask = 30/hour, shared by Ask my work and Break my AI; failure drills = `FIT_DAILY_LIMIT` per day in their own bucket (the rate drill makes no LLM call and uses no bucket). Over the limit → the hero's "limited" state, no LLM call ("llm.call skipped · nothing billed").
 - **Budget cap:** monthly spend counter in Upstash, increased by each run's real cost; at `MONTHLY_BUDGET_USD`, all AI modes return the `budget` state. Hero copy: tag "Fit check · monthly budget reached", title "Live checks are paused for this month.", text "This site caps what it spends on AI each month, and that cap is reached. The precomputed matches below come from the same knowledge base, and Aswin is one message away." Plus a spend limit on the Anthropic workspace.
 - **Every model call:** Zod-validated input (JD ≤ 12,000 chars, Ask ≤ 1,000), Turnstile, `maxOutputTokens`, 60 s timeout. User text wrapped in tags and treated as data.
 - **Privacy, as the design promises:** pasted JDs and questions are **not stored**. Log only run metrics.
@@ -232,7 +245,7 @@ Approved where the design is silent (Aswin, 2026-11-23):
 create table runs (
   id text primary key,            -- the trace/run id shown in X-ray
   created_at timestamptz default now(),
-  mode text,                      -- fit | ask | sandbox
+  mode text,                      -- fit | ask (sandbox until 2026-11-25)
   drill text,                     -- null | kb | rate
   branch text,                    -- link | text
   steps jsonb,                    -- [{tool, status, ms}]
@@ -254,7 +267,7 @@ RLS on; server-only writes; no raw IPs.
 
 - **The run log must provide every "This run" field** (design update 3): run id, timestamp, branch, retries, requirement count, sources retrieved and cited, guard results, fallback used, latency, tokens in/out, cost.
 
-- **Evals (Promptfoo, public in `/evals`):** the 4 sample JDs, ≥ 6 more real JDs (`TODO(aswin)`), every Break-my-AI attack in `HERO_ATTACKS` and `ASK_ANSWERS`, and the 7 case-study eval cases in `Work.dc.html`. Assertions: valid schema, no uncited match, bad fits never "Strong", not-done topics never matched, injections refused, no percentages. CI writes `content/eval-results.json` (pass rate, red-team held, last run date, case count), which the site displays as the offline eval numbers.
+- **Evals (Promptfoo, public in `/evals`):** the 4 sample JDs, ≥ 6 more real JDs (`TODO(aswin)`), every Break-my-AI attack in `HERO_ATTACKS` and `ASK_ANSWERS`. (The 7 case-study sandbox cases were removed with "Try to break it", 2026-11-25.) Assertions: valid schema, no uncited match, bad fits never "Strong", not-done topics never matched, injections refused, no percentages. CI writes `content/eval-results.json` (pass rate, red-team held, last run date, case count), which the site displays as the offline eval numbers.
 
 ## 11. SEO + GEO (invisible, required)
 
@@ -266,8 +279,8 @@ Create these files with `TODO(aswin)` values and a clear comment, and build a `p
 
 - `content/kb/*` (roles, projects, not-done list, facts, fallback)
 - `content/case-studies/*.mdx` (PRD template fields for every product's study: what I built, time spent, last updated, users/problem, 3 decisions, 4 safeguards, success metrics, before/after steps and times, v2, lessons, links, video)
-- `content/hood.ts`: the 12 "How I build agentic products, with proof" items, typed `{ name, status: 'live here'|'case study'|'GitHub'|'shipped'|'prototype'|'planned', proof, cta, href?, live? }` (design update 4)
-- `content/products.ts`: the 4 "Products I've built" items, typed `{ num, slug, status, name, pitch, built, flow: {text, human?: boolean}[], tags, primary: {label, href}, secondary: {label, href} }`. `status` is data only; no status pill renders on the desktop cards (design update 4)
+- `content/hood.ts`: the 12 "How I build agentic products, with proof" items, typed `{ name, group, status: 'live here'|'case study'|'GitHub'|'shipped'|'prototype'|'planned', proof, cta, href?, live? }` (design update 4); `group` is `'Agent building blocks'|'Running it reliably'|'Trust and checking'|'Data and context'`, 3 parts each, and a separate `hoodGroups` list holds each group's name and summary (design update 8)
+- `content/products.ts`: the 4 "Products I've built" items, typed `{ num, slug, status, name, pitch, phonePitch, built, flow: {text, human?: boolean}[], tags, primary: {label, href}, secondary: {label, href} }`. `status` is data only; no status pill renders on the desktop or phone cards (design updates 4 and 9). `phonePitch` is the shorter pitch on the phone cards (`MOB_WORK`, design update 9)
 - `content/site-meta.ts` (years of experience, eval set link, GitHub, LinkedIn, domain, posting cadence, "what breaks first at scale", "next", cost per run, 90-day plan line)
 - `content/posts/*.mdx` (3 designed posts)
 - `content/cv.ts` (design update 6): the CV, word for word from `About.dc.html`. Its `[date]` placeholder (the Dhee's website dates) and `#` links stay as placeholders until Aswin fills them; "Synced from my master resume" shows `siteMeta.resumeUpdated`
@@ -313,9 +326,9 @@ Provide `.env.example`. Verify model IDs against Anthropic's current model list 
 2. **Static pages, pixel-faithful:** `/` (all sections except the live hero, which shows its empty state), `/work/[slug]` PRD template, `/log`, `/about` (the CV page since design update 6; the dependency graph is gone), mobile layouts. Compare side by side with each artboard.
 3. **Ask my work UI:** modal + bottom sheet, ⌘K, per-page suggestions, session memory box, answer card states (wired to a stub first).
 4. **Fit-check hero UI:** all states driven by a typed event stream from a local mock that matches §7, so the UI is done before the backend.
-5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask, sandbox), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.
+5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask; sandbox removed 2026-11-25), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.
 6. **Contact form + analytics + SEO/GEO.**
-7. **Quality:** Vitest (guards, verdict template, kb.search, rate-limit helpers), Playwright (each hero state, X-ray toggle, Ask, each of the 6 contact states with the API mocked for error and 429; plus screenshot comparison against the artboards at 1440 and 390), Promptfoo evals + CI writing `eval-results.json`, `check:content`.
+7. **Quality:** Vitest (guards, verdict template, kb.search, rate-limit helpers), Playwright (each hero state, X-ray toggle, Ask, each of the 6 contact states with the API mocked for error and 429; plus screenshot comparison against the artboards at 1440 and 390). A Playwright `mobile` project (390×844) runs the phone tests: the menu, the dock X-ray toggle, the hint dismissal persisting, horizontal chip scrolling, the stepper and the single-open accordions (design update 9), Promptfoo evals + CI writing `eval-results.json`, `check:content`.
 8. **Launch checks:** Lighthouse 95+ mobile, accessibility pass (keyboard, focus trap, `aria-live` on streamed output, contrast AA in both themes, reduced motion), README.
 
 ## 15. Out of scope for v1

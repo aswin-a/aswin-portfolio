@@ -53,7 +53,7 @@
       "y": 0
     },
     "Mobile.dc.html": {
-      "h": 4600,
+      "h": 5400,
       "is_interactive": true,
       "title": "Mobile \u2014 recruiter from LinkedIn",
       "w": 390,
@@ -100,6 +100,22 @@
       "w": 2800,
       "x": 8520,
       "y": 8020
+    },
+    "MobileFitStates.dc.html": {
+      "h": 3200,
+      "is_interactive": true,
+      "title": "Fit check on mobile \u2014 key states",
+      "w": 2400,
+      "x": 7040,
+      "y": 0
+    },
+    "MobileNavStates.dc.html": {
+      "h": 1060,
+      "is_interactive": true,
+      "title": "Mobile nav, X-ray and Ask my work \u2014 phone viewport",
+      "w": 1550,
+      "x": 7040,
+      "y": 3360
     }
   },
   "createdOnFiles": {
@@ -134,6 +150,8 @@
     "BuildLog.dc.html",
     "About.dc.html",
     "Mobile.dc.html",
+    "MobileFitStates.dc.html",
+    "MobileNavStates.dc.html",
     "MobileAsk.dc.html",
     "HeroStates.dc.html",
     "Hero.dc.html",

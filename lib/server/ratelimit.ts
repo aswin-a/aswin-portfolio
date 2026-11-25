@@ -5,7 +5,7 @@ import { redisOrNull } from "./redis";
 /**
  * Rate limits (SPEC §10, buckets approved in M5 planning):
  * - fit: FIT_DAILY_LIMIT fit checks per visitor per day
- * - ask: 30 per visitor per hour, shared by Ask my work, Break my AI and the sandbox
+ * - ask: 30 per visitor per hour, shared by Ask my work and Break my AI
  * - drill: FIT_DAILY_LIMIT failure drills per visitor per day, apart from fit checks
  * - contact: 3 contact-form messages per visitor per hour (SPEC §9)
  */

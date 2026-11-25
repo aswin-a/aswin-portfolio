@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { MobileNav } from "@/components/mobile-nav";
 import { useShowIntro, useSite } from "@/components/xray-provider";
 
 export type NavCurrent = "home" | "work" | "log" | "about";
@@ -24,7 +25,7 @@ function scrollToContact(e: React.MouseEvent<HTMLAnchorElement>) {
   el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
 }
 
-/** Header from Nav.dc.html. */
+/** Header from Nav.dc.html; below 640px the phone header from Mobile.dc.html (design update 9). */
 export function Nav({ current }: { current: NavCurrent }) {
   const { xray, toggleXray, openAsk } = useSite();
   // The design passes isNew only on the home page.
@@ -33,18 +34,23 @@ export function Nav({ current }: { current: NavCurrent }) {
 
   // The header is sticky (Aswin's request). Its height changes as it wraps, so publish it
   // as --nav-h for scroll-padding-top and the case-study rail's sticky offset.
+  // Only one of the two headers is displayed at a time; the hidden one measures 0.
   const headerRef = useRef<HTMLElement>(null);
+  const phoneRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = headerRef.current;
-    if (!el) return;
+    const phone = phoneRef.current;
+    if (!el || !phone) return;
     const root = document.documentElement;
-    const set = () => root.style.setProperty("--nav-h", `${el.getBoundingClientRect().height}px`);
+    const height = () => Math.max(el.getBoundingClientRect().height, phone.getBoundingClientRect().height);
+    const set = () => root.style.setProperty("--nav-h", `${height()}px`);
     set();
     // A direct load of /#contact jumps before --nav-h exists; align it again now that it does.
     const target = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (target) target.scrollIntoView({ block: "start" });
     const ro = new ResizeObserver(set);
     ro.observe(el);
+    ro.observe(phone);
     return () => {
       ro.disconnect();
       root.style.removeProperty("--nav-h");
@@ -52,7 +58,8 @@ export function Nav({ current }: { current: NavCurrent }) {
   }, []);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 box-border w-full border-b border-rule bg-bg font-sans text-ink">
+    <>
+    <header ref={headerRef} className="sticky top-0 z-40 box-border w-full border-b border-rule bg-bg font-sans text-ink max-[640px]:hidden">
       <nav
         aria-label="Main"
         className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-x-5 gap-y-3 px-6 py-[14px]"
@@ -118,5 +125,7 @@ export function Nav({ current }: { current: NavCurrent }) {
         </div>
       </nav>
     </header>
+    <MobileNav current={current} headerRef={phoneRef} />
+    </>
   );
 }

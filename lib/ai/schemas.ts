@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { ASK_KINDS, ASK_MAX_CHARS, SessionMemorySchema } from "@/lib/ask/types";
 import { DRILLS, JD_MAX_CHARS } from "@/lib/fit-check/types";
-import { SANDBOX_GUARDS, SANDBOX_VERDICTS } from "@/lib/ai/sandbox-reply";
 
 /**
  * Zod schemas for `/api/run` (SPEC §7–8, §10): the request body and every structured output the
@@ -26,24 +25,15 @@ export const AskRunSchema = z.object({
   turnstileToken: TurnstileToken,
 });
 
-/** "Try to break it" on the case study (Work.dc.html). Same length cap as Ask. */
-export const SANDBOX_MAX_CHARS = ASK_MAX_CHARS;
-export const SandboxRunSchema = z.object({
-  mode: z.literal("sandbox"),
-  attempt: z.string().trim().min(1).max(SANDBOX_MAX_CHARS),
-  turnstileToken: TurnstileToken,
-});
-
-export const RunRequestSchema = z.discriminatedUnion("mode", [FitRunSchema, AskRunSchema, SandboxRunSchema]);
+export const RunRequestSchema = z.discriminatedUnion("mode", [FitRunSchema, AskRunSchema]);
 export type RunRequest = z.infer<typeof RunRequestSchema>;
 export type FitRun = z.infer<typeof FitRunSchema>;
 export type AskRun = z.infer<typeof AskRunSchema>;
-export type SandboxRun = z.infer<typeof SandboxRunSchema>;
 
 // ---------- Model outputs ----------
 
-/** SPEC §7 `jd.parse`: up to 8 requirements, plus a short role title for the hero and Contact. */
-export const MAX_REQUIREMENTS = 8;
+/** SPEC §7 `jd.parse`: up to 10 requirements, plus a short role title for the hero and Contact. */
+export const MAX_REQUIREMENTS = 10;
 export const JdParseSchema = z.object({
   role: z.string().min(1).max(120),
   requirements: z.array(z.string().min(1).max(300)).min(1).max(MAX_REQUIREMENTS),
@@ -90,17 +80,7 @@ export const AskOutputSchema = z.object({
 });
 export type AskOutput = z.infer<typeof AskOutputSchema>;
 
-// The verdicts, guards and reply schema live in lib/ai/sandbox-reply.ts (zod/mini, parsed in the browser).
-export { SANDBOX_GUARDS, SANDBOX_VERDICTS, RunTraceLiteSchema, SandboxReplySchema, type SandboxReply } from "@/lib/ai/sandbox-reply";
-/** The model's structured output: the same fields as the reply, without the trace. */
-export const SandboxOutputSchema = z.object({
-  verdict: z.enum(SANDBOX_VERDICTS),
-  reason: z.string().min(1).max(300),
-  guard: z.enum(SANDBOX_GUARDS),
-});
-export type SandboxOutput = z.infer<typeof SandboxOutputSchema>;
-
-// ---------- Responses for ask and sandbox (JSON, not streamed) ----------
+// ---------- Responses for ask ----------
 
 
 /** `budget`: the monthly AI budget is spent (SPEC §10, approved M5 addition). */

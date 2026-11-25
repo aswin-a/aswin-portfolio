@@ -44,7 +44,7 @@ export function Result({
     </button>
   );
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-7 max-[640px]:gap-5">
       <div className="flex flex-col gap-[10px]">
         <span className="self-start rounded-full border-[1.5px] border-ink px-[10px] py-[3px] font-mono text-[11px] font-medium tracking-[0.1em] text-ink">
           RESULT
@@ -52,7 +52,7 @@ export function Result({
         <h2
           ref={headingRef}
           tabIndex={-1}
-          className="m-0 font-serif text-[40px] font-normal leading-[1.1] tracking-[-0.01em] outline-none"
+          className="m-0 font-serif text-[40px] font-normal leading-[1.1] tracking-[-0.01em] outline-none max-[640px]:text-[28px] max-[640px]:leading-[1.15]"
         >
           {result.verdict}
         </h2>
@@ -156,11 +156,12 @@ export function Result({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Compact (design update 9): one per line, full width. */}
+      <div className="flex flex-wrap items-center gap-3 max-[640px]:flex-col max-[640px]:items-stretch max-[640px]:gap-x-3 max-[640px]:gap-y-[10px]">
         <a
           href="#contact"
           onClick={onTalk}
-          className="inline-flex min-h-12 items-center rounded-[10px] bg-btn-bg px-[22px] py-3 text-[16px] font-semibold text-btn-ink no-underline"
+          className="inline-flex min-h-12 items-center justify-center rounded-[10px] bg-btn-bg px-[22px] py-3 text-[16px] font-semibold text-btn-ink no-underline"
         >
           {bad ? "Talk to Aswin anyway" : "Talk to Aswin about this role"}
         </a>
@@ -171,9 +172,10 @@ export function Result({
         >
           Ask my work <span className="font-mono text-[12px] text-muted">⌘K</span>
         </button>
-        <a href="/resume.pdf" className="inline-flex min-h-12 items-center px-[6px] py-0 text-[15px] text-ink">
-          Download resume
-        </a>
+        {/* "See my CV" links to the CV page (design update 9; was "Download resume"). */}
+        <Link href="/about" className="inline-flex min-h-12 items-center justify-center px-[6px] py-0 text-[15px] text-ink">
+          See my CV
+        </Link>
       </div>
     </div>
   );

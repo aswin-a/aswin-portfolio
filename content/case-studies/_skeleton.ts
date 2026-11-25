@@ -34,7 +34,7 @@ export type SkeletonFill = {
 
 /**
  * The PRD template fields SPEC §12 asks for, for the studies the design doesn't spell out.
- * Every field not in `fill` stays a todo() placeholder. Architecture, "Try to break it", Performance and
+ * Every field not in `fill` stays a todo() placeholder. Architecture, Performance and
  * Questions stay off until Aswin adds them.
  */
 export function skeleton(card: CardFields, fill: SkeletonFill = {}): CaseStudy {

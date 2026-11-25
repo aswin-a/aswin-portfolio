@@ -12,7 +12,8 @@ const MEMORY = {
   ],
 };
 
-const askButton = (page: Page) => page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: /^Ask my work/ });
+// The desktop Nav's button, or below 640px the phone dock's "Ask my work ↑" (design update 9).
+const askButton = (page: Page) => page.getByRole("button", { name: /^Ask my work/ }).first();
 const dialog = (page: Page) => page.getByRole("dialog", { name: "Ask my work" });
 const input = (page: Page) => page.getByRole("textbox", { name: "Ask a question about Aswin's work" });
 const status = (page: Page) => dialog(page).getByRole("status");
@@ -47,10 +48,39 @@ test.describe("open, close and focus", () => {
     });
   }
 
-  test("clicking the scrim doesn't close it", async ({ page }) => {
+  test("clicking the scrim closes it and focus returns (design update 10)", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await open(page);
-    await page.mouse.click(20, 400);
+    await expect(page.locator("[data-ask-root]")).toHaveCSS("background-color", "rgba(27, 26, 23, 0.4)");
+    // A click inside the dialog doesn't close it.
+    await dialog(page).click({ position: { x: 300, y: 5 } });
     await expect(dialog(page)).toBeVisible();
+    await page.mouse.click(20, 400);
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(askButton(page)).toBeFocused();
+  });
+
+  test("desktop: at most 80vh tall; the conversation scrolls inside; the page keeps its place (update 10)", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 400 });
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, 700));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(700);
+    // The shortcut, not a click: Playwright scrolls a sticky button "into view" before clicking it.
+    await page.keyboard.press("Control+k");
+    await expect(dialog(page)).toBeVisible();
+    expect((await dialog(page).boundingBox())!.height).toBeLessThanOrEqual(320);
+    const scroller = dialog(page).locator("[data-ask-scroll]");
+    await expect(scroller).toHaveCSS("overflow-y", "auto");
+    await expect(scroller).toHaveCSS("overscroll-behavior-y", "contain");
+    expect(await scroller.evaluate((e) => e.scrollHeight > e.clientHeight)).toBe(true);
+    await scroller.hover();
+    await page.mouse.wheel(0, 400);
+    await expect.poll(() => scroller.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
+    // The input row stays put.
+    await expect(input(page)).toBeInViewport();
+    await page.keyboard.press("Escape");
+    await expect(dialog(page)).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(700);
   });
 
   test("page behind is inert and doesn't scroll; Tab stays in the dialog", async ({ page }) => {
@@ -333,9 +363,10 @@ test.describe("layout", () => {
     expect(Math.round(box.y + box.height)).toBe(844);
     await expect(dialog(page)).toHaveCSS("border-top-left-radius", "18px");
     await expect(dialog(page)).toHaveCSS("border-bottom-left-radius", "0px");
-    // The phone artboard's fixed "Ask my work" bottom button is a prototype control: not built.
-    await page.keyboard.press("Escape");
+    // The dock hides while Ask is open and comes back on close (design update 9).
     await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Ask my work", exact: true })).toBeVisible();
   });
 });
 

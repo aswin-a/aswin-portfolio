@@ -33,13 +33,6 @@ export const CaseStudySchema = z.object({
   builtMyself: z.string().optional(),
   usedOrReused: z.string().optional(),
   safeguards: z.array(z.object({ title: z.string(), stops: z.string(), userSees: z.string() })).optional(),
-  sandbox: z
-    .object({
-      attacks: z.array(
-        z.object({ type: z.string(), text: z.string(), verdict: z.string(), reason: z.string(), guard: z.string() }),
-      ),
-    })
-    .optional(),
   metrics: z.array(z.object({ kind: z.string(), hint: z.string() })).optional(),
   perf: z
     .object({

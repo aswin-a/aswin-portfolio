@@ -90,11 +90,11 @@ test.describe("intro banner", () => {
     await expect(banner(page)).toHaveCount(0);
   });
 
-  test("uses the phone copy at 390px", async ({ page }) => {
+  test("is desktop only: below 640px the dock hint replaces it (design update 9)", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await expect(banner(page).getByText("It shows how the AI works in the fit check, Ask my work and the case studies.", { exact: true })).toBeVisible();
-    await expect(banner(page).getByText(/: the sources, guardrails, live traces/)).toBeHidden();
+    await expect(banner(page)).toBeHidden();
+    await expect(page.getByRole("status").filter({ hasText: "New: X-ray." })).toBeVisible();
   });
 
   test("uses the desktop copy at 1440px", async ({ page }) => {
@@ -105,7 +105,6 @@ test.describe("intro banner", () => {
         "It shows how the AI works in the fit check, Ask my work and the case studies: the sources, guardrails, live traces, cost and eval results behind each answer.",
       ),
     ).toBeVisible();
-    await expect(banner(page).getByText("It shows how the AI works in the fit check, Ask my work and the case studies.", { exact: true })).toBeHidden();
   });
 });
 
