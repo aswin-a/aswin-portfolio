@@ -62,7 +62,7 @@ export function Fallback({
         </XrayPanel>
       )}
       <p className="m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-accent">Precomputed matches · same knowledge base</p>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-[14px]">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-[14px]">
         {precomputed.map((f) => (
           <article key={f.role} className="flex flex-col gap-[10px] rounded-xl border border-rule bg-paper p-[18px]">
             <h3 className="m-0 text-[17px] font-semibold">{f.role}</h3>

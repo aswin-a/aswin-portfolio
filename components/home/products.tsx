@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { products, type Product } from "@/content/products";
-import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { ComingSoonLink } from "@/components/coming-soon";
+import { ProductCards, type CardLink, type PhoneProduct } from "@/components/home/product-cards";
 import { workLinkIsLive } from "@/lib/case-studies";
 import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
@@ -13,10 +14,8 @@ function A({ href, className, children }: { href: string | undefined; className:
   return <a href={href} className={className}>{children}</a>;
 }
 
-const accentStatus = (status: string) => status === "LIVE HERE" || status.startsWith("IN USE");
-
 /**
- * "Products I've built" (Main.dc.html, design update 4) plus the phone list (Mobile.dc.html, ≤ 640px).
+ * "Products I've built" (Main.dc.html, design update 4) plus the phone's expandable cards (Mobile.dc.html, < 640px, design update 9).
  * `headingLevel` is 1 on the standalone /work page (a design gap, SPEC §4), where the hero's
  * `#fit-h` anchor lives on `/`, so `anchorBase` is "/".
  */
@@ -39,18 +38,23 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
     const url = hrefOf(h);
     return url.startsWith("#") && url !== "#" ? `${anchorBase}${url}` : url;
   };
-  // The phone card goes where the primary button goes when that's on this page ("Try it above ↑").
-  const phoneHref = (p: Product) => {
-    const primary = primaryOf(p);
-    if (primary?.href.startsWith("#")) return href(primary.href);
-    const secondary = shown(p.secondary) ? p.secondary : undefined;
-    return secondary && href(secondary.href);
+  // Phone cards (design update 9) keep the desktop links. The primary gets the phone style's trailing
+  // arrow (Aswin, 2026-11-25): "Add to Claude/ChatGPT →", "Try it above ↑", "Run it locally →".
+  const cardLink = (l: Product["secondary"] | undefined, arrow: boolean): CardLink | undefined => {
+    if (!l) return undefined;
+    const soon = isHiddenStudyHref(l.href);
+    const label = soon ? plainLabel(l.label) : arrow && !/[→↑↓]$/.test(l.label) ? `${l.label} →` : l.label;
+    return { label, href: href(l.href), soon };
   };
-  // A phone card that would go to a hidden case study is a plain card with the pill.
-  const phoneHidden = (p: Product) => {
-    const to = phoneHref(p);
-    return to !== undefined && isHiddenStudyHref(to);
-  };
+  const phoneCard = (p: Product): PhoneProduct => ({
+    num: p.num,
+    name: p.name,
+    pitch: p.phonePitch,
+    built: p.built,
+    flow: p.flow,
+    primary: cardLink(primaryOf(p), true),
+    secondary: cardLink(secondaryOf(p), false),
+  });
 
   return (
     <>
@@ -150,33 +154,7 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
         <H id="m-work" className="m-0 mb-1 font-serif text-[30px] font-normal">
           Products I&apos;ve built
         </H>
-        {items.map((p) => (
-          <A
-            key={p.slug}
-            href={phoneHidden(p) ? undefined : phoneHref(p)}
-            className="flex flex-col gap-[6px] rounded-xl border border-rule bg-paper px-4 py-[14px] no-underline"
-          >
-            <span className={`font-mono text-[11px] ${accentStatus(p.status) ? "text-accent" : "text-muted"}`}>{p.status}</span>
-            <span className="text-[16px]">{p.name}</span>
-            {p.phoneFlow ? (
-              <span className="font-mono text-[12px] text-muted">
-                {p.phoneFlow.map((f, i) => (
-                  <span key={f.text}>
-                    {f.human ? <span className="text-amber-text">{f.text}</span> : f.text}
-                    {i < p.phoneFlow!.length - 1 ? " → " : ""}
-                  </span>
-                ))}
-              </span>
-            ) : (
-              primaryOf(p)?.href.startsWith("#") && <span className="font-mono text-[12px] text-muted">{primaryOf(p)!.label}</span>
-            )}
-            {phoneHidden(p) && (
-              <span className="self-start">
-                <ComingSoonPill />
-              </span>
-            )}
-          </A>
-        ))}
+        <ProductCards items={items.map(phoneCard)} />
       </section>
     </>
   );

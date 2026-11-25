@@ -28,6 +28,15 @@ describe("design update 4 content", async () => {
   const { products } = await import("@/content/products");
   const { CASE_STUDY_SLUGS } = await import("@/lib/case-studies");
 
+  it("hood: 4 groups of 3 in order, matching Mobile.dc.html (design update 8)", async () => {
+    const { hoodGroups } = await import("@/content/hood");
+    expect(hoodGroups.map((g) => g.name)).toEqual(["Agent building blocks", "Running it reliably", "Trust and checking", "Data and context"]);
+    expect(hoodGroups.map((g) => hood.filter((h) => h.group === g.name).map((h) => h.name))).toEqual([
+      ["agents", "skills", "tools"], ["orchestration", "memory", "production"],
+      ["guardrails", "evals", "human in loop"], ["data privacy", "rag", "mcp server"],
+    ]);
+  });
+
   it("hood: the 12 parts in order; live parts jump to #top or #break-my-ai; planned has no link", () => {
     expect(hood.map((h) => h.name)).toEqual([
       "agents", "skills", "tools", "orchestration", "memory", "production",

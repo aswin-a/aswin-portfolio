@@ -6,6 +6,12 @@ export default defineConfig({
   // Visual baselines (M7): reviewed against the artboards, then committed. `pnpm test:e2e:update` rewrites them.
   snapshotPathTemplate: "{testDir}/__screenshots__/{arg}{ext}",
   expect: { toHaveScreenshot: { animations: "disabled", caret: "hide", scale: "css", maxDiffPixelRatio: 0.002 } },
+  // The phone layout (design update 9) has its own project at 390×844: tests/e2e/*.mobile.spec.ts.
+  // Older specs that check a phone detail set the viewport themselves and stay in "desktop".
+  projects: [
+    { name: "desktop", testIgnore: /\.mobile\.spec\.ts$/ },
+    { name: "mobile", testMatch: /\.mobile\.spec\.ts$/, use: { viewport: { width: 390, height: 844 } } },
+  ],
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   webServer: {
     // E2E_PREBUILT=1 (CI): .next was already built with this same env, so only start it.

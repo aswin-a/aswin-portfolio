@@ -15,47 +15,128 @@ a{color:inherit}
 a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2px}
 </style>
 </helmet>
-<div style="width: 390px; min-height: 4300px; box-sizing: border-box; position: relative; overflow: hidden; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
-<dc-import name="Nav" current="home" xray="{{xray}}" is-new="{{showIntro}}" on-toggle-xray="{{toggleXray}}" on-ask="{{openAsk}}" hint-size="390px,180px"></dc-import>
-
-<sc-if value="{{showIntro}}" hint-placeholder-val="{{ true }}">
-<div role="region" aria-label="About X-ray mode" style="padding: 14px 20px; border-bottom: 1px solid {{t.rule}}; background: {{t.accentTint}}; display: flex; flex-direction: column; gap: 10px">
-<p style="margin: 0; font-size: 15px; line-height: 1.5"><b style="font-weight: 600">New here? Try X-ray.</b> It shows how the AI works in the fit check, Ask my work and the case studies.</p>
-<div style="display: flex; gap: 8px">
-<button type="button" onClick="{{xrayOn}}" style="flex: 1; min-height: 44px; border-radius: 8px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 15px; font-weight: 600; cursor: pointer">Turn on X-ray</button>
-<button type="button" onClick="{{introDismiss}}" style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid {{t.accent}}; background: transparent; color: {{t.accent}}; font-family: {{t.sans}}; font-size: 15px; cursor: pointer">Got it</button>
+<div style="width: 390px; min-height: 4300px; box-sizing: border-box; position: relative; overflow-x: clip; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
+<header style="position: sticky; top: 0; z-index: 30; background: {{t.bg}}; border-bottom: 1px solid {{t.rule}}">
+<nav aria-label="Main" style="display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 8px 0 20px">
+<a href="Main.dc.html" style="display: inline-flex; align-items: baseline; gap: 8px; min-height: 44px; align-items: center; color: {{t.ink}}; text-decoration: none"><span style="font-family: {{t.serif}}; font-size: 21px; letter-spacing: -0.01em">Aswin</span><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.muted}}">pm · builds for agents</span></a>
+<button type="button" onClick="{{toggleMenu}}" aria-expanded="{{menuOpen}}" aria-controls="m-menu" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 0 12px; border: 0; background: transparent; color: {{t.ink}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">{{menuLabel}}<span aria-hidden="true" style="font-size: 16px">{{menuIcon}}</span></button>
+</nav>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div id="m-menu" style="position: absolute; left: 0; right: 0; top: 52px; background: {{t.bg}}; border-bottom: 1px solid {{t.rule}}; box-shadow: 0 16px 32px rgba(27, 26, 23, 0.12); padding: 4px 20px 20px; display: flex; flex-direction: column">
+<sc-for list="{{menuLinks}}" as="ml" hint-placeholder-count="4">
+<a href="{{ml.href}}" onClick="{{ml.click}}" aria-current="{{ml.current}}" style="display: flex; justify-content: space-between; align-items: center; min-height: 52px; border-bottom: 1px solid {{t.rule}}; font-size: 18px; color: {{t.ink}}; text-decoration: none">{{ml.label}}<span aria-hidden="true" style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{ml.mark}}</span></a>
+</sc-for>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 16px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 600">X-ray</span>
+<span style="font-size: 13px; line-height: 1.45; color: {{t.muted}}">Shows how the AI works: sources, guardrails, cost.</span>
+</div>
+<button type="button" onClick="{{toggleXray}}" role="switch" aria-checked="{{xray}}" aria-label="X-ray" style="flex: none; width: 52px; height: 32px; padding: 0; border-radius: 999px; border: 0; background: {{switchBg}}; position: relative; cursor: pointer"><span style="position: absolute; top: 3px; left: {{switchKnob}}; width: 26px; height: 26px; border-radius: 999px; background: {{t.paper}}"></span></button>
 </div>
 </div>
 </sc-if>
+</header>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" onClick="{{toggleMenu}}" style="position: absolute; inset: 0; z-index: 20; background: rgba(27, 26, 23, 0.4)"></div>
+</sc-if>
 
 <div id="top"></div>
-<dc-import name="Hero" initial="result" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-xray="{{xrayOn}}" hint-size="390px,2500px"></dc-import>
+<dc-import name="Hero" initial="result" compact="{{ true }}" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-xray="{{xrayOn}}" hint-size="390px,2500px"></dc-import>
 
 <section aria-labelledby="m-hood" style="border-top: 1px solid {{t.rule}}; padding: 36px 20px; display: flex; flex-direction: column; gap: 10px">
 <p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.08em; color: {{t.muted}}">ACROSS ALL MY WORK</p>
 <h2 id="m-hood" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 28px; line-height: 1.2">How I build agentic products, with proof</h2>
-<p style="margin: 0 0 4px; font-size: 15px; line-height: 1.5; color: {{t.muted}}">Each part links to where you can see it working.</p>
-<sc-for list="{{hood}}" as="u" hint-placeholder-count="12">
-<a href="{{u.href}}" onClick="{{u.click}}" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border: 1px solid {{t.rule}}; border-radius: 10px; background: {{t.paper}}; text-decoration: none; color: {{t.ink}}">
+<p style="margin: 0 0 4px; font-size: 15px; line-height: 1.5; color: {{t.muted}}">12 parts in 4 groups. Open one to see the proof and where to check it.</p>
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; border: 1px solid {{g.border}}; border-radius: 12px; background: {{t.paper}}">
+<button type="button" onClick="{{g.toggle}}" aria-expanded="{{g.open}}" style="display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 14px 16px; border: 0; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; text-align: left; cursor: pointer">
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%">
+<span style="font-size: 16px; font-weight: 600">{{g.name}}</span>
+<span style="flex: none; font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">{{g.cue}}</span>
+</span>
+<span style="font-size: 14px; line-height: 1.45; color: {{t.muted}}">{{g.summary}}</span>
+<span style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{g.chips}}" as="c" hint-placeholder-count="3">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 999px; border: 1px solid {{t.rule}}; font-family: {{t.mono}}; font-size: 12px; color: {{t.ink}}"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 999px; background: {{c.dot}}; border: 1px solid {{c.dotBorder}}"></span>{{c.name}}</span>
+</sc-for>
+</span>
+</button>
+<sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
+<ul style="margin: 0; padding: 0 16px 6px; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{g.items}}" as="u" hint-placeholder-count="3">
+<li style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-top: 1px solid {{t.rule}}">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
 <span style="font-family: {{t.mono}}; font-size: 14px">{{u.name}}</span>
 <span style="padding: 2px 8px; border-radius: 999px; border: 1px solid {{u.statusBorder}}; background: {{u.statusBg}}; font-family: {{t.mono}}; font-size: 11px; color: {{u.statusInk}}">{{u.status}}</span>
-</a>
+</span>
+<span style="font-size: 14px; line-height: 1.5">{{u.proof}}</span>
+<sc-if value="{{u.hasLink}}" hint-placeholder-val="{{ true }}"><a href="{{u.href}}" onClick="{{u.click}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{u.cta}}</a></sc-if>
+<sc-if value="{{u.planned}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{u.cta}}</span></sc-if>
+</li>
+</sc-for>
+</ul>
+</sc-if>
+</div>
 </sc-for>
 </section>
 
 <section aria-labelledby="m-work" style="border-top: 1px solid {{t.rule}}; padding: 36px 20px 56px; display: flex; flex-direction: column; gap: 12px">
 <p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.08em; color: {{t.muted}}">CASE STUDIES</p>
 <h2 id="m-work" style="margin: 0 0 4px; font-family: {{t.serif}}; font-weight: 400; font-size: 30px">Products I've built</h2>
-<a href="Work.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid {{t.rule}}; border-radius: 12px; background: {{t.paper}}; text-decoration: none"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.accent}}">IN USE · RECORDED RUN</span><span style="font-size: 16px">AI job search and apply agent</span><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">search → tailor → <span style="color: {{t.amberText}}">wait for my approval</span> → apply</span></a>
-<a href="#fit-h" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid {{t.rule}}; border-radius: 12px; background: {{t.paper}}; text-decoration: none"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.accent}}">LIVE HERE</span><span style="font-size: 16px">Job-fit AI on this site</span><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">Try it above ↑</span></a>
-<a href="Work.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid {{t.rule}}; border-radius: 12px; background: {{t.paper}}; text-decoration: none"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.muted}}">CONCEPT</span><span style="font-size: 16px">AI integration builder for long-tail apps</span></a>
-<a href="Work.dc.html" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid {{t.rule}}; border-radius: 12px; background: {{t.paper}}; text-decoration: none"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.accent}}">IN USE · RECORDED RUN</span><span style="font-size: 16px">Instagram content intelligence agent</span></a>
+<sc-for list="{{work}}" as="w" hint-placeholder-count="4">
+<article style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid {{w.border}}; border-radius: 12px; background: {{t.paper}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{w.num}}</span>
+<button type="button" onClick="{{w.toggle}}" aria-expanded="{{w.open}}" style="min-height: 36px; padding: 4px 0; border: 0; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">{{w.cue}}</button>
+</div>
+<h3 style="margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3">{{w.name}}</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{t.muted}}">{{w.pitch}}</p>
+<div style="display: flex; gap: 4px 18px; flex-wrap: wrap">
+<a href="{{w.primaryHref}}" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{w.primary}}</a>
+<a href="Work.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">Read the case study →</a>
+</div>
+<sc-if value="{{w.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid {{t.rule}}">
+<span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">HOW IT WORKS</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{w.flow}}" as="f" hint-placeholder-count="5">
+<li style="display: flex; gap: 12px; align-items: flex-start">
+<span style="display: flex; flex-direction: column; align-items: center; flex: 0 0 auto">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 999px; border: {{f.dotBorder}}; background: {{f.dotBg}}; font-family: {{t.mono}}; font-size: 11px; color: {{f.dotInk}}">{{f.n}}</span>
+<span style="display: block; width: 1px; height: {{f.lineH}}; background: {{t.rule}}"></span>
+</span>
+<span style="padding-top: 2px; padding-bottom: 12px; font-size: 15px; line-height: 1.4; color: {{f.ink}}">{{f.text}}<span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.amberText}}">{{f.note}}</span></span>
+</li>
+</sc-for>
+</ol>
+<p style="margin: 0; font-size: 14px; line-height: 1.5"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">WHAT I BUILT </span>{{w.built}}</p>
+</div>
+</sc-if>
+</article>
+</sc-for>
 </section>
 <dc-import name="Footer" hint-size="390px,1100px"></dc-import>
-<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="home" context="{{askCtx}}" on-close="{{closeAsk}}" on-forget="{{forgetCtx}}" hint-size="0px,0px"></dc-import>
+<sc-if value="{{showDock}}" hint-placeholder-val="{{ true }}">
+<div style="position: sticky; bottom: 16px; z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 16px; pointer-events: none">
+<sc-if value="{{showIntro}}" hint-placeholder-val="{{ true }}">
+<div role="status" style="pointer-events: auto; position: relative; display: flex; align-items: center; gap: 12px; max-width: 340px; padding: 10px 12px 10px 14px; border-radius: 12px; background: {{t.paper}}; border: 1px solid {{t.accent}}; box-shadow: 0 8px 24px rgba(27, 26, 23, 0.14)">
+<span style="font-size: 14px; line-height: 1.4"><b style="font-weight: 600">New: X-ray.</b> Turn it on to see how the AI works here.</span>
+<button type="button" onClick="{{introDismiss}}" style="flex: none; min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid {{t.accent}}; background: transparent; color: {{t.accent}}; font-family: {{t.sans}}; font-size: 13px; cursor: pointer">Got it</button>
+<span aria-hidden="true" style="position: absolute; bottom: -6px; left: 56px; width: 10px; height: 10px; background: {{t.paper}}; border-right: 1px solid {{t.accent}}; border-bottom: 1px solid {{t.accent}}; transform: rotate(45deg)"></span>
+</div>
+</sc-if>
+<div style="pointer-events: auto; display: flex; align-items: stretch; width: 100%; max-width: 340px; height: 52px; border-radius: 999px; background: {{dockBg}}; box-shadow: 0 10px 28px rgba(16, 18, 20, 0.28); overflow: hidden">
+<button type="button" onClick="{{toggleXray}}" aria-pressed="{{xray}}" style="flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border: 0; background: transparent; color: #E9E6DF; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">
+<span aria-hidden="true" style="width: 26px; height: 16px; border-radius: 999px; background: {{dockTrack}}; position: relative"><span style="position: absolute; top: 2px; left: {{dockKnob}}; width: 12px; height: 12px; border-radius: 999px; background: {{dockKnobBg}}"></span></span>{{dockXLabel}}</button>
+<span aria-hidden="true" style="width: 1px; margin: 12px 0; background: #3A4047"></span>
+<button type="button" onClick="{{openAskDock}}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent; color: #FFFDF8; font-family: {{t.sans}}; font-size: 15px; font-weight: 600; cursor: pointer">Ask my work <span aria-hidden="true" style="font-family: {{t.mono}}; font-size: 13px; font-weight: 400; color: #A3A9B0">↑</span></button>
+</div>
+</div>
+</sc-if>
+<dc-import name="Ask" open="{{askOpen}}" sheet="{{ true }}" xray="{{xray}}" page="home" context="{{askCtx}}" on-close="{{closeAsk}}" on-forget="{{forgetCtx}}" hint-size="0px,0px"></dc-import>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":4300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"startMenu":{"editor":"boolean","default":false},"startXray":{"editor":"boolean","default":false},"introSeen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":4300}}'>
 function mobTokens(x) {
   var c = x
     ? { bg: '#101214', paper: '#171A1D', ink: '#E9E6DF', muted: '#A3A9B0', rule: '#2B3036', accent: '#8DBBF2', accentTint: '#17283D', amberText: '#EDB65E', btnBg: '#E9E6DF', btnInk: '#101214' }
@@ -63,23 +144,90 @@ function mobTokens(x) {
   c.serif = "'Newsreader', Georgia, serif"; c.sans = "'IBM Plex Sans', system-ui, sans-serif"; c.mono = "'IBM Plex Mono', ui-monospace, Menlo, monospace";
   return c;
 }
-var MOB_HOOD = [
-  ['agents', 'case study', 'Work.dc.html'], ['skills', 'GitHub', '#'], ['tools', 'live here', '#top'],
-  ['orchestration', 'live here', '#top'], ['memory', 'live here', '#top'], ['production', 'live here', '#break-my-ai'],
-  ['guardrails', 'live here', '#break-my-ai'], ['evals', 'GitHub', '#'], ['human in loop', 'shipped', '#'],
-  ['data privacy', 'shipped', '#'], ['rag', 'prototype', '#'], ['mcp server', 'planned']
+var MOB_WORK = [
+  { num: '01', status: 'IN USE · RECORDED RUN', name: 'AI job search and apply agent', pitch: 'Finds roles that fit, tailors my resume to each, and applies only after I say yes.',
+    built: 'The project instructions, step prompts A–F and the approval step.', primary: 'Watch the run →', primaryHref: 'Work.dc.html',
+    flow: [['Search LinkedIn and save matches'], ['Write the ideal resume for the JD'], ['Tailor mine with a three-way map'], ['Wait for my approval', 1], ['Apply']] },
+  { num: '02', status: 'LIVE HERE', name: 'Job-fit AI on this site', pitch: 'Paste a job description and get an honest verdict: what fits, with proof, and what doesn’t.',
+    built: 'The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.', primary: 'Try it above ↑', primaryHref: '#fit-h',
+    flow: [['Paste a JD or a link'], ['fetch_url, only for links'], ['Parse requirements, search the record'], ['Guardrails check every claim'], ['Cited verdict, gaps included']] },
+  { num: '03', status: 'CONCEPT', name: 'AI integration builder for long-tail apps', pitch: 'AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A CloudEagle.ai take-home.',
+    built: '[e.g. the spec, Figma flows and the clickable prototype]', primary: 'Run it locally →', primaryHref: '#',
+    flow: [['Paste the app’s API docs'], ['AI drafts the connector'], ['Policy checks: scopes, secrets, allow-list'], ['A person approves the diff', 1], ['Deploy']] },
+  { num: '04', status: 'IN USE · RECORDED RUN', name: 'Instagram content intelligence agent', pitch: 'Finds what competing pet-food brands post that performs, and suggests what Dhee’s should post next.',
+    built: 'The agent’s prompts and analysis steps.', primary: 'Watch the run →', primaryHref: 'Work.dc.html',
+    flow: [['Pick the competitors to watch'], ['Pull their recent posts'], ['Rank what performs'], ['Spot trending formats'], ['Suggest Dhee’s next posts']] }
+];
+var MOB_GROUPS = [
+  { name: 'Agent building blocks', summary: 'A 4-step agent, a Claude Skill, and tool calls you can watch live.', items: [
+    { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html' },
+    { name: 'skills', status: 'GitHub', proof: 'I wrote a Claude Skill that scores JD fit against my master resume.', cta: 'View the skill →', href: '#' },
+    { name: 'tools', status: 'live here', proof: 'The fit check calls three tools: fetch_url, jd.parse and kb.search.', cta: 'See the calls in X-ray →', live: true, href: '#top' } ] },
+  { name: 'Running it reliably', summary: 'A fixed pipeline with a retry, session-only memory, and limits with a fallback.', items: [
+    { name: 'orchestration', status: 'live here', proof: 'A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.', cta: 'Open X-ray →', live: true, href: '#top' },
+    { name: 'memory', status: 'live here', proof: 'Your fit result carries into Ask my work for this session, and nothing is stored after.', cta: 'Open X-ray →', live: true, href: '#top' },
+    { name: 'production', status: 'live here', proof: 'Rate limit, budget cap, and a precomputed fallback when either trips.', cta: 'Try Break my AI →', live: true, href: '#break-my-ai' } ] },
+  { name: 'Trust and checking', summary: 'Every claim cited, a public eval set, and a person reviewing low-confidence output.', items: [
+    { name: 'guardrails', status: 'live here', proof: 'Every claim is cited, gaps are stated, and injected instructions are refused.', cta: 'Try Break my AI →', live: true, href: '#break-my-ai' },
+    { name: 'evals', status: 'GitHub', proof: '[25] test JDs and red-team cases, run before every change.', cta: 'View the eval set →', href: '#' },
+    { name: 'human in loop', status: 'shipped', proof: 'I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.', cta: 'Read the OCR story →', href: '#' } ] },
+  { name: 'Data and context', summary: 'Patient data kept away from LLMs, a docs assistant, and an MCP server next.', items: [
+    { name: 'data privacy', status: 'shipped', proof: 'Advised against sending patient data to LLMs at a healthcare SaaS platform.', cta: 'Read more →', href: '#' },
+    { name: 'rag', status: 'prototype', proof: 'A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.', cta: 'Why no vector DB yet →', href: '#' },
+    { name: 'mcp server', status: 'planned', proof: 'My agent uses MCP connectors today. Next: kb.search as an MCP server you can add to Claude.', cta: 'Coming soon', planned: true } ] }
 ];
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { xray: false, introSeen: false, askOpen: false, askCtx: null }; }
+  constructor(props) { super(props); this.state = { xray: !!props.startXray, introSeen: !!props.introSeen || !!props.startXray, askOpen: false, askCtx: null, openGroup: 0, openWork: -1, menuOpen: !!props.startMenu }; }
   renderVals() {
     var s = this.state, x = s.xray, t = mobTokens(false);
     return {
       t: t, xray: x, askOpen: s.askOpen, askCtx: s.askCtx,
       showIntro: !s.introSeen && !x,
-      hood: MOB_HOOD.map((h) => {
-        var live = h[1] === 'live here', shipped = h[1].indexOf('shipped') === 0;
-        return { name: h[0], status: h[1], href: h[2], click: live ? () => this.setState({ xray: true, introSeen: true }) : undefined,
-          statusBg: live ? t.accentTint : 'transparent', statusBorder: live ? t.accent : (shipped ? t.ink : t.rule), statusInk: live ? t.accent : (shipped ? t.ink : t.muted) };
+      menuOpen: s.menuOpen, menuLabel: s.menuOpen ? 'Close' : 'Menu', menuIcon: s.menuOpen ? '✕' : '☰',
+      toggleMenu: () => this.setState({ menuOpen: !this.state.menuOpen }),
+      menuLinks: [['Case studies', 'Work.dc.html'], ['Build log', 'BuildLog.dc.html'], ['CV', 'About.dc.html'], ['Contact', '#contact']].map((l) => ({
+        label: l[0], href: l[1], mark: l[1] === '#contact' ? '↓' : '→', current: undefined,
+        click: (e) => {
+          this.setState({ menuOpen: false });
+          if (l[1] !== '#contact' || typeof document === 'undefined') return;
+          var el = document.getElementById('contact');
+          if (el) { if (e && e.preventDefault) e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        }
+      })),
+      switchBg: x ? t.accent : t.rule, switchKnob: x ? '23px' : '3px',
+      showDock: !s.askOpen && !s.menuOpen,
+      dockBg: '#101214', dockTrack: x ? '#8DBBF2' : '#3A4047', dockKnob: x ? '12px' : '2px', dockKnobBg: x ? '#101214' : '#A3A9B0',
+      dockXLabel: x ? 'X-ray on' : 'X-ray',
+      openAskDock: () => this.setState({ askOpen: true, menuOpen: false, askCtx: this.state.askCtx ? Object.assign({}, this.state.askCtx, { focus: null }) : null }),
+      work: MOB_WORK.map((w, wi) => {
+        var open = s.openWork === wi, live = w.status === 'LIVE HERE', inUse = w.status.indexOf('IN USE') === 0;
+        return {
+          num: w.num, status: w.status, name: w.name, pitch: w.pitch, built: w.built, primary: w.primary, primaryHref: w.primaryHref,
+          open: open, border: open ? t.accent : t.rule, cue: open ? 'Collapse ↑' : 'Expand ↓',
+          statusBg: live ? t.accentTint : 'transparent', statusBorder: live || inUse ? t.accent : t.rule, statusInk: live || inUse ? t.accent : t.muted,
+          toggle: () => this.setState({ openWork: this.state.openWork === wi ? -1 : wi }),
+          flow: w.flow.map((f, i) => { var human = !!f[1]; return { n: String(i + 1), text: f[0], note: human ? '  · person decides' : '', ink: human ? t.amberText : t.ink,
+            dotBorder: human ? '1.5px dashed #C08A2E' : '1px solid ' + t.rule, dotBg: human ? '#FBF2E2' : t.paper, dotInk: human ? t.amberText : t.muted,
+            lineH: i < w.flow.length - 1 ? '14px' : '0px' }; })
+        };
+      }),
+      groups: MOB_GROUPS.map((g, gi) => {
+        var open = s.openGroup === gi;
+        var style = (st) => {
+          var live = st === 'live here', shipped = st === 'shipped';
+          return { bg: live ? t.accentTint : 'transparent', border: live ? t.accent : (shipped ? t.ink : t.rule), ink: live ? t.accent : (shipped ? t.ink : t.muted),
+            dot: live ? t.accent : (shipped ? t.ink : 'transparent'), dotBorder: live ? t.accent : (shipped ? t.ink : t.muted) };
+        };
+        return {
+          name: g.name, summary: g.summary, open: open, border: open ? t.accent : t.rule,
+          cue: open ? 'Collapse ↑' : 'Expand ↓',
+          toggle: () => this.setState({ openGroup: this.state.openGroup === gi ? -1 : gi }),
+          chips: g.items.map((u) => { var c = style(u.status); return { name: u.name, dot: c.dot, dotBorder: c.dotBorder }; }),
+          items: g.items.map((u) => { var c = style(u.status); return {
+            name: u.name, status: u.status, proof: u.proof, cta: u.cta, href: u.href || '#', hasLink: !u.planned, planned: !!u.planned,
+            click: u.live ? () => this.setState({ xray: true, introSeen: true }) : undefined,
+            statusBg: c.bg, statusBorder: c.border, statusInk: c.ink }; })
+        };
       }),
       toggleXray: () => this.setState({ xray: !this.state.xray, introSeen: true }),
       xrayOn: () => this.setState({ xray: true, introSeen: true }),

@@ -349,43 +349,6 @@ test("case study: CASE STUDIES breadcrumb and LAST UPDATED (update 4)", async ({
   await expect(page.getByRole("heading", { name: "Job-fit AI on this site", level: 1 })).toBeVisible();
 });
 
-test("phone home: compact hood list and Products I've built (update 4)", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const hood = page.locator("#m-hood");
-  await expect(hood).toHaveText("How I build agentic products, with proof");
-  await expect(hood).toHaveCSS("font-size", "28px");
-  await expect(page.getByText("Each part links to where you can see it working.", { exact: true })).toBeVisible();
-  const list = hood.locator("xpath=..");
-  await expect(list.locator(":scope > a, :scope > div")).toHaveCount(12);
-  await expect(list.getByRole("link", { name: /^production/ })).toHaveAttribute("href", "#break-my-ai");
-  await expect(list.getByRole("link", { name: /^mcp server/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^agents/ })).toHaveCount(0);
-  await expect(list.getByRole("link", { name: /^rag/ })).toHaveCount(0);
-  await expect(list.getByText("COMING SOON", { exact: true })).toHaveCount(4);
-  // Phone pills are never dashed; shipped is ink.
-  await expect(list.getByText("prototype", { exact: true })).toHaveCSS("border-top-style", "solid");
-  await expect(list.getByText("shipped", { exact: true }).first()).toHaveCSS("color", "rgb(27, 26, 23)");
-
-  const work = page.locator("#m-work").locator("xpath=..");
-  await expect(page.locator("#m-work")).toHaveText("Products I've built");
-  await expect(work.getByText("CASE STUDIES", { exact: true })).toBeVisible();
-  // Only the fit check's card links (to the hero); the other three go to hidden case studies, so they're plain cards.
-  await expect(work.getByRole("link")).toHaveCount(1);
-  await expect(work.getByRole("link").nth(0)).toHaveAttribute("href", "#fit-h");
-  await expect(work.getByRole("link").nth(0)).toHaveText("LIVE HEREJob-fit AI on this siteTry it above ↑");
-  await expect(work.getByText("AI job search and apply agent", { exact: true }).locator("xpath=..")).toHaveText(
-    "IN USE · RECORDED RUNAI job search and apply agentsearch → tailor → wait for my approval → applyCOMING SOON",
-  );
-  await expect(work.getByText("wait for my approval", { exact: true })).toHaveCSS("color", "rgb(138, 85, 16)");
-  await expect(work.getByText("CONCEPT", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
-  await expect(work.getByText("COMING SOON", { exact: true })).toHaveCount(3);
-  await expect(work.getByText("Instagram content intelligence agent", { exact: true }).locator("xpath=..")).toHaveText(
-    "IN PROGRESSInstagram content intelligence agentCOMING SOON",
-  );
-  await expect(page.locator("#work-h")).toBeHidden();
-});
-
 test("unknown post slug is a 404", async ({ page }) => {
   expect((await page.goto("/log/nope"))?.status()).toBe(404);
 });

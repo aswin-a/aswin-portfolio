@@ -27,7 +27,7 @@ function Item({ label, children }: { label: string; children: React.ReactNode })
 }
 
 const value = "text-[15px] leading-[1.4]";
-const grid = "grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-x-6 gap-y-4";
+const grid = "grid grid-cols-[repeat(auto-fit,minmax(min(190px,100%),1fr))] gap-x-6 gap-y-4";
 
 /**
  * X-ray "This run" + "Build details" (Hero.dc.html `showRunXray`, design update 3). Every value

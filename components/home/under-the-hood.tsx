@@ -1,18 +1,19 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LiveLink } from "@/components/home/live-link";
-import { hood, type HoodItem } from "@/content/hood";
+import { HoodAccordion, type AccordionGroup } from "@/components/home/hood-accordion";
+import { hood, hoodGroups, type HoodItem } from "@/content/hood";
 import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
 import { workLinkIsLive } from "@/lib/case-studies";
 import { isHiddenStudyHref, plainLabel } from "@/lib/case-study-visibility";
 import { hrefOf, published } from "@/lib/content";
 import { comingSoonPostHrefs } from "@/lib/posts";
 
-/** Status pill colours (Main.dc.html, design update 4). The phone list never uses dashed borders. */
-function pillClass(u: HoodItem, phone = false) {
+/** Status pill colours (Main.dc.html, design update 4). */
+function pillClass(u: HoodItem) {
   if (u.live) return "border-solid border-accent bg-accent-tint text-accent";
   if (u.status === "shipped") return "border-solid border-ink bg-transparent text-ink";
-  if (!phone && (u.status === "planned" || u.status === "prototype")) return "border-dashed border-rule bg-transparent text-muted";
+  if ((u.status === "planned" || u.status === "prototype")) return "border-dashed border-rule bg-transparent text-muted";
   return "border-solid border-rule bg-transparent text-muted";
 }
 
@@ -25,7 +26,7 @@ function CardLink({ card, soon, className, children }: { card: HoodItem; soon: b
   return <a href={href} className={className}>{children}</a>;
 }
 
-/** Desktop grid (Main.dc.html) and the phone list (Mobile.dc.html, ≤ 640px). */
+/** Desktop grid (Main.dc.html) and the phone accordion (Mobile.dc.html, < 640px, design update 8). */
 export async function UnderTheHood() {
   // A card whose proof is an unpublished case study is left out with it (Aswin, 2026-11-24). A hidden
   // one (content/case-studies/visibility.ts) keeps its card, with "COMING SOON" in place of the link.
@@ -34,6 +35,15 @@ export async function UnderTheHood() {
   const soonPosts = await comingSoonPostHrefs();
   const hidden = (u: HoodItem) => u.href !== undefined && (isHiddenStudyHref(u.href) || soonPosts.has(u.href));
   const cards = published(hood).filter((u) => hidden(u) || isLive(u.href));
+  // The phone accordion (design update 8) groups the same cards; a group with no cards left is dropped.
+  const groups: AccordionGroup[] = hoodGroups
+    .map((g) => ({
+      ...g,
+      items: cards
+        .filter((u) => u.group === g.name)
+        .map((u) => ({ ...u, href: u.href && hrefOf(u.href), soon: hidden(u), label: plainLabel(u.cta) })),
+    }))
+    .filter((g) => g.items.length > 0);
   return (
     <>
       <section aria-labelledby="uh-h" className="border-t border-rule px-6 py-14 max-[640px]:hidden">
@@ -83,21 +93,10 @@ export async function UnderTheHood() {
         <h2 id="m-hood" className="m-0 font-serif text-[28px] font-normal leading-[1.2]">
           How I build agentic products, with proof
         </h2>
-        <p className="m-0 mb-1 text-[15px] leading-[1.5] text-muted">Each part links to where you can see it working.</p>
-        {cards.map((u) => (
-          <CardLink
-            key={u.name}
-            card={u}
-            soon={hidden(u)}
-            className="flex min-h-[52px] items-center justify-between gap-3 rounded-[10px] border border-rule bg-paper px-[14px] py-[10px] text-ink no-underline"
-          >
-            <span className="font-mono text-[14px]">{u.name}</span>
-            <span className="flex items-center gap-[6px]">
-              {hidden(u) && <ComingSoonPill />}
-              <span className={`rounded-full border px-2 py-[2px] font-mono text-[11px] ${pillClass(u, true)}`}>{u.status}</span>
-            </span>
-          </CardLink>
-        ))}
+        <p className="m-0 mb-1 text-[15px] leading-[1.5] text-muted">
+          12 parts in 4 groups. Open one to see the proof and where to check it.
+        </p>
+        <HoodAccordion groups={groups} />
       </section>
     </>
   );

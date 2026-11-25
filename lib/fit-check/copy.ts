@@ -73,6 +73,8 @@ export const STEP_COPY: Record<FitTool, string> = {
 };
 /** The only branch: pasted text skips fetch_url. */
 export const SKIPPED_FETCH = "skipped: text was pasted";
+/** The phone stepper's status line for that skipped step (Hero.dc.html compact, design update 9). */
+export const SKIPPED_FETCH_STATUS = "skipped, text was pasted";
 
 /** The pipeline's one branch rule (heroIsLink). */
 export function isLink(jd: string): boolean {
