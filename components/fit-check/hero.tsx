@@ -22,6 +22,7 @@ import {
   heroSummary,
   NUDGE,
   SKIPPED_FETCH,
+  SKIPPED_FETCH_STATUS,
   STEP_COPY,
 } from "@/lib/fit-check/copy";
 import { rolePrefill } from "@/lib/fit-check/role-prefill";
@@ -191,21 +192,21 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
   else if (showFallback && drill) nudge = NUDGE.drill;
 
   return (
-    <section className="box-border w-full bg-bg px-6 pt-[72px] pb-16 font-sans text-ink">
-      <div className="mx-auto flex max-w-[1040px] flex-col gap-7">
+    <section className="box-border w-full bg-bg px-6 pt-[72px] pb-16 font-sans text-ink max-[640px]:px-4 max-[640px]:pt-7 max-[640px]:pb-9">
+      <div className="mx-auto flex max-w-[1040px] flex-col gap-7 max-[640px]:gap-5">
         <div className="flex flex-col gap-[18px]">
           <p className="m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-muted">Aswin · Senior Product Manager</p>
-          <h1 className="m-0 font-serif text-[clamp(32px,4vw,46px)] font-normal leading-[1.1] tracking-[-0.015em]">
+          <h1 className="m-0 font-serif text-[clamp(32px,4vw,46px)] font-normal max-[640px]:text-[32px] leading-[1.1] tracking-[-0.015em]">
             Platform PM who builds for agents.
           </h1>
-          <p className="m-0 max-w-[720px] font-serif text-[20px] leading-[1.45] text-muted">
+          <p className="m-0 max-w-[720px] font-serif text-[20px] leading-[1.45] text-muted max-[640px]:text-[18px]">
             I build platforms, AI-powered products, and systems that turn emerging technology into real-world capability.
           </p>
         </div>
 
         <section
           aria-labelledby="fit-h"
-          className="mt-2 flex flex-col gap-[22px] rounded-[20px] border border-rule bg-panel p-[clamp(18px,3vw,32px)]"
+          className="mt-2 flex flex-col gap-[22px] rounded-[20px] border border-rule bg-panel p-[clamp(18px,3vw,32px)] max-[640px]:gap-4 max-[640px]:rounded-2xl max-[640px]:p-4"
         >
           <div className="flex flex-wrap items-end justify-between gap-x-5 gap-y-2 border-b border-rule pb-[18px]">
             <div className="flex flex-col gap-2">
@@ -267,18 +268,53 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
               tabIndex={-1}
               role="status"
               aria-live="polite"
-              className="flex flex-col gap-3 rounded-[14px] border border-rule bg-paper px-[22px] py-5 outline-none"
+              className="flex flex-col gap-3 rounded-[14px] border border-rule bg-paper px-[22px] py-5 outline-none max-[640px]:p-4"
             >
-              <p className={statusLabel}>
+              <p className={`${statusLabel} max-[640px]:mb-1`}>
                 {phase === "running" ? "Agent · streaming from the live run" : `Agent · done · ${steps.length} steps from the live run`}
               </p>
+              {/* Phone: a vertical stepper (Hero.dc.html compact, design update 9). Desktop keeps one-line rows. */}
+              <ol className="m-0 hidden list-none flex-col p-0 max-[640px]:flex">
+                {steps.map((st, i) => {
+                  const done = st.status !== "running";
+                  const skipped = st.status === "skipped";
+                  const last = i === steps.length - 1;
+                  const dot = skipped
+                    ? "border border-dashed border-rule bg-paper text-muted"
+                    : done
+                      ? "border border-solid border-accent bg-accent-tint text-accent"
+                      : "border-[1.5px] border-solid border-accent bg-paper text-accent";
+                  return (
+                    <li key={st.tool} className="flex items-start gap-3">
+                      <span className="flex flex-[0_0_auto] flex-col items-center self-stretch">
+                        <span
+                          aria-hidden="true"
+                          className={`inline-flex h-[22px] w-[22px] items-center justify-center rounded-full font-mono text-[11px] leading-none ${dot}`}
+                        >
+                          {skipped ? "–" : done ? "✓" : "•"}
+                        </span>
+                        <span className={`block w-px flex-1 ${last ? "min-h-0 bg-transparent" : "min-h-[10px] bg-rule"}`} />
+                      </span>
+                      <span className={`flex min-w-0 flex-col gap-[2px] pt-px ${last ? "pb-0" : "pb-3"}`}>
+                        <span className={`text-[15px] leading-[1.4] ${skipped ? "text-muted" : "text-ink"}`}>{STEP_COPY[st.tool]}</span>
+                        <span className="font-mono text-[12px] leading-[1.5] text-muted [overflow-wrap:anywhere]">
+                          {st.tool} ·{" "}
+                          <span className={skipped ? "text-muted" : "text-accent"}>
+                            {skipped ? SKIPPED_FETCH_STATUS : done ? (st.detail ?? "") : "running…"}
+                          </span>
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
               {steps.map((st) => {
                 const done = st.status !== "running";
                 const skipped = st.status === "skipped";
                 const label = st.tool === "fetch_url" && !linkRun ? SKIPPED_FETCH : STEP_COPY[st.tool];
                 const statusColor = done && !skipped ? "text-accent" : "text-muted";
                 return (
-                  <div key={st.tool} className="flex flex-wrap justify-between gap-4 font-mono text-[14px] leading-[1.5]">
+                  <div key={st.tool} className="flex flex-wrap justify-between gap-4 font-mono text-[14px] leading-[1.5] max-[640px]:hidden">
                     <span className={skipped ? "text-muted" : "text-ink"}>
                       <span className={statusColor}>{skipped ? "–" : done ? "✓" : "›"} </span>
                       {st.tool} · {label}

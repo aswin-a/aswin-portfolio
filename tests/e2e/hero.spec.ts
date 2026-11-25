@@ -194,7 +194,7 @@ test.describe("fit check", () => {
     await expect(hero(page).getByText(/offline eval · pass rate/)).toHaveCount(0);
     await expect(hero(page).getByRole("heading", { name: "This run" })).toHaveCount(0);
     await expect(hero(page).getByText("See the trace, sources and cost behind this result.")).toBeVisible();
-    await expect(hero(page).getByRole("link", { name: "Download resume" })).toHaveAttribute("href", "/resume.pdf");
+    await expect(hero(page).getByRole("link", { name: "See my CV" })).toHaveAttribute("href", "/about");
 
     const memory = await page.evaluate(() => JSON.parse(window.sessionStorage.getItem("fit-memory") ?? "null"));
     expect(memory).toMatchObject({ role: "Senior Platform PM · APIs & integrations", matchCount: 4 });

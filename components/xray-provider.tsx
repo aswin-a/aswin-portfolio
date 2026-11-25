@@ -5,6 +5,7 @@ import { askPageFor } from "@/lib/ask/copy";
 import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { AskDialog, type AskOpenOptions } from "@/components/ask/ask-dialog";
+import { MobileDock } from "@/components/mobile-dock";
 import { makeFlagStore } from "@/lib/flag-store";
 import { applyXray, INTRO_KEY, XRAY_KEY } from "@/lib/xray";
 
@@ -79,6 +80,16 @@ export function XrayProvider({ children }: { children: ReactNode }) {
   return (
     <SiteContext.Provider value={value}>
       {children}
+      {/* Phone dock (design update 9): the hint shows on home only, like the Nav's "NEW" pill. */}
+      {!askOpen && (
+        <MobileDock
+          xray={xray}
+          showHint={pathname === "/" && !introSeen && !xray}
+          onToggleXray={toggleXray}
+          onDismissHint={dismissIntro}
+          onAsk={() => openAsk()}
+        />
+      )}
       {askOpen && <AskDialog {...ask.options} onClose={closeAsk} />}
     </SiteContext.Provider>
   );

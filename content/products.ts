@@ -2,8 +2,8 @@
 export type FlowStep = { text: string; human?: boolean };
 
 /**
- * "Products I've built" (Main.dc.html `products`, design update 4). `status` is data only: the
- * desktop cards render no status pill; the phone cards show it as their label (Mobile.dc.html).
+ * "Products I've built" (Main.dc.html `products`, design update 4). `status` is data only: neither the
+ * desktop cards nor the phone cards show it (design update 9).
  */
 export type Product = {
   num: string;
@@ -18,8 +18,8 @@ export type Product = {
   /** The main button. None while there is nothing to show (the Instagram agent has no run yet). */
   primary?: { label: string; href: string };
   secondary: { label: string; href: string };
-  /** The short flow on the phone card (Mobile.dc.html), when it has one. */
-  phoneFlow?: FlowStep[];
+  /** The shorter pitch on the phone card (Mobile.dc.html `MOB_WORK`, design update 9). */
+  phonePitch: string;
 };
 
 export const products: Product[] = [
@@ -29,6 +29,7 @@ export const products: Product[] = [
     status: "IN USE · RECORDED RUN",
     name: "AI job search and apply agent",
     pitch: "Finds roles that fit, tailors my resume to each one, and applies only after I say yes. Shown as a recorded run, since it signs in as me.",
+    phonePitch: "Finds roles that fit, tailors my resume to each, and applies only after I say yes.",
     built: "The project instructions, step prompts A–F and the approval step.",
     flow: [
       { text: "Search LinkedIn and save matches" },
@@ -40,7 +41,6 @@ export const products: Product[] = [
     tags: ["agents", "tools", "orchestration"],
     primary: { label: "Add to Claude/ChatGPT", href: "https://github.com/aswin-a/linkedin-job-search-agent" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/job-search-agent" },
-    phoneFlow: [{ text: "search" }, { text: "tailor" }, { text: "wait for my approval", human: true }, { text: "apply" }],
   },
   {
     num: "02",
@@ -48,6 +48,7 @@ export const products: Product[] = [
     status: "LIVE HERE",
     name: "Job-fit AI on this site",
     pitch: "Paste a job description and get an honest verdict: what fits with proof, and what doesn’t, stated plainly.",
+    phonePitch: "Paste a job description and get an honest verdict: what fits, with proof, and what doesn’t.",
     built: "The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.",
     flow: [
       { text: "Paste a JD or a link" },
@@ -66,6 +67,7 @@ export const products: Product[] = [
     status: "CONCEPT",
     name: "AI integration builder",
     pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.",
+    phonePitch: "AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A CloudEagle.ai take-home.",
     built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // Aswin, 2026-11-24
     flow: [
       { text: "Paste the app’s API docs" },
@@ -84,6 +86,7 @@ export const products: Product[] = [
     status: "IN PROGRESS", // Not run yet (Aswin, 2026-11-24): the design's "IN USE · RECORDED RUN" returns with a real run
     name: "Instagram content intelligence agent",
     pitch: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.",
+    phonePitch: "Finds what competing pet-food brands post that performs, and suggests what Dhee’s should post next.",
     built: "The agent’s prompts and analysis steps.",
     flow: [
       { text: "Pick the competitors to watch" },

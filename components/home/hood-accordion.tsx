@@ -36,7 +36,8 @@ function Cta({ u }: { u: AccordionItem }) {
 
 /**
  * "How I build agentic products, with proof" below 640px (Mobile.dc.html, design update 8): 4 groups,
- * one open at a time, the first open by default; tapping the open group closes it.
+ * one open at a time, the first open by default; tapping the open group closes it. Cue "Expand ↓" /
+ * "Collapse ↑" (design update 9).
  */
 export function HoodAccordion({ groups }: { groups: AccordionGroup[] }) {
   const [openGroup, setOpenGroup] = useState(0);
@@ -56,7 +57,7 @@ export function HoodAccordion({ groups }: { groups: AccordionGroup[] }) {
             >
               <span className="flex w-full items-baseline justify-between gap-3">
                 <span className="text-[16px] font-semibold">{g.name}</span>
-                <span className="flex-none font-mono text-[12px] text-accent">{open ? "Hide ↑" : `Show ${g.items.length} ↓`}</span>
+                <span className="flex-none font-mono text-[12px] text-accent">{open ? "Collapse ↑" : "Expand ↓"}</span>
               </span>
               <span className="text-[14px] leading-[1.45] text-muted">{g.summary}</span>
               <span className="flex flex-wrap gap-[6px]">
