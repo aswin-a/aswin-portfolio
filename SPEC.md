@@ -159,7 +159,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
 | # | Tool | What runs | UI label (the step line is always `{tool} · {label}`; the call forms below are reference only and are no longer shown) |
 | --- | --- | --- | --- |
 | 1 | `fetch_url` | Only if the input starts with `http(s)://`: server-side fetch with timeout, HTML → text. Otherwise skipped | "Fetching the job post" / "skipped: text was pasted" · X-ray: `fetch_url(url) → page text` / `branch: input is text → skip fetch_url` |
-| 2 | `jd.parse` | LLM (`FIT_CHECK_MODEL`), structured output: `requirements: string[]` (≤ 8) | "Reading the job description" · `jd.parse(text) → requirements[]` |
+| 2 | `jd.parse` | LLM (`FIT_CHECK_MODEL`), structured output: `requirements: string[]` (≤ 10) | "Reading the job description" · `jd.parse(text) → requirements[]` |
 | 3 | `kb.search` | Deterministic search (§6) | "Searching roles, projects and the not-done list" · `kb.search(scope=["roles","projects","not_done"])` |
 | 4 | `evidence.map` | LLM, structured output: for each requirement either a match `{req, evidence, sourceId}` or a gap `{req, closest, close}` | "Matching each requirement to evidence" · `evidence.map(requirements, sources)` |
 | 5 | `guard.citations` | Deterministic: every match cites a KB `sourceId` that exists; otherwise it becomes a gap | "Every claim cites a source" · `guard.citations(cards)` |
