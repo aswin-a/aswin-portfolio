@@ -32,8 +32,8 @@ export type AskRun = z.infer<typeof AskRunSchema>;
 
 // ---------- Model outputs ----------
 
-/** SPEC §7 `jd.parse`: up to 8 requirements, plus a short role title for the hero and Contact. */
-export const MAX_REQUIREMENTS = 8;
+/** SPEC §7 `jd.parse`: up to 10 requirements, plus a short role title for the hero and Contact. */
+export const MAX_REQUIREMENTS = 10;
 export const JdParseSchema = z.object({
   role: z.string().min(1).max(120),
   requirements: z.array(z.string().min(1).max(300)).min(1).max(MAX_REQUIREMENTS),
