@@ -2,6 +2,33 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-25 (update 8): Mobile "How I build agentic products, with proof" becomes 4 expandable groups
+
+Changed artboard: `Mobile.dc.html` only. Nothing else changed, including the Mobile "Products I've built" list and desktop `Main.dc.html`.
+
+### 1. Mobile hood section: a flat list of 12 → an accordion of 4 groups
+- Sub-line: "Each part links to where you can see it working." → "12 parts in 4 groups. Open one to see the proof and where to check it."
+- The 12 parts are grouped 3 per group (data in `MOB_GROUPS`):
+  1. **Agent building blocks**: "A 4-step agent, a Claude Skill, and tool calls you can watch live." Parts: agents, skills, tools.
+  2. **Running it reliably**: "A fixed pipeline with a retry, session-only memory, and limits with a fallback." Parts: orchestration, memory, production.
+  3. **Trust and checking**: "Every claim cited, a public eval set, and a person reviewing low-confidence output." Parts: guardrails, evals, human in loop.
+  4. **Data and context**: "Patient data kept away from LLMs, a docs assistant, and an MCP server next." Parts: data privacy, rag, mcp server.
+- **Group card:** paper background, `1px solid rule` (accent when open), radius 12px. The whole header is one `<button>` with `aria-expanded` (padding 14px 16px, column, gap 8px). It contains:
+  - The group name (16px 600), with a cue on the right (mono 12px accent): `Show 3 ↓` / `Hide ↑`.
+  - The summary (14px muted).
+  - A row of 3 **chips**, one per part: a pill with a `1px solid rule` border and the part name in mono 12px, with a 6px status dot before it. The dot is filled accent for `live here`, filled ink for `shipped`, and hollow with a muted border for everything else.
+- **Accordion behaviour:** **one group open at a time**, and the **first group is open by default** (`openGroup: 0`). Tapping the open group closes it, so it's possible to have all closed.
+- **Open group body:** a `<ul>` (padding 0 16px 6px). Each part is an `<li>` with a top border, padding 12px 0 and a column gap of 6px:
+  - name and status pill (unchanged styling: live → accent/tint; shipped → ink; others → rule/muted)
+  - the proof text (14px)
+  - the CTA as a mono 13px accent link (min-height 36px). `live here` links also turn X-ray on.
+  - `mcp server` (planned) shows "Coming soon" as plain muted text, with no link.
+- The proof and CTA text are now shown on mobile (before, mobile showed only name and status). The wording matches the desktop cards, **except** that `production`'s CTA on mobile is "Try Break my AI →". On desktop it still reads "Run the failure drills →" (the open question since update 5); ask Aswin whether desktop should change to match.
+
+### Spec impact
+- `content/hood.ts` gains a `group` field (`'Agent building blocks' | 'Running it reliably' | 'Trust and checking' | 'Data and context'`), plus a separate list of group summaries. Desktop and mobile share the same data; below 640px the section renders as this accordion, and above it as the existing 12-card grid.
+- Accessibility: each header button has `aria-controls` pointing to its panel id. The single-open behaviour must work with keyboard (Enter/Space).
+
 ## 2026-11-23 (update 7): Contact form gets real states, WhatsApp and call; "Contact" in the nav
 
 Changed: `Footer.dc.html`, `Nav.dc.html`, plus `canvas.json`. **New** artboard: `FooterStates.dc.html` (2800×2900), which shows the contact form in all 6 states. No other artboard changed.
