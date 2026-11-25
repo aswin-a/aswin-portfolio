@@ -13,7 +13,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 | **Fit check** (home hero) | A fixed pipeline streams each step to the page as it runs: `fetch_url` → `jd.parse` → `kb.search` → `evidence.map` → `guard.citations` → `guard.honesty` → `verdict.compose`. It shows matches and gaps as tables, with no scores or percentages. Every match cites a source. |
 | **Ask my work** (⌘K / Ctrl+K) | Questions answered from the same knowledge base, with source chips. Answers can carry on from a fit check through session memory, and "Forget this" clears it. |
 | **X-ray mode** | Reveals inline panels on every page: the live run's trace, build details, "How I built this", and **Break my AI**, a red-team panel for trying prompt injections and other attacks against the real guardrails. |
-| **Case studies** (`/work`) | Product write-ups in a PRD format, with before/after views and a "Try to break it" sandbox. |
+| **Case studies** (`/work`) | Product write-ups in a PRD format, with before/after views. |
 | **Build log** (`/log`) | Build notes, teardowns, essays and TILs, with filters. |
 | **CV** (`/about`) | The CV as a timeline of roles with outcomes, certificates, "Copy as plain text" and a markdown twin at `/about.md`. |
 | **Contact** (every page) | A contact form with its own ready, invalid, sending, sent, error and rate-limited states, plus WhatsApp and call links. The fit check pre-fills the role. |
@@ -96,7 +96,7 @@ To add a real job description to the eval set, fill one of the slots in [`evals/
 
 - **Lighthouse (mobile, production build, median of 3 runs):** accessibility, best practices and SEO are 100 on every route, with X-ray on too. Performance is 95–96 on every route except home, at 94 (its fit-check hero makes it the heaviest page).
 - **Keyboard:** every control is reachable with Tab and shows the design's focus ring (`2px solid #4F7FC0`, offset 2px). The borderless text fields the design draws without an outline (the job-description box, Break my AI, the Ask inputs) are the only exception. Ask traps focus while it is open and returns it to whatever opened it.
-- **Screen readers:** the fit check's streamed steps, Ask's thinking and answer, Break my AI and the case-study sandbox are polite live regions; the fit-check result heading takes focus when it arrives. Contact-form errors are tied to their fields with `aria-describedby` and `aria-invalid`.
+- **Screen readers:** the fit check's streamed steps, Ask's thinking and answer, and Break my AI are polite live regions; the fit-check result heading takes focus when it arrives. Contact-form errors are tied to their fields with `aria-describedby` and `aria-invalid`.
 - **Contrast:** every text colour meets WCAG AA on each surface it is used on, on the light page and inside the dark X-ray panels ([`tests/unit/contrast.test.ts`](tests/unit/contrast.test.ts) reads the tokens from `app/globals.css`).
 - **Reduced motion:** `prefers-reduced-motion` turns off every transition and animation, and smooth scrolling becomes a jump.
 - **Page weight:** PostHog loads only when a key is set, and only once the page is idle, so it is never in the first load. The schemas that run in the browser use `zod/mini`, and the large Newsreader variable font is not preloaded (measured: a preload lowered the mobile score).
@@ -127,7 +127,7 @@ content/          Everything the site and the AI say
 lib/
   ai/             Prompts (with PROMPT_VERSION), Zod schemas, model and cost helpers, fake model
   kb/             Knowledge-base snapshot and kb.search
-  run/            The /api/run pipelines (fit, ask, sandbox), guards and verdict
+  run/            The /api/run pipelines (fit, ask), guards and verdict
   fit-check/      Fit-check client, types and copy
   ask/            Ask my work client, session memory and copy
   server/         Rate limits, budget, Turnstile, run logging

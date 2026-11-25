@@ -1,10 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BeforeAfterTabs } from "@/components/case-study/before-after-tabs";
-import { Sandbox } from "@/components/case-study/sandbox";
 import { XrayLinkButton } from "@/components/case-study/xray-link";
 import { XrayPanel } from "@/components/xray-panel";
-import { siteMeta } from "@/content/site-meta";
 import { containsTodo, hrefOf, isTodo, withTodo } from "@/lib/content";
 import type { CaseStudy, Post } from "@/lib/schemas/content";
 
@@ -51,7 +49,6 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
     ...(cs.arch ? [["s-arch", "Architecture"] as [string, string]] : []),
     ...(cs.builtMyself ? [["s-built", "What I built"] as [string, string]] : []),
     ...(cs.safeguards ? [["s-safeguards", "Safeguards"] as [string, string]] : []),
-    ...(cs.sandbox ? [["s-break", "Try to break it"] as [string, string]] : []),
     ...(cs.metrics ? [["s-measure", "Success"] as [string, string]] : []),
     ...(cs.perf ? [["s-perf", "Performance"] as [string, string]] : []),
     ...(cs.beforeAfter ? [["s-ba", "Before / after"] as [string, string]] : []),
@@ -59,7 +56,6 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
     ...(cs.questions ? [["s-questions", "Questions"] as [string, string]] : []),
     ["s-links", "Links"],
   ];
-  const evalSet = { href: hrefOf(siteMeta.evalSetLink), label: withTodo("These red-team cases ship with the public eval set · GitHub", siteMeta.evalSetLink) };
 
   return (
     <main className="cs-page mx-auto flex max-w-[1200px] flex-col gap-12 px-6 pt-14 pb-24">
@@ -235,8 +231,6 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
               </div>
             </section>
           )}
-
-          {cs.sandbox && <Sandbox attacks={cs.sandbox.attacks} evalSet={evalSet} />}
 
           {cs.metrics && (
             <Section id="measure" title="How success is measured">

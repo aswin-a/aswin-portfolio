@@ -8,7 +8,7 @@ export type RunRecord = {
   startedAt: number;
   /** Wall-clock start, ISO 8601 (the "Time" in X-ray's "This run"). */
   startedAtIso: string;
-  mode: "fit" | "ask" | "sandbox";
+  mode: "fit" | "ask";
   drill: "kb" | "rate" | null;
   branch: "link" | "text" | null;
   steps: { tool: string; status: string; ms: number }[];
@@ -22,7 +22,7 @@ export type RunRecord = {
   /** Model id for pricing and the log. Empty until a model is resolved. */
   model: string;
   tokens: Tokens;
-  /** False for runs that must not be logged (failed or limited Ask and sandbox attempts, SPEC §8). */
+  /** False for runs that must not be logged (failed or limited Ask attempts, SPEC §8). */
   log: boolean;
   /** Set once the cost is counted and the row logged, so neither happens twice. */
   finished?: boolean;

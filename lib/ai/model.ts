@@ -3,7 +3,7 @@ import type { LanguageModel } from "ai";
 import { isFake, serverEnv, type ServerEnv } from "@/lib/server/env";
 import { isPriced } from "./cost";
 
-/** Which env var picks the model: FIT_CHECK_MODEL for the fit check, CHAT_MODEL for Ask and the sandbox. */
+/** Which env var picks the model: FIT_CHECK_MODEL for the fit check, CHAT_MODEL for Ask and Break my AI. */
 export type ModelRole = "fit" | "chat";
 
 export type ResolvedModel = {

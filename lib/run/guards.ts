@@ -1,4 +1,4 @@
-import type { AskOutput, EvidenceCard, SandboxOutput } from "@/lib/ai/schemas";
+import type { AskOutput, EvidenceCard } from "@/lib/ai/schemas";
 import { CONTACT_SOURCE } from "@/lib/ask/copy";
 import type { AskAnswer, AskSource } from "@/lib/ask/types";
 import type { FitGap, FitMatch } from "@/lib/fit-check/types";
@@ -130,18 +130,4 @@ export function guardAsk(out: AskOutput, hasMemory: boolean): Omit<AskAnswer, "t
   const guard = GUARD_BY_KIND[out.kind] ?? (usedMemory ? MEMORY_GUARD : DEFAULT_GUARD);
   const todo = [...new Set(cited.flatMap((e) => e.todos))].join(" ");
   return { kind: out.kind, text: out.text, sources, guard, todo, fired: GUARD_BY_KIND[out.kind] ?? null };
-}
-
-// ---------- Sandbox ----------
-
-const SANDBOX_GUARDS_BY_VERDICT: Record<SandboxOutput["verdict"], readonly SandboxOutput["guard"][]> = {
-  BLOCKED: ["guard.injection", "guard.scope", "guard.secrets", "guard.allowlist"],
-  FLAGGED: ["guard.conflict"],
-  CLARIFIED: ["guard.clarify"],
-  DRAFTED: ["none · review_required=true"],
-};
-
-/** The verdict and guard must agree (WORK_ATTACKS); otherwise the attempt fails closed as an error. */
-export function sandboxConsistent(out: SandboxOutput): boolean {
-  return SANDBOX_GUARDS_BY_VERDICT[out.verdict].includes(out.guard) && !hasScore(out.reason);
 }

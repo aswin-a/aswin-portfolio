@@ -95,7 +95,7 @@ export const projects: Project[] = [
     id: "cloudeagle",
     title: "CloudEagle.ai — AI integration builder",
     status: cloudeagle?.status ?? "CONCEPT",
-    summary: "Safeguards as the centrepiece. A small sandbox lets you try to break it.",
+    summary: "Safeguards as the centrepiece.",
     // D26 (Aswin, 2026-11-24)
     evidence: [
       "The take-home brief asked for AI that generates integration code from an app's API docs (API client, auth, user and usage retrieval, error handling, pagination and logging), plus screens, safeguards and a prototype.",
