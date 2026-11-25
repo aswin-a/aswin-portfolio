@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import type { Ref } from "react";
 import { XrayPanel } from "@/components/xray-panel";
-import { fallback as precomputed } from "@/content/kb/fallback";
 import { FALLBACK_COPY } from "@/lib/fit-check/copy";
 import type { FallbackEvent } from "@/lib/fit-check/types";
 
@@ -61,21 +59,6 @@ export function Fallback({
           ))}
         </XrayPanel>
       )}
-      <p className="m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-accent">Precomputed matches · same knowledge base</p>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-[14px]">
-        {precomputed.map((f) => (
-          <article key={f.role} className="flex flex-col gap-[10px] rounded-xl border border-rule bg-paper p-[18px]">
-            <h3 className="m-0 text-[17px] font-semibold">{f.role}</h3>
-            <p className="m-0 text-[15px] leading-[1.5] text-muted">{f.summary}</p>
-            <Link
-              href={f.href}
-              className="mt-auto self-start rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"
-            >
-              {f.source} →
-            </Link>
-          </article>
-        ))}
-      </div>
     </div>
   );
 }

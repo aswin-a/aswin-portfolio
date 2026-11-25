@@ -189,7 +189,6 @@ describe("/api/run · fit", () => {
       "kb.search(...) → timeout",
       "retry 1 of 1: kb.search(...) → timeout",
       "guard.no_sources → stop instead of answering",
-      "fallback.precomputed(role_types=3)",
     ]);
     expect(f.trace?.[1].ms).toBeGreaterThanOrEqual(1400);
     expect(rows[0]).toMatchObject({ drill: "kb", retries: 1, requirement_count: 6, sources_retrieved: null, fallback: "error" });

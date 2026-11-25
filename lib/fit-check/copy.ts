@@ -86,29 +86,29 @@ export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget
   error: {
     tag: "Fit check · error",
     title: "The fit check couldn't finish this time.",
-    text: "Nothing you did: the AI service didn't answer in time. Try again, or use the precomputed matches below. They come from the same knowledge base.",
+    text: "Nothing you did: the AI service didn't answer in time. Try again, or message Aswin directly.",
   },
   limited: {
     tag: "Fit check · daily limit reached",
     title: "That's today's limit for live checks.",
-    text: "Live checks are capped per visitor per day to keep the AI bill predictable. The precomputed matches below come from the same knowledge base, and Aswin is one message away.",
+    text: "Live checks are capped per visitor per day to keep the AI bill predictable. Aswin is one message away.",
   },
   // Approved in M5 planning: the monthly AI budget is spent (SPEC §10).
   budget: {
     tag: "Fit check · monthly budget reached",
     title: "Live checks are paused for this month.",
-    text: "This site caps what it spends on AI each month, and that cap is reached. The precomputed matches below come from the same knowledge base, and Aswin is one message away.",
+    text: "This site caps what it spends on AI each month, and that cap is reached. Aswin is one message away.",
   },
   kb: {
     tag: "Failure drill · knowledge base offline",
     title: "The knowledge base didn't answer, so the AI won't guess.",
-    text: "The fit check retried once, then stopped rather than answer without sources. The matches below are precomputed from the last good copy of the knowledge base.",
+    text: "The fit check retried once, then stopped rather than answer without sources.",
   },
   // The rate drill keeps the limited title and text with its own tag.
   rate: {
     tag: "Failure drill · rate limit",
     title: "That's today's limit for live checks.",
-    text: "Live checks are capped per visitor per day to keep the AI bill predictable. The precomputed matches below come from the same knowledge base, and Aswin is one message away.",
+    text: "Live checks are capped per visitor per day to keep the AI bill predictable. Aswin is one message away.",
   },
 };
 
@@ -145,12 +145,12 @@ export const BREAK_LOG_MAX = 6;
  */
 export const DRILL_LOG: Record<Drill, { reply: string; path: string }> = {
   kb: {
-    reply: "Knowledge base offline: the fit check retried once, then showed precomputed matches instead of answering without sources.",
-    path: "kb.search timeout → retry → fallback.precomputed",
+    reply: "Knowledge base offline: the fit check retried once, then stopped instead of answering without sources.",
+    path: "kb.search timeout → retry → guard.no_sources",
   },
   rate: {
-    reply: "Rate limit hit: the AI was not called and nothing was billed; the fit check showed precomputed matches.",
-    path: "ratelimit 429 → fallback.precomputed",
+    reply: "Rate limit hit: the AI was not called and nothing was billed.",
+    path: "ratelimit 429 → stop",
   },
 };
 

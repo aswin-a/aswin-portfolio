@@ -317,14 +317,14 @@ test.describe("fit check", () => {
     await expect(page.getByLabel(JD_LABEL)).toBeFocused();
   });
 
-  test("error: calm message, retry and precomputed matches", async ({ page }) => {
+  test("error: calm message and retry, no precomputed matches", async ({ page }) => {
     await page.goto("/");
     await paste(page, `Senior PM, platform. ${FAKE.error}`);
     await expect(page.getByRole("heading", { name: "The fit check couldn't finish this time." })).toBeVisible();
     await expect(hero(page).getByText("Fit check · error")).toBeVisible();
     await expect(hero(page).getByRole("button", { name: "Try again" })).toBeVisible();
-    await expect(hero(page).getByText("Precomputed matches · same knowledge base")).toBeVisible();
-    await expect(hero(page).getByRole("heading", { level: 3, name: "Platform PM · APIs & integrations" })).toBeVisible();
+    await expect(hero(page).getByText("Precomputed matches · same knowledge base")).toHaveCount(0);
+    await expect(hero(page).getByRole("heading", { level: 3 })).toHaveCount(0);
     await hero(page).getByRole("link", { name: "Message Aswin about this role" }).click();
     await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Senior PM, platform");
   });
@@ -337,12 +337,12 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
   });
 
-  test("monthly budget spent: its own message, precomputed matches, no retry", async ({ page }) => {
+  test("monthly budget spent: its own message, no precomputed matches, no retry", async ({ page }) => {
     await page.goto("/");
     await paste(page, `Senior PM, platform. ${FAKE.budget}`);
     await expect(page.getByRole("heading", { name: "Live checks are paused for this month." })).toBeVisible();
     await expect(hero(page).getByText("Fit check · monthly budget reached")).toBeVisible();
-    await expect(hero(page).getByText("Precomputed matches · same knowledge base")).toBeVisible();
+    await expect(hero(page).getByText("Precomputed matches · same knowledge base")).toHaveCount(0);
     await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
   });
 

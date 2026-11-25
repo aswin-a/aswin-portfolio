@@ -1,4 +1,3 @@
-import { fallback as precomputed } from "@/content/kb/fallback";
 import { getModel, type ResolvedModel } from "@/lib/ai/model";
 import { EVIDENCE_MAP_SYSTEM, JD_PARSE_SYSTEM, evidenceMapPrompt, jdParsePrompt } from "@/lib/ai/prompts";
 import { EvidenceMapSchema, JdParseSchema, type EvidenceCard, type FitRun } from "@/lib/ai/schemas";
@@ -100,13 +99,10 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
   if (rec.drill === "rate") {
     rec.log = true;
     yield { type: "start", runId: rec.runId };
-    const pre = await timed(async () => precomputed.length);
-    rec.steps.push({ tool: "fallback.precomputed", status: "done", ms: pre.ms });
     rec.guardFired.push("ratelimit.check");
     yield fallback("limited", [
       { mark: "×", text: "ratelimit.check(visitor) → 429 · daily cap reached", bad: true, timed: false },
       { mark: "›", text: "llm.call skipped · nothing billed", bad: false, timed: false },
-      { mark: "✓", text: `fallback.precomputed(role_types=${pre.value})`, bad: false, timed: true, ms: pre.ms },
     ]);
     return;
   }
@@ -196,7 +192,6 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
     } catch (e) {
       // guard.no_sources: stop rather than answer without sources (SPEC §7).
       rec.guardFired.push("guard.no_sources");
-      const pre = await timed(async () => precomputed.length);
       const firstMs = (e as { failedMs?: number }).failedMs;
       rec.steps.push({ tool: "kb.search", status: "failed", ms: msOf(e) });
       const trace: TraceLine[] = [
@@ -208,8 +203,7 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
             ]
           : [{ mark: "×" as const, text: "kb.search(...) → timeout", bad: true, timed: true, ms: msOf(e) }]),
         { mark: "›", text: "guard.no_sources → stop instead of answering", bad: false, timed: false },
-        { mark: "✓", text: `fallback.precomputed(role_types=${pre.value})`, bad: false, timed: true, ms: pre.ms },
-      ];
+        ];
       yield fallback("error", rec.drill ? trace : undefined);
       return;
     }
