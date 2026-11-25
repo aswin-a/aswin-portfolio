@@ -13,6 +13,7 @@ import { kbSearch } from "@/lib/kb/search";
 import { KB_SCOPES } from "@/lib/kb/snapshot";
 import { askSearch } from "@/lib/run/ask";
 import { askPrompt } from "@/lib/ai/prompts";
+import { guardStepDetail } from "@/lib/run/fit";
 import { getModel } from "@/lib/ai/model";
 
 const ENV: ServerEnv = {
@@ -113,6 +114,30 @@ describe("/api/run · fit", () => {
       retries: r.retries,
       output_tokens: t.tokensOut,
     });
+  });
+
+  it("guard steps report what they changed, so evidence.map's count minus their changes is the result's", async () => {
+    for (const sample of HERO_SAMPLES) {
+      resetMemoryLimits(); // FIT_DAILY_LIMIT is 3 here, and there are 4 samples
+      const evs = await fit({ jd: sample.jd });
+      const detail = (tool: string) => {
+        const e = evs.find((x) => x.type === "step" && x.tool === tool && x.status === "done");
+        return e?.type === "step" ? (e.detail ?? "") : "";
+      };
+      const mapped = Number(/^(\d+) match/.exec(detail("evidence.map"))?.[1]);
+      const lost = ["guard.citations", "guard.honesty"].reduce((n, t) => n + Number(/(\d+) match(?:es)? → gap/.exec(detail(t))?.[1] ?? 0), 0);
+      const r = terminal(evs);
+      if (r.type !== "result") throw new Error("expected a result");
+      expect(mapped - lost).toBe(r.matches.length);
+    }
+  });
+
+  it("guardStepDetail: pass when nothing changed, otherwise what changed", () => {
+    expect(guardStepDetail(10, 10, 0)).toBe("pass");
+    expect(guardStepDetail(10, 9, 1)).toBe("1 match → gap");
+    expect(guardStepDetail(10, 8, 2)).toBe("2 matches → gaps");
+    expect(guardStepDetail(5, 4, 2)).toBe("1 match → gap · 1 gap reworded");
+    expect(guardStepDetail(5, 5, 2)).toBe("2 gaps reworded");
   });
 
   it("skips fetch_url for pasted text", async () => {
