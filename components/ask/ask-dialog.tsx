@@ -223,10 +223,16 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
     if (items.length === 0) return;
     const first = items[0];
     const last = items[items.length - 1];
-    if (e.shiftKey && (document.activeElement === first || !dialogRef.current.contains(document.activeElement))) {
+    const active = document.activeElement;
+    // Focus can sit on an element outside the tab order (the thinking block, tabIndex -1): wrap when no
+    // tabbable item lies past it in that direction, or Tab would leave the dialog.
+    const outside = !active || !items.includes(active as HTMLElement);
+    const noneAfter = outside && !items.some((el) => active && active.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const noneBefore = outside && !items.some((el) => active && active.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING);
+    if (e.shiftKey && (active === first || !dialogRef.current.contains(active) || noneBefore)) {
       e.preventDefault();
       last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
+    } else if (!e.shiftKey && (active === last || !dialogRef.current.contains(active) || noneAfter)) {
       e.preventDefault();
       first.focus();
     }
