@@ -150,7 +150,11 @@ test.describe("Ask: focus trap and focus return for every trigger", () => {
     await page.keyboard.press("Enter");
     await expect(dialog(page)).toBeVisible();
     // A trigger that asks a question right away (a gap card): wait for the answer, which hands focus back to the input.
-    if (answers) await expect(page.getByRole("textbox", { name: "Ask a question about Aswin's work" })).toBeFocused();
+    // The input is also focused for a moment on open, before the question starts, so wait for the answer itself first.
+    if (answers) {
+      await expect(dialog(page).getByRole("button", { name: "← Ask another" })).toBeVisible();
+      await expect(page.getByRole("textbox", { name: "Ask a question about Aswin's work" })).toBeFocused();
+    }
     for (let i = 0; i < 25; i++) {
       await page.keyboard.press(i % 3 === 0 ? "Shift+Tab" : "Tab");
       expect(await page.evaluate(() => !!document.activeElement?.closest("[role=dialog]"))).toBe(true);
