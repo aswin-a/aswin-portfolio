@@ -7,7 +7,7 @@ import { isProduction, type ServerEnv } from "./env";
  */
 export type RunRow = {
   id: string;
-  mode: "fit" | "ask" | "sandbox";
+  mode: "fit" | "ask";
   drill: "kb" | "rate" | null;
   branch: "link" | "text" | null;
   steps: { tool: string; status: string; ms: number }[];

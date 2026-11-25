@@ -7,7 +7,7 @@ import { serverEnv, type ServerEnv } from "@/lib/server/env";
 import { logRun, type RunLogger } from "@/lib/server/log-run";
 import { verifyTurnstile } from "@/lib/server/turnstile";
 import { clientIp, visitorId } from "@/lib/server/visitor";
-import { runAsk, runSandbox } from "./ask";
+import { runAsk } from "./ask";
 import { newRecord, runCost, type RunContext, type RunRecord } from "./context";
 import { runFit, type FitDeps } from "./fit";
 
@@ -97,12 +97,6 @@ export async function handleRun(request: Request, deps: HandleDeps = {}): Promis
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(RUN_TIMEOUT_MS)]);
   const ctx: RunContext = { env, visitor: visitorId(ip, env), signal, now };
   const rec = newRecord(req.mode, now);
-
-  if (req.mode === "sandbox") {
-    const res = await runSandbox(req, ctx, rec);
-    await finish(rec, env, logger, now);
-    return json(res);
-  }
 
   // Fit and Ask: NDJSON, one event per line, flushed as each step happens.
   const events: AsyncGenerator<FitEvent | AskEvent> = req.mode === "ask" ? runAsk(req, ctx, rec) : runFit(req, ctx, rec, deps.fit);

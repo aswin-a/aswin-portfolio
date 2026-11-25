@@ -12,16 +12,15 @@ import type { ApiProvider, CallApiContextParams, ProviderResponse } from "prompt
 import { handleRun } from "@/lib/run/handle";
 import { FitEventSchema } from "@/lib/fit-check/types";
 import { AskEventSchema } from "@/lib/ask/types";
-import { SandboxReplySchema } from "@/lib/ai/schemas";
 import { serverEnv, type ServerEnv } from "@/lib/server/env";
 
-export type EvalMode = "fit" | "ask" | "sandbox";
+export type EvalMode = "fit" | "ask";
 
-/** What the assertions see: the run's last event (or the sandbox reply) plus any schema errors. */
+/** What the assertions see: the run's last event plus any schema errors. */
 export type EvalOutput = {
   mode: EvalMode;
   fake: boolean;
-  /** Fit: the `result` or `fallback` event. Ask: the `result` event. Sandbox: the JSON response. */
+  /** Fit: the `result` or `fallback` event. Ask: the `result` event. */
   result: unknown;
   /** Every streamed line, validated against the site's own event schemas. */
   events: number;
@@ -53,9 +52,9 @@ export default class SiteRunProvider implements ApiProvider {
 
   async callApi(prompt: string, context?: CallApiContextParams): Promise<ProviderResponse> {
     const mode = context?.vars?.mode as EvalMode | undefined;
-    if (mode !== "fit" && mode !== "ask" && mode !== "sandbox") return { error: `unknown mode: ${String(mode)}` };
+    if (mode !== "fit" && mode !== "ask") return { error: `unknown mode: ${String(mode)}` };
     const { fake, ...env } = evalEnv();
-    const field = mode === "fit" ? "jd" : mode === "ask" ? "question" : "attempt";
+    const field = mode === "fit" ? "jd" : "question";
     const ip = `198.51.100.${(seq++ % 250) + 1}`;
     const request = new Request("http://localhost/api/run", {
       method: "POST",
@@ -64,16 +63,7 @@ export default class SiteRunProvider implements ApiProvider {
     });
     const res = await handleRun(request, { env, verify: async () => ({ ok: true }), logger: async () => {} });
     const out: EvalOutput = { mode, fake, result: null, events: 0, schemaErrors: [] };
-    if (mode === "sandbox") {
-      const body: unknown = await res.json();
-      out.result = body;
-      out.events = 1;
-      const reply = (body as { reply?: unknown }).reply;
-      if (reply !== undefined) {
-        const p = SandboxReplySchema.safeParse(reply);
-        if (!p.success) out.schemaErrors.push(p.error.message);
-      }
-    } else {
+    {
       const schema = mode === "fit" ? FitEventSchema : AskEventSchema;
       const lines = (await res.text()).trim().split("\n").filter(Boolean);
       out.events = lines.length;

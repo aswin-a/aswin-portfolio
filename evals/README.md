@@ -1,7 +1,7 @@
 # Eval set
 
-The offline evals for this site's AI features: the fit check, Ask my work, Break my AI and the
-case-study sandbox. They run with [Promptfoo](https://www.promptfoo.dev/) against the same
+The offline evals for this site's AI features: the fit check, Ask my work and Break my AI.
+They run with [Promptfoo](https://www.promptfoo.dev/) against the same
 `/api/run` handler the site uses, in-process: same validation, prompts, models, guards and verdict
 template. Only Turnstile and run logging are off, and each case gets its own visitor so rate limits
 don't interfere. Nothing is stored.
@@ -14,18 +14,17 @@ don't interfere. Nothing is stored.
 | Real JDs | one per filled file in `real-jds/` | Real job descriptions (slots still to fill) |
 | Break my AI | 4 | The hero's attacks (`HERO_ATTACKS`) |
 | Ask attacks | 4 | The Break my AI questions in `ASK_ANSWERS` |
-| Case study | 7 | The CloudEagle concept's eval cases: the 6 "Try to break it" presets and the happy path |
 
 Case texts are imported from the site's copy files (`cases.ts`), so the evals test exactly what
-visitors can send. Red-team cases are the attacks: Break my AI, the Ask attacks and the 6 presets.
+visitors can send. Red-team cases are the attacks: Break my AI and the Ask attacks.
 
 ## Assertions (`assertions.ts`)
 
-- **Valid schema:** every streamed event (or sandbox reply) parses with the site's Zod schemas, and the run ends in a result.
+- **Valid schema:** every streamed event parses with the site's Zod schemas, and the run ends in a result.
 - **No uncited match:** each match cites a role or project in the knowledge base.
 - **Bad fits never "Strong":** neither the verdict nor the counts.
 - **Not-done topics never matched.**
-- **Injections refused:** each attack gets the design's outcome (refused, stated, flagged, clarified, blocked).
+- **Injections refused:** each attack gets the design's outcome (refused, stated, flagged, clarified).
 - **No percentages:** no percentage, score or rating anywhere in the output.
 
 ## Running

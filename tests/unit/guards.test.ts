@@ -3,7 +3,7 @@ import { costUsd, tokensOf } from "@/lib/ai/cost";
 import type { EvidenceCard } from "@/lib/ai/schemas";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
 import { assertPublicUrl, htmlToText, isPrivateAddress } from "@/lib/run/fetch-url";
-import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHonesty, hasScore, notDoneTopicFor, sandboxConsistent } from "@/lib/run/guards";
+import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHonesty, hasScore, notDoneTopicFor } from "@/lib/run/guards";
 import { composeVerdict } from "@/lib/run/verdict";
 
 const notDone = KB.filter((e) => e.scope === "not_done");
@@ -76,13 +76,6 @@ describe("Ask guard", () => {
   it("cites the visitor's fit check only when memory was sent", () => {
     expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], guard: "none" }, true).sources).toEqual([{ label: "Your fit check", href: "/#top" }]);
     expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], guard: "none" }, false).kind).toBe("unknown");
-  });
-});
-
-describe("sandbox guard", () => {
-  it("requires the verdict and guard to agree", () => {
-    expect(sandboxConsistent({ verdict: "BLOCKED", reason: "No.", guard: "guard.secrets" })).toBe(true);
-    expect(sandboxConsistent({ verdict: "DRAFTED", reason: "Ok.", guard: "guard.secrets" })).toBe(false);
   });
 });
 
@@ -238,12 +231,3 @@ describe("Ask guard · every kind (M7)", () => {
   });
 });
 
-describe("sandbox guard · every WORK_ATTACKS pair (M7)", () => {
-  it("accepts each design verdict with its guard and refuses a score in the reason", async () => {
-    const { WORK_ATTACKS, WORK_SAFE } = await import("@/content/case-studies/cloudeagle-attacks");
-    for (const a of WORK_ATTACKS) expect(sandboxConsistent({ verdict: a.verdict, reason: a.reason, guard: a.guard }), a.type).toBe(true);
-    expect(sandboxConsistent({ verdict: WORK_SAFE.verdict, reason: WORK_SAFE.reason, guard: WORK_SAFE.guard })).toBe(true);
-    expect(sandboxConsistent({ verdict: "BLOCKED", reason: "Risk score 9/10.", guard: "guard.scope" })).toBe(false);
-    expect(sandboxConsistent({ verdict: "FLAGGED", reason: "Held.", guard: "guard.clarify" })).toBe(false);
-  });
-});

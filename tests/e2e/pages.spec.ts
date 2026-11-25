@@ -320,24 +320,23 @@ test("case study: rail is sticky from 900px only", async ({ page }) => {
   await expect(rail).toHaveCSS("position", "static");
 });
 
-test("case study: only CloudEagle has 'Try to break it'", async ({ page }) => {
+test("case study: no 'Try to break it' anywhere (removed, Aswin 2026-11-25)", async ({ page }) => {
   await page.goto("/work/integration-builder");
-  await expect(page.getByRole("heading", { name: "Try to break it" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Try to break it" })).toHaveCount(0);
+  await expect(page.locator("#s-break")).toHaveCount(0);
+  await expect(page.getByRole("navigation").getByText("Try to break it")).toHaveCount(0);
   await page.goto("/work/job-search-agent");
   await expect(page.getByRole("heading", { name: "Try to break it" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "AI job search and apply agent", level: 1 })).toBeVisible();
 });
 
-test("case study: CASE STUDIES breadcrumb, LAST UPDATED and the counter before and after an attempt (update 4)", async ({ page }) => {
+test("case study: CASE STUDIES breadcrumb and LAST UPDATED (update 4)", async ({ page }) => {
   await page.goto("/work/integration-builder");
   await expect(page.getByText("CASE STUDIES / 03 · CLOUDEAGLE.AI")).toBeVisible();
   // Numbering and order follow the home products 01–04 (Aswin, 2026-11-20).
   await expect(page.getByRole("link", { name: /^NEXT · 04 · IN PROGRESS/ })).toHaveAttribute("href", "/work/instagram-agent");
   await expect(page.getByRole("link", { name: "CASE STUDIES", exact: true })).toHaveAttribute("href", "/work");
   await expect(page.getByText("LAST UPDATED", { exact: true })).toBeVisible();
-  const counter = page.locator("#s-break").getByRole("status");
-  await expect(counter).toHaveText("No attempts yet");
-  await expect(counter.getByText("No attempts yet")).toHaveCSS("font-size", "14px");
   for (const gone of ["/work/cloudeagle", "/work/dhees-instagram-agent", "/work/platform-api-work"]) {
     expect((await page.goto(gone))?.status()).toBe(404);
   }

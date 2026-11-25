@@ -1,5 +1,4 @@
 import { todo } from "@/lib/content";
-import { WORK_ATTACKS } from "./cloudeagle-attacks";
 
 {/* Copy from Work.dc.html, the PRD template. Placeholders stay until Aswin fills them. */}
 
@@ -89,8 +88,6 @@ export const meta = {
       userSees: "New connectors go live labelled \"Custom (AI-built)\" and no automation acts on them until 3 clean syncs and the owner marks them trusted. Each last-active value shows its source and confidence; a proxy signal never triggers a reclaim, and apps without activity data are labelled \"No activity data\".",
     },
   ],
-  // WORK_ATTACKS: the six presets and their expected verdicts. Also eval cases (SPEC §8).
-  sandbox: { attacks: WORK_ATTACKS.map((a) => ({ ...a })) },
   metrics: [
     { kind: "NORTH STAR", hint: "Long-tail apps with a live, trusted connector each week, built without engineering time." }, // D17–D19 (Aswin, 2026-11-24)
     { kind: "GUARDRAIL", hint: "Write calls seen at the egress proxy (must stay at zero), and fixes that changed a field's meaning but reached go-live without being flagged to the admin (target: zero)." },

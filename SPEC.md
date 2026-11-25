@@ -190,11 +190,7 @@ The design's honest note is a requirement: **"the fit check is a fixed pipeline 
   - **Pending state (design update 4):** while an attempt runs, its entry shows `RUNNING…`, "Checking the guardrails… {step}", a progress bar and "guardrail: … · trace: …"; the input, chips and drills are disabled and the button reads "Running…". `{step}` and the bar come from the real step events of the run (`kb.search`, `compose`, `guardrails`), never a timer.
   - **Drills are logged** (no drill buttons in v1, design update 5; the entry type stays): each failure drill adds a `DRILL` entry (its reply, "See the fallback above ↑" and "fallback path: {path} · trace {run id}") once the drill's real fallback event arrives. DRILL entries are not counted in attempts, held or the tally.
   - A failed, rate-limited or budget-stopped attempt isn't logged or counted; its pending entry is removed and it shows Ask's error, limit or budget line below the input. Ask's budget line: "Ask my work is paused for this month: the AI budget is spent. Aswin is one message away."
-- **Case study "Try to break it"** (`Work.dc.html`) uses `mode: "sandbox"` with a prompt that plays the CloudEagle integration builder and returns `{verdict: BLOCKED|FLAGGED|CLARIFIED|DRAFTED, reason, guard}`. The six preset attacks and their expected verdicts are `WORK_ATTACKS`; they are also eval cases. Its counter reads "No attempts yet" before the first attempt, then "{stopped} held up of {attempts}" (design update 4). The verdict and guard must agree, or the attempt fails closed as an error. States the design doesn't show (approved M5), one line under the input; a failed attempt isn't logged or counted:
-  - Loading: "Running against the builder…"
-  - Error: "The builder couldn't answer this time. Try again."
-  - Limit: "That's the limit for attempts this hour. Aswin is one message away."
-  - Budget: "Live attempts are paused for this month."
+- **Case study "Try to break it"** (`Work.dc.html`) is removed (Aswin, 2026-11-25): no section on the integration-builder page, no `mode: "sandbox"` in `/api/run`, no sandbox eval cases. The design still shows it; the code doesn't build it.
 
 ## 9. Contact form — `/api/contact`
 
@@ -223,7 +219,7 @@ Approved where the design is silent (Aswin, 2026-11-23):
 
 ## 10. Limits, cost, logging, evals
 
-- **Rate limits (Upstash, hashed IP):** fit checks per visitor per day = `FIT_DAILY_LIMIT` (default 10); Ask = 30/hour, shared by Ask my work, Break my AI and the sandbox; failure drills = `FIT_DAILY_LIMIT` per day in their own bucket (the rate drill makes no LLM call and uses no bucket). Over the limit → the hero's "limited" state, no LLM call ("llm.call skipped · nothing billed").
+- **Rate limits (Upstash, hashed IP):** fit checks per visitor per day = `FIT_DAILY_LIMIT` (default 10); Ask = 30/hour, shared by Ask my work and Break my AI; failure drills = `FIT_DAILY_LIMIT` per day in their own bucket (the rate drill makes no LLM call and uses no bucket). Over the limit → the hero's "limited" state, no LLM call ("llm.call skipped · nothing billed").
 - **Budget cap:** monthly spend counter in Upstash, increased by each run's real cost; at `MONTHLY_BUDGET_USD`, all AI modes return the `budget` state. Hero copy: tag "Fit check · monthly budget reached", title "Live checks are paused for this month.", text "This site caps what it spends on AI each month, and that cap is reached. The precomputed matches below come from the same knowledge base, and Aswin is one message away." Plus a spend limit on the Anthropic workspace.
 - **Every model call:** Zod-validated input (JD ≤ 12,000 chars, Ask ≤ 1,000), Turnstile, `maxOutputTokens`, 60 s timeout. User text wrapped in tags and treated as data.
 - **Privacy, as the design promises:** pasted JDs and questions are **not stored**. Log only run metrics.
@@ -232,7 +228,7 @@ Approved where the design is silent (Aswin, 2026-11-23):
 create table runs (
   id text primary key,            -- the trace/run id shown in X-ray
   created_at timestamptz default now(),
-  mode text,                      -- fit | ask | sandbox
+  mode text,                      -- fit | ask (sandbox until 2026-11-25)
   drill text,                     -- null | kb | rate
   branch text,                    -- link | text
   steps jsonb,                    -- [{tool, status, ms}]
@@ -254,7 +250,7 @@ RLS on; server-only writes; no raw IPs.
 
 - **The run log must provide every "This run" field** (design update 3): run id, timestamp, branch, retries, requirement count, sources retrieved and cited, guard results, fallback used, latency, tokens in/out, cost.
 
-- **Evals (Promptfoo, public in `/evals`):** the 4 sample JDs, ≥ 6 more real JDs (`TODO(aswin)`), every Break-my-AI attack in `HERO_ATTACKS` and `ASK_ANSWERS`, and the 7 case-study eval cases in `Work.dc.html`. Assertions: valid schema, no uncited match, bad fits never "Strong", not-done topics never matched, injections refused, no percentages. CI writes `content/eval-results.json` (pass rate, red-team held, last run date, case count), which the site displays as the offline eval numbers.
+- **Evals (Promptfoo, public in `/evals`):** the 4 sample JDs, ≥ 6 more real JDs (`TODO(aswin)`), every Break-my-AI attack in `HERO_ATTACKS` and `ASK_ANSWERS`. (The 7 case-study sandbox cases were removed with "Try to break it", 2026-11-25.) Assertions: valid schema, no uncited match, bad fits never "Strong", not-done topics never matched, injections refused, no percentages. CI writes `content/eval-results.json` (pass rate, red-team held, last run date, case count), which the site displays as the offline eval numbers.
 
 ## 11. SEO + GEO (invisible, required)
 
@@ -313,7 +309,7 @@ Provide `.env.example`. Verify model IDs against Anthropic's current model list 
 2. **Static pages, pixel-faithful:** `/` (all sections except the live hero, which shows its empty state), `/work/[slug]` PRD template, `/log`, `/about` (the CV page since design update 6; the dependency graph is gone), mobile layouts. Compare side by side with each artboard.
 3. **Ask my work UI:** modal + bottom sheet, ⌘K, per-page suggestions, session memory box, answer card states (wired to a stub first).
 4. **Fit-check hero UI:** all states driven by a typed event stream from a local mock that matches §7, so the UI is done before the backend.
-5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask, sandbox), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.
+5. **Backend:** knowledge base + `kb.search`, `/api/run` (fit, ask; sandbox removed 2026-11-25), streaming, retry, guards, drills, fallbacks, rate limits, budget cap, Turnstile, run logging. Swap the mocks for the real endpoint.
 6. **Contact form + analytics + SEO/GEO.**
 7. **Quality:** Vitest (guards, verdict template, kb.search, rate-limit helpers), Playwright (each hero state, X-ray toggle, Ask, each of the 6 contact states with the API mocked for error and 429; plus screenshot comparison against the artboards at 1440 and 390), Promptfoo evals + CI writing `eval-results.json`, `check:content`.
 8. **Launch checks:** Lighthouse 95+ mobile, accessibility pass (keyboard, focus trap, `aria-live` on streamed output, contrast AA in both themes, reduced motion), README.
