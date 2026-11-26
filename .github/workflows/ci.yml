@@ -9,9 +9,8 @@ on:
     branches: [main]
     paths-ignore:
       - content/eval-results.json
-  # A PR that changes only the eval results is the Evals workflow's own PR. GitHub doesn't run
-  # pull_request workflows for PRs made with the built-in token (it waits for an approval that then
-  # expires), so Evals starts this workflow on that branch itself (workflow_dispatch below).
+  # A PR that changes only the eval results is the Evals workflow's own PR (bot/eval-results). CI
+  # doesn't run on it (Aswin, 2026-11-26): it changes no code, and the build on main checks the file.
   pull_request:
     paths-ignore:
       - content/eval-results.json
