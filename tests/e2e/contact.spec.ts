@@ -194,12 +194,12 @@ test.describe("contact form: the 6 states (FooterStates.dc.html)", () => {
 });
 
 test.describe("nav Contact link (Nav.dc.html update 7)", () => {
-  test("is the 4th link and scrolls to #contact on the current page", async ({ page }) => {
+  test("is the 5th link (Stack added in update 11) and scrolls to #contact on the current page", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/log");
     const nav = page.getByRole("navigation", { name: "Main" });
     const links = nav.getByRole("link");
-    await expect(links).toHaveText(["Aswinpm · builds for agents", "Case studies", "Build log", "CV", "Contact"]);
+    await expect(links).toHaveText(["Aswinpm · builds for agents", "Case studies", "Stack", "Build log", "CV", "Contact"]);
     await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "#contact");
     await nav.getByRole("link", { name: "Contact" }).click();
     await expect(page.locator("#contact")).toBeInViewport();
