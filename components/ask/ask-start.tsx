@@ -1,6 +1,5 @@
 import {
   ASK_BY_PAGE,
-  ASK_QUESTIONS,
   CTX_QUESTION,
   gapQuestion,
   type AskPage,
@@ -77,9 +76,9 @@ export function AskStart({
       )}
       <div className="flex flex-col gap-[6px]">
         <p className={LABEL}>Suggested for this page</p>
-        {ASK_BY_PAGE[page].map((id) => (
-          <button key={id} type="button" onClick={() => onAsk(ASK_QUESTIONS[id])} className={`${ROW} text-[16px]`}>
-            {ASK_QUESTIONS[id]}
+        {ASK_BY_PAGE[page].map((q) => (
+          <button key={q} type="button" onClick={() => onAsk(q)} className={`${ROW} text-[16px]`}>
+            {q}
             <span className={HINT}>ask ↵</span>
           </button>
         ))}

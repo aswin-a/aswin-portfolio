@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ASK_BY_PAGE, ASK_QUESTIONS, askPageFor } from "@/lib/ask/copy";
 import { ASK_ANSWERS } from "@/lib/ask/fixtures";
+import { askSearch } from "@/lib/run/ask";
 import { AskAnswerSchema, SessionMemorySchema, type SessionMemory } from "@/lib/ask/types";
 
 const MEMORY: SessionMemory = {
@@ -33,10 +34,15 @@ describe("SessionMemorySchema", () => {
 });
 
 describe("ASK_ANSWERS (replayed by the AI_FAKE test model)", () => {
-  it("covers every suggested question with a schema-valid answer", () => {
-    for (const id of new Set(Object.values(ASK_BY_PAGE).flat())) {
-      expect(ASK_QUESTIONS[id]).toBeTruthy();
+  it("every design answer is schema-valid", () => {
+    for (const id of Object.keys(ASK_QUESTIONS) as (keyof typeof ASK_QUESTIONS)[]) {
       expect(AskAnswerSchema.safeParse({ ...ASK_ANSWERS[id], guard: ASK_ANSWERS[id].guard ?? "none" }).success).toBe(true);
     }
+  });
+});
+
+describe("ASK_BY_PAGE (Aswin, 2026-11-26)", () => {
+  it("every suggested question finds something in the knowledge base", () => {
+    for (const q of new Set(Object.values(ASK_BY_PAGE).flat())) expect(askSearch(q).length, q).toBeGreaterThan(0);
   });
 });

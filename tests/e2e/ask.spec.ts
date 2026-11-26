@@ -89,7 +89,7 @@ test.describe("open, close and focus", () => {
     expect(await page.evaluate(() => document.documentElement.style.overflow)).toBe("hidden");
     // Shift+Tab from the input wraps to the last control, Tab from there back to the first.
     await page.keyboard.press("Shift+Tab");
-    await expect(dialog(page).getByRole("button", { name: "Has he led a hardware launch?" })).toBeFocused();
+    await expect(dialog(page).getByRole("button", { name: /What's his biggest platform win\?/ })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(input(page)).toBeFocused();
     for (let i = 0; i < 20; i++) {
@@ -103,12 +103,14 @@ test.describe("open, close and focus", () => {
 });
 
 test.describe("before a question", () => {
+  const HOME = ["Has he worked on APIs?", "How does the fit check avoid making things up?", "Has he shipped LLM features at a company?", "What's his biggest platform win?"];
+  const WORK = ["Which AI agents has he built?", "How does the integration builder keep AI out of production?", "Is the integration builder CloudEagle's product?", "Has he shipped LLM features at a company?"];
   const SUGGESTIONS: [string, string[]][] = [
-    ["/", ["Has he worked on APIs?", "What's his biggest platform win?", "Has he shipped LLM features at a company?", "Has he led a hardware launch?"]],
-    ["/work/integration-builder", ["Why are safeguards the centrepiece?", "What failed first?", "Is this CloudEagle's product?", "Has he shipped LLM features at a company?"]],
-    ["/work", ["Why are safeguards the centrepiece?", "What failed first?", "Is this CloudEagle's product?", "Has he shipped LLM features at a company?"]],
-    ["/log/integrations-experience-is-agent-experience", ["What's he building now?", "Has he worked on APIs?", "Has he shipped LLM features at a company?"]],
-    ["/about", ["Has he worked on APIs?", "What's his healthcare experience?", "What's his biggest platform win?", "Has he led a hardware launch?"]],
+    ["/", HOME],
+    ["/work/integration-builder", WORK],
+    ["/work", WORK],
+    ["/log/integrations-experience-is-agent-experience", ["Why does the job-search agent wait for approval?", "How do his platform skills carry over to AI agents?", "What's he building now?"]],
+    ["/about", ["What's his healthcare experience?", "What's his biggest platform win?", "What did he build as a founder?", "Has he worked with enterprise clients?"]],
   ];
   for (const [path, qs] of SUGGESTIONS) {
     test(`suggestions on ${path}`, async ({ page }) => {
@@ -243,7 +245,8 @@ test.describe("answers", () => {
     const cited = KB.find((e) => e.id === "cloudeagle")!;
     test.skip(cited.todos.length === 0, "No KB entry cited by a design Ask answer still has a placeholder");
     await open(page, "/work/integration-builder");
-    await dialog(page).getByRole("button", { name: /Is this CloudEagle's product\?/ }).click();
+    await input(page).fill(ASK_QUESTIONS.isce);
+    await input(page).press("Enter");
     const todoBox = status(page).getByText(cited.todos[0], { exact: true });
     await expect(todoBox).toBeVisible();
     await expect(todoBox).toHaveCSS("border-top-style", "dotted");
