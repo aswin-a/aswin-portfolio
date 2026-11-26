@@ -69,7 +69,9 @@ export function ContactArea({ intro, links, config }: { intro: ReactNode; links:
   const [prefilled, setPrefilled] = useState(false);
   const [status, setStatus] = useState<ContactStatus>("idle");
   const [tick, setTick] = useState(0);
-  const [limitTime, setLimitTime] = useState("");
+  // When the rate limit ends; the PAUSED line counts down to it (Footer.dc.html, design update 12 §7).
+  const [limitUntil, setLimitUntil] = useState(0);
+  const [now, setNow] = useState(0);
   const reopen = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // A draft kept after a failed send (survives a reload).
@@ -95,6 +97,13 @@ export function ContactArea({ intro, links, config }: { intro: ReactNode; links:
     return () => clearInterval(t);
   }, [status]);
   useEffect(() => () => void (reopen.current && clearTimeout(reopen.current)), []);
+  // Re-checked every 15s, as in the design.
+  useEffect(() => {
+    if (status !== "limited") return;
+    const t = setInterval(() => setNow(Date.now()), 15_000);
+    return () => clearInterval(t);
+  }, [status]);
+  const limitTime = minutesText(Math.max(0, (limitUntil - now) / 1000));
 
   const set = (k: keyof ContactFields) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
   const rolePrefilled = prefilled && !!form.role;
@@ -122,7 +131,9 @@ export function ContactArea({ intro, links, config }: { intro: ReactNode; links:
     }
     writeDraft(form);
     if (out.status === "limited") {
-      setLimitTime(minutesText(out.retryAfterSec));
+      const t = Date.now();
+      setNow(t);
+      setLimitUntil(t + out.retryAfterSec * 1000);
       setStatus("limited");
       if (reopen.current) clearTimeout(reopen.current);
       reopen.current = setTimeout(() => setStatus((s) => (s === "limited" ? "idle" : s)), out.retryAfterSec * 1000);

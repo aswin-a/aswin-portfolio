@@ -1,4 +1,4 @@
-import { stackClosing, stackHero, stackJudgment, stackLayers, stackRulesHeading } from "@/content/stack";
+import { STACK_POST_URL, stackClosing, stackHero, stackJudgment, stackLayers, stackRulesHeading } from "@/content/stack";
 import { stackRules } from "@/content/stack-rules";
 import { isTodo } from "@/lib/content";
 import { absolute } from "@/lib/seo";
@@ -23,7 +23,7 @@ export function stackMarkdown(): string {
   out.push(`## ${stackRulesHeading.title}`, "");
   for (const r of stackRules) out.push(`- ${r.id} · ${r.title}: ${r.body}`);
   out.push("", `## ${stackClosing.title}`, "", stackClosing.body);
-  if (!isTodo(stackClosing.href)) out.push("", `[${stackClosing.cta}](${stackClosing.href})`);
+  if (STACK_POST_URL) out.push("", `[${stackClosing.cta}](${STACK_POST_URL})`);
   out.push("");
   return out.join("\n");
 }

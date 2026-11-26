@@ -1,5 +1,4 @@
 import { todo } from "@/lib/content";
-import { siteMeta } from "@/content/site-meta";
 
 /**
  * /stack, "My AI-powered operating stack" (design update 11). Copy is word for word from
@@ -7,7 +6,8 @@ import { siteMeta } from "@/content/site-meta";
  * The R1–R4 cards live in content/stack-rules.ts.
  *
  * Placeholder links are never shown on /stack (Aswin, 2026-11-26): a proof card whose href is still a
- * todo() renders as a plain box with no CTA line.
+ * todo() renders as a plain box with no CTA line, and the closing LinkedIn button is hidden until
+ * STACK_POST_URL is set (design update 12 §8).
  */
 
 export type StackProof = {
@@ -129,13 +129,15 @@ export const stackClosing = {
   title: "What’s in your stack?",
   body: "I wrote about building mine on LinkedIn. Tell me what’s in yours.",
   cta: "Read the LinkedIn post",
-  // For now, the LinkedIn profile (Aswin, 2026-11-26). TODO(aswin): swap in the post about building the stack.
-  href: siteMeta.linkedin as string,
 } as const;
+
+/** The LinkedIn post about building the stack. Empty hides the button (design update 12 §8). TODO(aswin): the post's URL. */
+export const STACK_POST_URL: string = "";
 
 /** Homepage strip (HomeStrip.dc.html, Main.dc.html, Mobile.dc.html). */
 export const stackStrip = {
   label: "Operating stack",
+  eyebrow: "HOW I WORK WITH AI", // design update 12 §9
   statement: "I run on an AI-powered operating stack.",
   cta: "See how I work, layer by layer",
   arrow: "→",

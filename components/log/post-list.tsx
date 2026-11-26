@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ComingSoonLink, ComingSoonPill } from "@/components/coming-soon";
+import { ComingSoonPill, StudyChip } from "@/components/coming-soon";
 import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { useState } from "react";
 import type { Post } from "@/lib/schemas/content";
@@ -67,11 +67,16 @@ export function PostList({ posts }: { posts: Post[] }) {
                 </Link>
               )}
             </h2>
-            <p className="m-0 font-mono text-[13px] leading-[1.55] text-muted">
+            {/* Placeholder vs real (BuildLog.dc.html, design update 12 §1): a "[…]" summary keeps the dotted mono box; real text is sans 16px. */}
+            <p
+              className={`m-0 leading-[1.55] text-muted ${
+                p.summary.startsWith("[") ? "rounded-lg border border-dotted border-muted px-3 py-[10px] font-mono text-[13px]" : "text-[16px]"
+              }`}
+            >
               {p.summary}
             </p>
             {p.study && isHiddenStudy(p.study.slug) && (
-              <ComingSoonLink label={p.study.label} className="self-start font-mono text-[12px]" />
+              <StudyChip label={p.study.label} />
             )}
             {p.study && !isHiddenStudy(p.study.slug) && (
               <Link
@@ -86,10 +91,12 @@ export function PostList({ posts }: { posts: Post[] }) {
         {shown.length === 0 && (
           <div className="flex flex-col gap-2 border-t border-rule py-9">
             <p className="m-0 font-serif text-[24px]">No {emptyLabel} yet. The first one is in the works.</p>
-            <p className="m-0 text-[15px] text-muted">Build notes come first. Until then, the case studies go deeper.</p>
-            <Link href="/work" className="inline-flex min-h-11 items-center text-[15px] text-accent">
-              Read a case study →
-            </Link>
+            <p className="m-0 text-[15px] text-muted">Build notes come first. Until then, try the fit check on the home page.</p>
+            {/* Every case study is hidden at launch (design update 12 §1). */}
+            <span className="inline-flex min-h-11 items-center gap-2">
+              <span className="text-[15px] text-muted">Read a case study</span>
+              <ComingSoonPill />
+            </span>
           </div>
         )}
       </div>

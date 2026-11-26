@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ComingSoonLink } from "@/components/coming-soon";
+import { StudyChip } from "@/components/coming-soon";
+import { siteMeta } from "@/content/site-meta";
+import { isTodo } from "@/lib/content";
 import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
@@ -8,6 +10,9 @@ import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
 import { loadPost, posts } from "@/lib/posts";
 import { articleJsonLd, pageMetadata } from "@/lib/seo";
+
+/** The closing card on every post (LogPost.dc.html, design update 12). */
+const POST_FOLLOW = { text: "Get the next post on LinkedIn.", cta: "Follow Aswin" } as const;
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -24,38 +29,66 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata({ title: p.title, description: p.summary, path: `/log/${p.slug}`, type: "article" });
 }
 
-/** Design gap (SPEC §4): a simple article page in the build log's type styles, 880px column. */
+/** A build-log post (LogPost.dc.html, design update 12): 880px column, serif body, RELATED row and the LinkedIn card. */
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
   if (!(await posts()).some((p) => p.slug === slug)) notFound();
   const { meta, Body } = await loadPost(slug);
+  const related = meta.related ?? [];
+  const hasRelated = !!meta.study || related.length > 0;
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
       <JsonLd data={articleJsonLd(meta)} />
       <Nav current="log" />
-      <main className="mx-auto flex max-w-[880px] flex-col gap-9 px-6 pt-[72px] pb-24">
+      <main className="mx-auto flex max-w-[880px] flex-col gap-8 px-6 pt-14 pb-24">
+        <Link href="/log" className="inline-flex min-h-11 items-center self-start font-mono text-[13px] text-accent no-underline">
+          ← Build log
+        </Link>
         <header className="flex flex-col gap-[14px]">
-          <div className="flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] text-muted">
+          <p className="m-0 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] tracking-[0.04em] text-muted">
             <span>{meta.tag}</span>
             <span>{meta.date}</span>
             <span>{meta.readTime}</span>
-          </div>
-          <h1 className="m-0 font-serif text-[clamp(44px,6vw,68px)] font-normal leading-[1.04] tracking-[-0.02em]">{meta.title}</h1>
+          </p>
+          <h1 className="m-0 font-serif text-[clamp(38px,5vw,56px)] font-normal leading-[1.08] tracking-[-0.015em]">{meta.title}</h1>
+          {meta.standfirst && <p className="m-0 font-serif text-[21px] leading-[1.45] text-muted">{meta.standfirst}</p>}
         </header>
-        <article className="flex flex-col gap-4">
+        <article className="flex flex-col gap-5">
           <Body />
         </article>
-        {meta.study && isHiddenStudy(meta.study.slug) && (
-          <ComingSoonLink label={meta.study.label} className="self-start font-mono text-[12px]" />
+        {hasRelated && (
+          <div className="flex flex-col gap-3 border-t border-rule pt-6">
+            <p className="m-0 font-mono text-[11px] tracking-[0.06em] text-muted">RELATED</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {meta.study && isHiddenStudy(meta.study.slug) && <StudyChip label={meta.study.label} />}
+              {meta.study && !isHiddenStudy(meta.study.slug) && (
+                <Link
+                  href={`/work/${meta.study.slug}`}
+                  className="rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"
+                >
+                  {meta.study.label} →
+                </Link>
+              )}
+              {related.map((r) => (
+                <a key={r.href} href={r.href} className="rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline">
+                  {r.label} →
+                </a>
+              ))}
+            </div>
+          </div>
         )}
-        {meta.study && !isHiddenStudy(meta.study.slug) && (
-          <Link
-            href={`/work/${meta.study.slug}`}
-            className="self-start rounded-md bg-accent-tint px-[10px] py-[6px] font-mono text-[12px] text-accent no-underline"
-          >
-            {meta.study.label} →
-          </Link>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[14px] border border-rule bg-paper p-[22px]">
+          <p className="m-0 font-serif text-[20px]">{POST_FOLLOW.text}</p>
+          {/* The LinkedIn follow link is the profile (content/site-meta.ts); hidden if that's ever a placeholder. */}
+          {!isTodo(siteMeta.linkedin) && (
+            <a
+              href={siteMeta.linkedin}
+              className="inline-flex min-h-11 items-center rounded-[10px] bg-btn-bg px-4 py-2 text-[15px] font-semibold text-btn-ink no-underline"
+            >
+              {POST_FOLLOW.cta}
+            </a>
+          )}
+        </div>
       </main>
       <Footer />
     </div>

@@ -8,25 +8,23 @@ export const meta = {
   date: "15 Sep 2026", // Aswin, 2026-11-24
   readTime: "3 min", // L3 (Aswin, 2026-11-24)
   summary: "My job-search agent stops before every application and waits for an exact approval line for that one job. It costs me a message per job. It stays because an application under my name can't be unsent.",
+  // TODO(aswin): standfirst, the one-line serif intro under the title (LogPost.dc.html, design update 12).
   study: { label: "Case study · Job-search agent", slug: "job-search-agent" },
+  related: [{ label: "GitHub · job-search agent", href: "https://github.com/aswin-a/linkedin-job-search-agent" }],
 };
 
 I built a Claude agent for my own job search. It searches LinkedIn, scores each job against my experience, saves the ones that clear my bar, writes a tailored resume per job, and fills in the application. Everything up to the application runs without asking me. The application itself never does.
 
-**What the agent does on its own**
-
+## What the agent does on its own
 Saving a job, scoring it, writing resumes in Drive and updating my tracker are all reversible, so none of them need approval. The agent screens results at a human pace, scores each job 0–100 with fixed weights (skills and tools, experience, evidence of results, domain, seniority), saves everything above my minimum score and logs it. For each job it writes an "ideal" resume from the JD alone, then maps my Master Resume against it and the JD, and asks me short gap questions where my evidence is thin. It never fills a gap by inventing a claim.
 
-**Where it stops**
-
+## Where it stops
 After the final resume, the agent hands me an apply kickoff and stops. It only moves when my latest message is exactly "APPROVED TO APPLY - Company - Role" for that job. Then it fills the form from my Master Resume, the final resume and my saved answers, and any question it can't source (CTC, notice period, visa, relocation, essays) stops it again. Before Submit, it shows a table of every field, its value and where that value came from, and it waits for one more word: SUBMIT.
 
-**What that costs**
-
+## What that costs
 At least two extra messages per job, a review of every form, and no way to apply to fifty jobs overnight. The agent is slower than an auto-apply tool, by design.
 
-**Why it stays**
-
+## Why it stays
 Three reasons.
 
 1. **An application can't be unsent.** A wrong resume, a guessed CTC or a role I'd never take goes out under my name, to a recruiter who'll remember it. Everything else the agent does can be undone; this can't.

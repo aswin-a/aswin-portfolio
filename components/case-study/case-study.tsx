@@ -223,7 +223,8 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                 {cs.safeguards.map((g, i) => (
                   <article key={i} className="flex flex-col gap-3 rounded-xl border border-rule bg-paper p-5">
                     <span className="font-mono text-[12px] text-accent">{`0${i + 1}`}</span>
-                    <p className={hintFor(g.title)}>{g.title}</p>
+                    {/* Placeholder vs real (design update 12 §1): real titles are sans 16px ink, no box. */}
+                    <p className={containsTodo(g.title) ? hintFor(g.title) : "m-0 text-[16px] leading-[1.55] text-ink"}>{g.title}</p>
                     <Pair label="STOPS" value={g.stops} />
                     <Pair label="USER SEES" value={g.userSees} />
                   </article>
@@ -256,7 +257,8 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
                 </p>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[14px]">
-                {cs.perf.items.map((p) => (
+                {/* LIVE USAGE cards are hidden; only offline-eval cards remain (Work.dc.html, design update 12 §10; Aswin, 2026-11-26). */}
+                {cs.perf.items.filter((p) => p.source !== "LIVE USAGE").map((p) => (
                   <div key={p.name} className={card}>
                     <span
                       className={`self-start rounded-full border px-2 py-[2px] font-mono text-[11px] tracking-[0.06em] ${

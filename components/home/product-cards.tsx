@@ -29,8 +29,9 @@ function CardA({ l }: { l: CardLink }) {
  * "Products I've built" below 640px (Mobile.dc.html, design update 9): expandable cards, one open at a
  * time, all closed at first. Open, a card adds "HOW IT WORKS" (the desktop stepper) and "WHAT I BUILT".
  */
-export function ProductCards({ items }: { items: PhoneProduct[] }) {
+export function ProductCards({ items, nameLevel = 3 }: { items: PhoneProduct[]; nameLevel?: 2 | 3 }) {
   const [openWork, setOpenWork] = useState(-1);
+  const Name = nameLevel === 2 ? "h2" : "h3";
   return (
     <>
       {items.map((p, wi) => {
@@ -53,7 +54,7 @@ export function ProductCards({ items }: { items: PhoneProduct[] }) {
                 {open ? "Collapse ↑" : "Expand ↓"}
               </button>
             </div>
-            <h3 className="m-0 text-[18px] font-semibold leading-[1.3]">{p.name}</h3>
+            <Name className="m-0 text-[18px] font-semibold leading-[1.3]">{p.name}</Name>
             <p className="m-0 text-[15px] leading-[1.5] text-muted">{p.pitch}</p>
             {(p.primary || p.secondary) && (
               <div className="flex flex-wrap gap-x-[18px] gap-y-1">

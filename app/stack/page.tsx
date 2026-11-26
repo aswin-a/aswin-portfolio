@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { Nav } from "@/components/nav";
 import { StackDiagram } from "@/components/stack/stack-diagram";
-import { stackClosing, stackHero, stackLayers, stackRulesHeading } from "@/content/stack";
+import { STACK_POST_URL, stackClosing, stackHero, stackLayers, stackRulesHeading } from "@/content/stack";
 import { stackRules } from "@/content/stack-rules";
 import { isTodo } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
@@ -18,7 +18,7 @@ export const metadata: Metadata = pageMetadata({
  * here, so X-ray changes nothing and the intro banner isn't shown. Placeholder links are hidden.
  */
 export default function StackPage() {
-  const linkedIn = !isTodo(stackClosing.href);
+  const linkedIn = STACK_POST_URL !== "";
   return (
     <div className="min-h-screen bg-bg font-sans text-ink">
       <Nav current="stack" />
@@ -88,7 +88,7 @@ export default function StackPage() {
             {linkedIn && (
               <div className="flex flex-wrap gap-[10px] max-[640px]:block">
                 <a
-                  href={stackClosing.href}
+                  href={STACK_POST_URL}
                   className="inline-flex min-h-12 items-center rounded-[10px] bg-ink px-[18px] py-[10px] text-[15px] font-semibold text-paper no-underline max-[640px]:flex max-[640px]:justify-center"
                 >
                   {stackClosing.cta}
