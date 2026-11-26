@@ -61,12 +61,21 @@
 <p style="margin: 0; font-size: 15px; line-height: 1.55">{{l.how}}</p>
 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A5510"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em">MY CALL · </span>{{l.call}}</p>
 </div>
+<sc-if value="{{l.hasProof}}" hint-placeholder-val="{{ true }}">
 <a href="{{l.proofHref}}" style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 12px; color: #1B1A17; text-decoration: none">
 <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">PROOF · {{l.proofKind}}</span>
 <span style="font-size: 16px; font-weight: 600; line-height: 1.35">{{l.proofTitle}}</span>
 <span style="font-size: 14px; line-height: 1.5; color: #5C574E">{{l.proofBody}}</span>
 <span style="margin-top: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">{{l.proofCta}}</span>
 </a>
+</sc-if>
+<sc-if value="{{l.noProof}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 12px; color: #1B1A17">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">PROOF · {{l.proofKind}}</span>
+<span style="font-size: 16px; font-weight: 600; line-height: 1.35">{{l.proofTitle}}</span>
+<span style="font-size: 14px; line-height: 1.5; color: #5C574E">{{l.proofBody}}</span>
+</div>
+</sc-if>
 </div>
 </sc-if>
 </li>
@@ -80,12 +89,12 @@ var LAYERS = [
     tools: ['Claude', 'PM Skills library', 'ChatGPT', 'Gemini'],
     how: 'I frame the problem myself, then use Claude with my PM Skills to research and draft options. For big decisions I ask a second model to argue against my plan.',
     call: 'Which problem is worth solving, and which option I back.',
-    proofKind: 'BEFORE / AFTER', proofTitle: 'A decision, before and after the challenge round', proofBody: 'My first draft, the objections a second model raised, and what I changed.', proofCta: 'See the example → [link]', proofHref: '#' },
+    proofKind: 'BEFORE / AFTER', proofTitle: 'A decision, before and after the challenge round', proofBody: 'My first draft, the objections a second model raised, and what I changed.', proofCta: 'See the example →', proofHref: '' },
   { num: '02', name: 'Context', summary: 'A product context repo (strategy, personas, metrics, decisions) and OpenSpec for specs.',
     tools: ['Context repo', 'OpenSpec', 'Markdown', 'Git'],
     how: 'Strategy, personas, metrics and past decisions live in one repo every AI session starts from. Specs are written in OpenSpec, so a build starts from an agreed spec, not a chat.',
     call: 'What goes into the context, and what is out of date.',
-    proofKind: 'MASTER RESUME + PRD', proofTitle: 'One source of truth, and a site built from a PRD', proofBody: 'My master resume feeds every tailored CV and the fit check. This site was built from a written PRD.', proofCta: 'Read the PRD → [link]', proofHref: '#' },
+    proofKind: 'MASTER RESUME + PRD', proofTitle: 'One source of truth, and a site built from a PRD', proofBody: 'My master resume feeds every tailored CV and the fit check. This site was built from a written PRD.', proofCta: 'Read the PRD →', proofHref: '' },
   { num: '03', name: 'Building & communicating', summary: 'Claude Code prototypes and data checks, to learn, not to ship; PRDs and decision docs.',
     tools: ['Claude Code', 'PRDs', 'Decision docs'],
     how: 'I build throwaway prototypes and quick data checks to test an idea before asking engineering for time. What I learn goes into a PRD or a decision doc.',
@@ -95,7 +104,7 @@ var LAYERS = [
     tools: ['Scheduled agents', 'MCP connectors', 'Claude'],
     how: 'Agents run on a schedule and leave a digest for me to read. Anything that sends, applies or publishes waits for my approval.',
     call: 'Every action that leaves my desk.',
-    proofKind: 'OPEN SOURCE', proofTitle: 'Job-search agent on GitHub', proofBody: 'Searches LinkedIn, tailors my resume to each JD, and applies only after I approve.', proofCta: 'github.com/aswin-a/[repo] →', proofHref: 'https://github.com/aswin-a' }
+    proofKind: 'OPEN SOURCE', proofTitle: 'Job-search agent on GitHub', proofBody: 'Searches LinkedIn, tailors my resume to each JD, and applies only after I approve.', proofCta: 'github.com/aswin-a/linkedin-job-search-agent →', proofHref: 'https://github.com/aswin-a/linkedin-job-search-agent' }
 ];
 class Component extends DCLogic {
   constructor(props) {
@@ -120,7 +129,7 @@ class Component extends DCLogic {
       layers: LAYERS.map((l, i) => {
         var key = String(i + 1), open = !!this.state.open[key];
         return Object.assign({}, l, {
-          open: open,
+          open: open, hasProof: !!l.proofHref, noProof: !l.proofHref,
           btnId: p + '-layer-' + key, panelId: p + '-layer-' + key + '-panel',
           cue: c ? '' : (open ? 'Close' : 'Open'), icon: open ? '−' : '+',
           iconBorder: open ? '#1F4C86' : '#E2DCD0',

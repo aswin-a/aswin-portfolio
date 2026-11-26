@@ -39,18 +39,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <div id="top"></div>
 <dc-import name="Hero" initial="empty" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-role="{{setRole}}" on-xray="{{xrayOn}}" hint-size="100%,860px"></dc-import>
 
-<section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0">
-<a href="Stack.dc.html" class="strip-link" style="display: block; padding: 20px 24px; text-decoration: none; color: #1B1A17">
-<span style="max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 24px">
-<span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 3px; width: 112px; box-sizing: border-box; padding: 8px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 8px">
+<section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0; background: #EFEAE0; padding: 28px 24px">
+<a href="Stack.dc.html" class="strip-link" style="display: block; max-width: 1040px; margin: 0 auto; box-sizing: border-box; padding: 20px 24px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 14px; text-decoration: none; color: #1B1A17">
+<span style="display: flex; align-items: center; gap: 24px">
+<span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 3px; width: 112px; box-sizing: border-box; padding: 8px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 8px">
 <span style="display: block; height: 14px; border-radius: 3px; background: #1B1A17"></span>
 <span style="display: block; height: 4px"></span>
-<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
+<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 </span>
-<span style="flex: 1 1 auto; font-family: 'Newsreader', Georgia, serif; font-size: 26px; line-height: 1.25">I run on an AI-powered operating stack.</span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I WORK WITH AI</span><span style="font-family: 'Newsreader', Georgia, serif; font-size: 26px; line-height: 1.25">I run on an AI-powered operating stack.</span></span>
 <span class="strip-cta" style="flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #1F4C86; border-radius: 10px; font-size: 15px; font-weight: 600; color: #1F4C86">See how I work, layer by layer <span aria-hidden="true">→</span></span>
 </span>
 </a>
@@ -68,7 +68,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <a href="{{u.href}}" onClick="{{u.click}}" style="display: flex; flex-direction: column; gap: 10px; min-height: 170px; box-sizing: border-box; padding: 18px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 12px; text-decoration: none; color: {{t.ink}}">
 <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-family: {{t.mono}}; font-size: 14px; font-weight: 500">{{u.name}}</span><span style="padding: 2px 8px; border-radius: 999px; border: 1px {{u.statusStyle}} {{u.statusBorder}}; background: {{u.statusBg}}; font-family: {{t.mono}}; font-size: 11px; color: {{u.statusInk}}; white-space: nowrap">{{u.status}}</span></span>
 <span style="font-size: 15px; line-height: 1.5; color: {{t.muted}}">{{u.proof}}</span>
-<span style="margin-top: auto; font-family: {{t.mono}}; font-size: 12px; color: {{u.ctaColor}}">{{u.cta}}</span>
+<span style="margin-top: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><sc-if value="{{u.hasCta}}" hint-placeholder-val="{{ true }}"><span style="font-family: {{t.mono}}; font-size: 12px; color: {{u.ctaColor}}">{{u.ctaText}}</span></sc-if><sc-if value="{{u.soon}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></sc-if></span>
 </a>
 </sc-for>
 </div>
@@ -91,8 +91,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <p style="margin: 0; font-size: 16px; line-height: 1.5; color: {{t.muted}}">{{pr.pitch}}</p>
 <p style="margin: 0; font-size: 15px; line-height: 1.5"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">What I built </span>{{pr.built}}</p>
 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; padding-top: 6px">
-<a href="{{pr.primaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 14px; font-weight: 600; text-decoration: none">{{pr.primary}}</a>
-<a href="{{pr.secondaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{pr.secondary}}</a>
+<sc-if value="{{pr.showPrimary}}" hint-placeholder-val="{{ true }}"><a href="{{pr.primaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 14px; font-weight: 600; text-decoration: none">{{pr.primary}}</a></sc-if>
+<sc-if value="{{pr.secLive}}" hint-placeholder-val="{{ false }}"><a href="{{pr.secondaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{pr.secondary}}</a></sc-if>
+<sc-if value="{{pr.secSoon}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 4px"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{pr.secondaryText}}</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span></sc-if>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 12px">
@@ -175,35 +176,37 @@ class Component extends DCLogic {
       showIntro: !s.introSeen && !x,
       askCtx: s.askCtx,
       hood: [
-        { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html' },
+        { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html', hiddenStudy: true },
         { name: 'skills', status: 'GitHub', proof: 'I wrote a Claude Skill that scores JD fit against my master resume.', cta: 'View the skill →', href: '#' },
         { name: 'tools', status: 'live here', proof: 'The fit check calls three tools: fetch_url, jd.parse and kb.search.', cta: 'See the calls in X-ray →', live: true, to: '#top' },
         { name: 'orchestration', status: 'live here', proof: 'A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.', cta: 'Open X-ray →', live: true, to: '#top' },
         { name: 'memory', status: 'live here', proof: 'Your fit result carries into Ask my work for this session, and nothing is stored after.', cta: 'Open X-ray →', live: true, to: '#top' },
-        { name: 'production', status: 'live here', proof: 'Rate limit, budget cap, and a precomputed fallback when either trips.', cta: 'Run the failure drills →', live: true, to: '#break-my-ai' },
+        { name: 'production', status: 'live here', proof: 'Rate limit, budget cap, and a clear error instead of a guess when either trips.', cta: 'Try Break my AI →', live: true, to: '#break-my-ai' },
         { name: 'guardrails', status: 'live here', proof: 'Every claim is cited, gaps are stated, and injected instructions are refused.', cta: 'Try Break my AI →', live: true, to: '#break-my-ai' },
         { name: 'evals', status: 'GitHub', proof: '[25] test JDs and red-team cases, run before every change.', cta: 'View the eval set →', href: '#' },
-        { name: 'human in loop', status: 'shipped', proof: 'I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.', cta: 'Read the OCR story →', href: '#' },
-        { name: 'data privacy', status: 'shipped', proof: 'Advised against sending patient data to LLMs at a healthcare SaaS platform.', cta: 'Read more →', href: '#' },
+        { name: 'human in loop', status: 'shipped', proof: 'I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.', cta: 'Read the OCR story →', href: '#', soonPost: true },
+        { name: 'data privacy', status: 'shipped', proof: 'Advised against sending patient data to LLMs at a healthcare SaaS platform.', cta: 'Read more →', href: '#', soonPost: true },
         { name: 'rag', status: 'prototype', proof: 'A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.', cta: 'Why no vector DB yet →', href: '#' },
         { name: 'mcp server', status: 'planned', proof: 'My agent uses MCP connectors today. Next: kb.search as an MCP server you can add to Claude.', cta: 'Coming soon', planned: true }
       ].map((u) => {
         var shipped = u.status.indexOf('shipped') === 0;
+        var soon = !!(u.planned || u.hiddenStudy || u.soonPost);
         return Object.assign(u, {
-          href: u.planned ? undefined : (u.live ? u.to : u.href),
+          soon: soon, hasCta: !u.planned, ctaText: soon ? u.cta.replace(/\s*→\s*$/, '') : u.cta,
+          href: soon ? undefined : (u.live ? u.to : u.href),
           click: u.live ? () => this.setState({ xray: true, introSeen: true }) : undefined,
           statusBg: u.live ? t.accentTint : 'transparent',
           statusBorder: u.live ? t.accent : (shipped ? t.ink : t.rule),
           statusStyle: u.planned || u.status === 'prototype' ? 'dashed' : 'solid',
           statusInk: u.live ? t.accent : (shipped ? t.ink : t.muted),
-          ctaColor: u.planned ? t.muted : t.accent
+          ctaColor: soon ? t.muted : t.accent
         });
       }),
       products: [
         { num: '01', status: 'IN USE · RECORDED RUN', name: 'AI job search and apply agent', pitch: 'Finds roles that fit, tailors my resume to each one, and applies only after I say yes. Shown as a recorded run, since it signs in as me.',
           built: 'The project instructions, step prompts A–F and the approval step.',
           flow: [['Search LinkedIn and save matches'], ['Write the ideal resume for the JD'], ['Tailor mine with a three-way map'], ['Wait for my approval', 'person decides'], ['Apply']],
-          tags: ['agents', 'tools', 'orchestration'], primary: 'Watch the recorded run', primaryHref: 'Work.dc.html', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
+          tags: ['agents', 'tools', 'orchestration'], primary: 'Add to Claude/ChatGPT', primaryHref: 'https://github.com/aswin-a/linkedin-job-search-agent', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
         { num: '02', status: 'LIVE HERE', name: 'Job-fit AI on this site', pitch: 'Paste a job description and get an honest verdict: what fits with proof, and what doesn’t, stated plainly.',
           built: 'The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.',
           flow: [['Paste a JD or a link'], ['fetch_url, only for links'], ['Parse requirements, search the record'], ['Guardrails check every claim'], ['Cited verdict, gaps included']],
@@ -215,10 +218,14 @@ class Component extends DCLogic {
         { num: '04', status: 'IN USE · RECORDED RUN', name: 'Instagram content intelligence agent', pitch: 'Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.',
           built: 'The agent’s prompts and analysis steps.',
           flow: [['Pick the competitors to watch'], ['Pull their recent posts'], ['Rank what performs'], ['Spot trending formats'], ['Suggest Dhee’s next posts']],
-          tags: ['agents', 'tools'], primary: 'Watch the recorded run', primaryHref: 'Work.dc.html', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' }
+          tags: ['agents', 'tools'], primary: 'Add to Claude/ChatGPT', primaryHref: 'https://github.com/aswin-a/instagram-content-intelligence-agent', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' }
       ].map((p) => {
         var live = p.status === 'LIVE HERE', inUse = p.status.indexOf('IN USE') === 0;
+        var secHidden = p.secondaryHref === 'Work.dc.html', primHidden = p.primaryHref === 'Work.dc.html';
+        var same = secHidden && primHidden;
         return Object.assign(p, {
+          showPrimary: !primHidden, secLive: !secHidden, secSoon: secHidden,
+          secondaryText: same ? 'Case study' : p.secondary.replace(/\s*→\s*$/, ''),
           statusBg: live ? t.accentTint : 'transparent',
           statusBorder: live || inUse ? t.accent : t.rule,
           statusInk: live || inUse ? t.accent : t.muted,

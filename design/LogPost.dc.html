@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Why my job-search agent asks before it applies — Aswin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{opacity:0.82}
+a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
+<dc-import name="Nav" current="log" xray="{{xray}}" on-toggle-xray="{{toggleXray}}" on-ask="{{openAsk}}" ask-open="{{askOpen}}" hint-size="100%,73px"></dc-import>
+
+<main style="max-width: 880px; margin: 0 auto; padding: 56px 24px 96px; display: flex; flex-direction: column; gap: 32px">
+<a href="BuildLog.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">← Build log</a>
+<header style="display: flex; flex-direction: column; gap: 14px">
+<p style="margin: 0; display: flex; gap: 8px 16px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.04em; color: {{t.muted}}"><span>Build notes</span><span>[date]</span><span>[read time]</span></p>
+<h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(38px, 5vw, 56px); line-height: 1.08; letter-spacing: -0.015em">Why my job-search agent asks before it applies</h1>
+<p style="margin: 0; font-family: {{t.serif}}; font-size: 21px; line-height: 1.45; color: {{t.muted}}">[One-line standfirst: the approval step, what it costs, why it stays]</p>
+</header>
+
+<article style="display: flex; flex-direction: column; gap: 20px; font-family: {{t.serif}}; font-size: 20px; line-height: 1.6">
+<p style="margin: 0; padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}">[Opening: the moment you decided the agent must stop and ask]</p>
+<h2 style="margin: 12px 0 0; font-family: {{t.serif}}; font-weight: 400; font-size: 30px; line-height: 1.2">[Section heading]</h2>
+<p style="margin: 0; padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}">[Body: what the agent does on its own, and where it waits]</p>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}; min-height: 180px; display: flex; align-items: center; justify-content: center">[Screenshot or diagram of the approval step]</div>
+<figcaption style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">[Caption]</figcaption>
+</figure>
+<p style="margin: 0; padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}">[Body: the trade-off, and what you would change in v2]</p>
+</article>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 24px; border-top: 1px solid {{t.rule}}">
+<p style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}">RELATED</p>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="padding: 6px 10px; border-radius: 6px; border: 1px solid {{t.rule}}; color: {{t.muted}}; font-family: {{t.mono}}; font-size: 12px">Case study · Job-search agent</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span>
+<a href="https://github.com/aswin-a/linkedin-job-search-agent" style="padding: 6px 10px; border-radius: 6px; background: {{t.accentTint}}; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 12px; text-decoration: none">GitHub · job-search agent →</a>
+</div>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 22px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
+<p style="margin: 0; font-family: {{t.serif}}; font-size: 20px">Get the next post on LinkedIn.</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 15px; font-weight: 600; text-decoration: none">Follow Aswin [link]</a>
+</div>
+</main>
+
+<dc-import name="Footer" hint-size="100%,640px"></dc-import>
+<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="log" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+var LOG_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
+function logTokens(x) {
+  var c = x
+    ? { bg: '#101214', paper: '#171A1D', ink: '#E9E6DF', muted: '#A3A9B0', rule: '#2B3036', accent: '#8DBBF2', accentTint: '#17283D', btnBg: '#E9E6DF', btnInk: '#101214' }
+    : { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
+  c.serif = LOG_FONTS.serif; c.sans = LOG_FONTS.sans; c.mono = LOG_FONTS.mono;
+  return c;
+}
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { xray: false, askOpen: false }; }
+  renderVals() {
+    var s = this.state;
+    return {
+      t: logTokens(false), xray: s.xray, askOpen: s.askOpen,
+      toggleXray: () => this.setState({ xray: !this.state.xray }),
+      openAsk: () => this.setState({ askOpen: true }),
+      closeAsk: () => this.setState({ askOpen: false })
+    };
+  }
+}
+</script>
+</body>
+</html>
