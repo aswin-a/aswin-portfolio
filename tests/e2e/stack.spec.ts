@@ -51,7 +51,8 @@ for (const width of [1440, 390]) {
       // Layers 01 and 02 have no real proof link yet: plain boxes with no CTA line.
       await expect(panel(page, 1).getByRole("link")).toHaveCount(0);
       await expect(panel(page, 1).getByText("See the example →")).toHaveCount(0);
-      await expect(page.getByRole("link", { name: "Read the LinkedIn post" })).toHaveCount(0);
+      // For now the LinkedIn button goes to the profile (Aswin, 2026-11-26).
+      await expect(page.getByRole("link", { name: "Read the LinkedIn post" })).toHaveAttribute("href", /linkedin\.com\/in\//);
     });
 
     test("/stack#layer-3 opens layer 3 and scrolls to it", async ({ page }) => {
