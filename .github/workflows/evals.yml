@@ -18,8 +18,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  # To start CI on the results branch (see the last step).
-  actions: write
 
 concurrency:
   group: evals
@@ -117,17 +115,6 @@ jobs:
             echo "::warning::Opening or updating the results PR failed (try $try of 3); retrying in $((try * 15))s."
             sleep $((try * 15))
           done
-
-      # Pushes and PRs made with the built-in token don't trigger other workflows, except
-      # workflow_dispatch. So CI is started here, on the results branch; its checks attach to the
-      # PR's head commit and show on the PR like any other run.
-      - name: Run CI on the results pull request
-        if: ${{ steps.pr.outputs.pushed == 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run ci.yml --ref "$RESULTS_BRANCH"
-          echo "::notice::CI started on $RESULTS_BRANCH: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/ci.yml?query=branch%3A$RESULTS_BRANCH"
 
       - name: Fail if any case failed
         if: ${{ steps.run.outputs.code == '100' }}
