@@ -7,7 +7,7 @@ import type { PostHog } from "posthog-js";
  * so a pasted JD, a question or a contact message can never be sent (CLAUDE.md: never stored or logged).
  */
 export type AnalyticsEvents = {
-  fit_check_run: { branch: "link" | "text"; outcome: "result" | "badfit" | "error" | "limited" | "budget" };
+  fit_check_run: { branch: "link" | "text"; outcome: "result" | "badfit" | "error" | "limited" | "budget" | "link" };
   ask_opened: { page: "home" | "work" | "log" | "about" };
   ask_question_sent: Record<string, never>;
   xray_toggled: { on: boolean };

@@ -6,9 +6,9 @@ import type { FallbackEvent, FitEvent, FitTool, TraceLine } from "@/lib/fit-chec
 import { KB, formatEntries, type KbEntry } from "@/lib/kb/snapshot";
 import { kbSearch } from "@/lib/kb/search";
 import { budgetLeft } from "@/lib/server/budget";
-import { checkLimit } from "@/lib/server/ratelimit";
+import { checkLimit, refundToken } from "@/lib/server/ratelimit";
 import { addUsage, displayCost, runCost, type RunContext, type RunRecord } from "./context";
-import { fetchUrl } from "./fetch-url";
+import { FetchUrlError, fetchFailure, fetchUrl } from "./fetch-url";
 import { guardCitations, guardHonesty, NO_SOURCE_CLOSEST } from "./guards";
 import { hook, untilAborted } from "./hooks";
 import { LlmError, callLlm } from "./llm";
@@ -162,7 +162,29 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
     rec.branch = link ? "link" : "text";
     yield step("fetch_url", "running");
     if (link) {
-      const page = await timed(() => deps.fetchPage(jd, signal));
+      let page: { value: string; ms: number };
+      try {
+        page = await timed(() =>
+          hook(env, jd, "blocked") ? Promise.reject(new FetchUrlError("403 · bot check", "blocked")) : deps.fetchPage(jd, signal),
+        );
+      } catch (e) {
+        if (signal.aborted) return;
+        // The link couldn't be read: stop before jd.parse, so no model call and nothing billed.
+        // The run gives its daily-limit token back (Aswin, 2026-11-26).
+        const { kind, cause } = fetchFailure(e);
+        rec.steps.push({ tool: "fetch_url", status: "failed", ms: msOf(e) });
+        await refundToken(bucket, ctx.visitor, env).catch((err: unknown) =>
+          console.error("fit check: rate-limit refund failed:", err instanceof Error ? err.message : err),
+        );
+        yield {
+          ...fallback("link", [
+            { mark: "×", text: `fetch_url(url) → ${cause}`, bad: true, timed: true, ms: msOf(e) },
+            { mark: "›", text: "stop before jd.parse → no model call", bad: false, timed: false },
+          ]),
+          link: kind,
+        };
+        return;
+      }
       jd = page.value;
       yield step("fetch_url", "done", "fetched", page.ms);
     } else {

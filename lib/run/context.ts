@@ -18,7 +18,7 @@ export type RunRecord = {
   requirements: number | null;
   sourcesRetrieved: number | null;
   sourcesCited: number | null;
-  fallback: "error" | "limited" | "budget" | null;
+  fallback: "error" | "limited" | "budget" | "link" | null;
   /** Model id for pricing and the log. Empty until a model is resolved. */
   model: string;
   tokens: Tokens;

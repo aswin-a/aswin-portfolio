@@ -12,7 +12,38 @@ export const FETCH_TIMEOUT_MS = 8000;
 const MAX_BYTES = 1_000_000;
 const MAX_REDIRECTS = 3;
 
-export class FetchUrlError extends Error {}
+/**
+ * Why a link couldn't be read. `blocked`: the site refused an automated reader (a bot check or an
+ * auth wall). `unreadable`: anything else (bad URL, 404, timeout, not a page, no text).
+ */
+export type FetchFailure = "blocked" | "unreadable";
+
+export class FetchUrlError extends Error {
+  constructor(
+    message: string,
+    readonly kind: FetchFailure = "unreadable",
+  ) {
+    super(message);
+  }
+}
+
+/** Statuses job sites send to automated readers: auth walls, bot checks, LinkedIn's 999. */
+const BLOCKED_STATUS = new Set([401, 403, 429, 503, 999]);
+/** Bot-check pages served with a 200. */
+const CHALLENGE_BODY = /<title>\s*Just a moment|challenges\.cloudflare\.com|cf-turnstile|captcha-delivery\.com|px-captcha/i;
+
+/** A Cloudflare (or similar) bot check, by header or status. */
+export function isBlocked(res: Response): boolean {
+  return res.headers.get("cf-mitigated") === "challenge" || BLOCKED_STATUS.has(res.status);
+}
+
+/** The step and trace label for a failed fetch_url (SPEC §7, Aswin 2026-11-26). */
+export function fetchFailure(e: unknown): { kind: FetchFailure; cause: string } {
+  if (e instanceof FetchUrlError) return { kind: e.kind, cause: e.message };
+  const name = (e as { name?: string }).name;
+  if (name === "TimeoutError" || name === "AbortError") return { kind: "unreadable", cause: "timeout" };
+  return { kind: "unreadable", cause: "no response" };
+}
 
 /** True for loopback, private, link-local, CGNAT, multicast, reserved and other non-public ranges. */
 export function isPrivateAddress(ip: string): boolean {
@@ -121,10 +152,12 @@ export async function fetchUrl(raw: string, signal: AbortSignal, resolve?: Resol
       url = await assertPublicUrl(new URL(res.headers.get("location")!, url).toString(), resolve);
       continue;
     }
-    if (!res.ok) throw new FetchUrlError(`status ${res.status}`);
+    if (isBlocked(res)) throw new FetchUrlError(`${res.status} · bot check`, "blocked");
+    if (!res.ok) throw new FetchUrlError(`${res.status}`);
     const type = res.headers.get("content-type") ?? "";
     if (!/text\/html|text\/plain|application\/xhtml/.test(type)) throw new FetchUrlError("not a web page");
     const body = await readCapped(res);
+    if (CHALLENGE_BODY.test(body.slice(0, 20_000))) throw new FetchUrlError(`${res.status} · bot check`, "blocked");
     const text = type.includes("text/plain") ? body.trim() : htmlToText(body);
     if (text.length < 40) throw new FetchUrlError("no readable text");
     return text.length > JD_MAX_CHARS ? `${text.slice(0, JD_MAX_CHARS)}\n[page text truncated]` : text;
