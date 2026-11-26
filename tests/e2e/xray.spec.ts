@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
-const toggle = (page: import("@playwright/test").Page) => page.getByRole("button", { name: /^X-ray/ });
+const toggle = (page: Page) => page.getByRole("button", { name: /^X-ray/ });
 /** "xray" while X-ray is on (the head script and the toggle set `data-xray`), else null. */
-const theme = async (page: import("@playwright/test").Page) =>
+const theme = async (page: Page) =>
   (await page.locator("html").getAttribute("data-xray")) === null ? null : "xray";
 const LIGHT_BG = "rgb(246, 243, 236)";
 
@@ -62,7 +62,7 @@ test("unknown case study slug is a 404", async ({ page }) => {
 });
 
 test.describe("intro banner", () => {
-  const banner = (page: import("@playwright/test").Page) => page.getByRole("region", { name: "About X-ray mode" });
+  const banner = (page: Page) => page.getByRole("region", { name: "About X-ray mode" });
 
   test("shows with a NEW pill on home only, and 'Got it' dismisses it for good", async ({ page }) => {
     await page.goto("/");

@@ -15,6 +15,17 @@ const eslintConfig = defineConfig([
     // Local agent worktrees (gitignored copies of the repo).
     ".claude/**",
   ]),
+  // e2e specs take `test` from ./fixtures, which waits for hydration after every navigation and gives
+  // each test its own visitor IP. Importing it from @playwright/test skips both.
+  {
+    files: ["tests/e2e/**/*.spec.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        { paths: [{ name: "@playwright/test", message: "Import test, expect and Page from ./fixtures instead." }] },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;
