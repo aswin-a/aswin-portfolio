@@ -298,14 +298,35 @@ test.describe("fit check", () => {
     await expect(page.getByText("pre-filled from your fit check")).toHaveCount(0);
   });
 
-  test("a link takes the fetch_url branch; a page that can't be fetched ends in the error state", async ({ page }) => {
+  test("a link takes the fetch_url branch; a page that can't be fetched ends in the link state", async ({ page }) => {
     await page.goto("/");
     // .invalid never resolves (RFC 2606), so this runs offline and always fails the fetch.
     await paste(page, "https://www.jobs.example.invalid/1 apply here");
-    await expect(page.getByRole("heading", { name: "The fit check couldn't finish this time." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "The fit check couldn't read that link." })).toBeVisible();
+    await expect(hero(page).getByText("Fit check · link couldn't be read")).toBeVisible();
+    await expect(
+      hero(page).getByText("The link didn't return a readable job post. Paste the job description text instead and the same check runs on it."),
+    ).toBeVisible();
+    await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
     // heroSummary: the link's first token without the scheme and www.
     await expect(hero(page).getByText("Checked against")).toBeVisible();
     await expect(hero(page).getByText("jobs.example.invalid/1", { exact: true })).toBeVisible();
+  });
+
+  test("link blocked by a bot check: its own text, Paste the text instead, and the trace in X-ray", async ({ page }) => {
+    await page.goto("/");
+    await xrayToggle(page).click();
+    await paste(page, `https://jobs.example.com/${FAKE.blocked}`);
+    await expect(page.getByRole("heading", { name: "The fit check couldn't read that link." })).toBeVisible();
+    await expect(
+      hero(page).getByText("Some job sites block automated readers, and this one did. Paste the job description text instead and the same check runs on it."),
+    ).toBeVisible();
+    await expect(hero(page).getByText(/^FALLBACK TRACE · run run_[0-9a-f]{12}$/)).toBeVisible();
+    await expect(hero(page).getByText(/^× fetch_url\(url\) → 403 · bot check · \d+ ms$/)).toBeVisible();
+    await expect(hero(page).getByText("› stop before jd.parse → no model call", { exact: true })).toBeVisible();
+    await hero(page).getByRole("button", { name: "Paste the text instead" }).click();
+    await expect(page.getByLabel(JD_LABEL)).toHaveValue("");
+    await expect(page.getByLabel(JD_LABEL)).toBeFocused();
   });
 
   test("Try another role resets to the empty state with the input focused", async ({ page }) => {

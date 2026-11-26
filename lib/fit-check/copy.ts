@@ -82,7 +82,7 @@ export function isLink(jd: string): boolean {
 }
 
 type FallbackCopy = { tag: string; title: string; text: string };
-export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget: FallbackCopy; kb: FallbackCopy; rate: FallbackCopy } = {
+export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget: FallbackCopy; link: FallbackCopy; kb: FallbackCopy; rate: FallbackCopy } = {
   error: {
     tag: "Fit check · error",
     title: "The fit check couldn't finish this time.",
@@ -104,6 +104,12 @@ export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget
     title: "The knowledge base didn't answer, so the AI won't guess.",
     text: "The fit check retried once, then stopped rather than answer without sources.",
   },
+  // fetch_url couldn't read the link: no model call was made (Aswin, 2026-11-26).
+  link: {
+    tag: "Fit check · link couldn't be read",
+    title: "The fit check couldn't read that link.",
+    text: "The link didn't return a readable job post. Paste the job description text instead and the same check runs on it.",
+  },
   // The rate drill keeps the limited title and text with its own tag.
   rate: {
     tag: "Failure drill · rate limit",
@@ -111,6 +117,11 @@ export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget
     text: "Live checks are capped per visitor per day to keep the AI bill predictable. Aswin is one message away.",
   },
 };
+
+/** The link state's text when the site blocked the reader (Aswin, 2026-11-26). */
+export const LINK_BLOCKED_TEXT = "Some job sites block automated readers, and this one did. Paste the job description text instead and the same check runs on it.";
+/** The link state's primary button: back to an empty input. */
+export const PASTE_INSTEAD = "Paste the text instead";
 
 export const NUDGE = {
   result: "See the trace, sources and cost behind this result.",

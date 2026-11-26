@@ -44,6 +44,7 @@ export const FAKE = {
   limited: "[[fake:limited]]",
   budget: "[[fake:budget]]",
   hold: "[[fake:hold]]",
+  blocked: "[[fake:blocked]]",
 } as const;
 
 /** The JD textarea's label (Hero.dc.html, 2026-11-18). */

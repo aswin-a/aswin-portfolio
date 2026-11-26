@@ -31,7 +31,7 @@ import { FIT_TOOLS, FitEventSchema, type Drill, type FallbackEvent, type ResultE
 export type { BuildMeta, HowIBuiltMeta };
 
 /** "break" is no longer a state (design update 3): Break my AI is an X-ray panel below the fit check. */
-type Phase = "empty" | "running" | "result" | "badfit" | "error" | "limited" | "budget";
+type Phase = "empty" | "running" | "result" | "badfit" | "error" | "limited" | "budget" | "link";
 
 const statusLabel = "m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-muted";
 
@@ -181,7 +181,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
 
   const talk = () => rolePrefill.send(role);
   const isResult = (phase === "result" || phase === "badfit") && result !== null;
-  const showFallback = (phase === "error" || phase === "limited" || phase === "budget") && fallback !== null;
+  const showFallback = (phase === "error" || phase === "limited" || phase === "budget" || phase === "link") && fallback !== null;
   const linkRun = isLink(jd);
   const showSteps = (phase === "running" && !drill) || isResult;
   // "Checking… step n of 7": the step running now, counted from the real step events.
@@ -344,6 +344,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
               event={fallback}
               xray={xray}
               onRetry={() => run(jd, role)}
+              onPaste={reset}
               onTalk={talk}
               headingRef={setFocusTarget}
             />

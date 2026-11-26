@@ -14,6 +14,7 @@ import { KB_SCOPES } from "@/lib/kb/snapshot";
 import { askSearch } from "@/lib/run/ask";
 import { askPrompt } from "@/lib/ai/prompts";
 import { guardStepDetail } from "@/lib/run/fit";
+import { FetchUrlError } from "@/lib/run/fetch-url";
 import { getModel } from "@/lib/ai/model";
 
 const ENV: ServerEnv = {
@@ -153,6 +154,30 @@ describe("/api/run · fit", () => {
     expect(evs.find((e) => e.type === "step" && e.tool === "fetch_url" && e.status === "done")).toMatchObject({ detail: "fetched" });
     expect(terminal(evs)).toMatchObject({ type: "result", role: HERO_SAMPLES[1].role });
     expect(rows[0].branch).toBe("link");
+  });
+
+  it("a link fetch_url can't read stops before jd.parse, logs the run and refunds the daily token", async () => {
+    const blocked = vi.fn(async () => {
+      throw new FetchUrlError("403 · bot check", "blocked");
+    });
+    const model = vi.fn(async () => getModel("fit", ENV));
+    const d: HandleDeps = { ...deps, fit: { fetchPage: blocked, search: async (r) => kbSearch(r), model } };
+    for (let i = 0; i < ENV.FIT_DAILY_LIMIT + 1; i++) {
+      const evs = await fit({ jd: "https://jobs.example.com/pm-agents" }, d);
+      expect(terminal(evs)).toMatchObject({
+        type: "fallback",
+        reason: "link",
+        link: "blocked",
+        trace: [
+          { mark: "×", text: "fetch_url(url) → 403 · bot check", bad: true, timed: true },
+          { mark: "›", text: "stop before jd.parse → no model call", bad: false, timed: false },
+        ],
+      });
+      expect(evs.some((e) => e.type === "step" && e.tool === "jd.parse")).toBe(false);
+    }
+    // Every attempt was refunded, so a pasted JD still runs.
+    expect(terminal(await fit({ jd: HERO_SAMPLES[1].jd }))).toMatchObject({ type: "result" });
+    expect(rows[0]).toMatchObject({ fallback: "link", branch: "link" });
   });
 
   it("the bad-fit sample: not-done topics are gaps, never matches, and the verdict is not strong", async () => {

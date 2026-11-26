@@ -2,25 +2,33 @@
 
 import type { Ref } from "react";
 import { XrayPanel } from "@/components/xray-panel";
-import { FALLBACK_COPY } from "@/lib/fit-check/copy";
+import { FALLBACK_COPY, LINK_BLOCKED_TEXT, PASTE_INSTEAD } from "@/lib/fit-check/copy";
 import type { FallbackEvent } from "@/lib/fit-check/types";
 
-/** Error and rate-limited states, including both failure drills (Hero.dc.html `showFallback`). */
+/**
+ * Error and rate-limited states, including both failure drills (Hero.dc.html `showFallback`), and
+ * the link state when fetch_url couldn't read a pasted link (Aswin, 2026-11-26).
+ */
 export function Fallback({
   event,
   xray,
   onRetry,
+  onPaste,
   onTalk,
   headingRef,
 }: {
   event: FallbackEvent;
   xray: boolean;
   onRetry: () => void;
+  /** The link state's "Paste the text instead": back to an empty input. */
+  onPaste: () => void;
   onTalk: () => void;
   headingRef: Ref<HTMLHeadingElement>;
 }) {
   const copy = FALLBACK_COPY[event.drill ?? event.reason];
   const isError = event.reason === "error" && !event.drill;
+  const isLink = event.reason === "link";
+  const text = isLink && event.link === "blocked" ? LINK_BLOCKED_TEXT : copy.text;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-[10px] rounded-[14px] border border-rule bg-paper p-[22px]">
@@ -28,8 +36,17 @@ export function Fallback({
         <h2 ref={headingRef} tabIndex={-1} className="m-0 font-serif text-[32px] font-normal leading-[1.15] outline-none">
           {copy.title}
         </h2>
-        <p className="m-0 max-w-[680px] text-[16px] leading-[1.55] text-muted">{copy.text}</p>
+        <p className="m-0 max-w-[680px] text-[16px] leading-[1.55] text-muted">{text}</p>
         <div className="mt-[6px] flex flex-wrap gap-[10px]">
+          {isLink && (
+            <button
+              type="button"
+              onClick={onPaste}
+              className="min-h-11 cursor-pointer rounded-[10px] border-0 bg-btn-bg px-[18px] py-[10px] font-sans text-[15px] font-semibold text-btn-ink"
+            >
+              {PASTE_INSTEAD}
+            </button>
+          )}
           {isError && (
             <button
               type="button"
@@ -48,9 +65,9 @@ export function Fallback({
           </a>
         </div>
       </div>
-      {xray && event.drill && (
+      {xray && (event.drill || isLink) && (
         <XrayPanel className="flex flex-col gap-[6px] rounded-[10px] px-4 py-[14px] font-mono text-[13px]">
-          <p className="m-0 text-[12px] text-xr-muted">FALLBACK TRACE · drill run {event.runId ?? "[run id]"}</p>
+          <p className="m-0 text-[12px] text-xr-muted">FALLBACK TRACE · {event.drill ? "drill run" : "run"} {event.runId ?? "[run id]"}</p>
           {(event.trace ?? []).map((l, i) => (
             <p key={i} className={`m-0 ${l.bad ? "text-xr-amber-text" : "text-xr-ink"}`}>
               {l.mark} {l.text}
