@@ -40,7 +40,7 @@ export const PLACEHOLDER = /TODO\(aswin\)|\[[^\]"&<>\n]{1,120}\]/g;
 export function bodyText(text) {
   return text.replace(/\[([^\]\n]+)\]\(/g, "$1(");
 }
-const TEXT_ROUTES = ["about.md.body", "llms.txt.body", "llms-full.txt.body", "rss.xml.body"];
+const TEXT_ROUTES = ["about.md.body", "stack.md.body", "llms.txt.body", "llms-full.txt.body", "rss.xml.body"];
 
 /** Values of <title>, meta tags (description, OG, Twitter) and JSON-LD: they render in search results and link previews. */
 export function headText(html) {
