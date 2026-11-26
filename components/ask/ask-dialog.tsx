@@ -334,7 +334,7 @@ export function AskDialog({ focus, topic: givenTopic, autoAsk, onClose }: AskOpe
         ) : asked ? (
           <AskThinking question={asked.question} steps={asked.steps} focusRef={thinkingRef} />
         ) : (
-          <AskStart page={page} topic={topic} memory={memory} onAsk={submitQuestion} onForget={forget} onNavigate={onClose} />
+          <AskStart page={page} topic={topic} memory={memory} onAsk={submitQuestion} onForget={forget} />
         )}
         </div>
       </div>
