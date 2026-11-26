@@ -7,9 +7,10 @@ import { isFake, type ServerEnv } from "@/lib/server/env";
  *   [[fake:budget]]  → the monthly budget is spent
  *   [[fake:hold]]    → the fit check pauses before evidence.map, and Ask before its model call
  *                      (compose), until the request is aborted
+ *   [[fake:blocked]] → a link's site blocks fetch_url with a bot check (no network call)
  * Model-level markers ([[fake:error]], [[fake:fail-once]]) live in lib/ai/fake.ts.
  */
-export type Hook = "limited" | "budget" | "hold";
+export type Hook = "limited" | "budget" | "hold" | "blocked";
 
 export function hook(env: ServerEnv, text: string, h: Hook): boolean {
   return isFake(env) && text.includes(`[[fake:${h}]]`);

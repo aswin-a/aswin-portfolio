@@ -17,7 +17,7 @@ export type RunRow = {
   requirement_count: number | null;
   sources_retrieved: number | null;
   sources_cited: number | null;
-  fallback: "error" | "limited" | "budget" | null;
+  fallback: "error" | "limited" | "budget" | "link" | null;
   model: string;
   input_tokens: number;
   output_tokens: number;

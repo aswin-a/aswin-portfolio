@@ -5,8 +5,10 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { NavCurrent } from "@/components/nav";
 import { useSite } from "@/components/xray-provider";
 
+// The current page's row shows • in place of its mark (StackMobile.dc.html; every page, Aswin, 2026-11-26).
 const ROWS: { id: NavCurrent | "contact"; label: string; href: string; mark: string }[] = [
   { id: "work", label: "Case studies", href: "/work", mark: "→" },
+  { id: "stack", label: "Stack", href: "/stack", mark: "→" }, // design update 11
   { id: "log", label: "Build log", href: "/log", mark: "→" },
   { id: "about", label: "CV", href: "/about", mark: "→" },
   { id: "contact", label: "Contact", href: "#contact", mark: "↓" },
@@ -53,6 +55,15 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close, headerRef]);
+
+  // Resizing across 640px closes the menu (Nav.dc.html, design update 12).
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(width < 640px)");
+    const onChange = () => close();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [open, close]);
 
   const onRow = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     close();
@@ -105,7 +116,7 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
               <>
                 {r.label}
                 <span aria-hidden="true" className="font-mono text-[13px] text-muted">
-                  {r.mark}
+                  {r.id === current ? "•" : r.mark}
                 </span>
               </>
             );

@@ -2,6 +2,180 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-26 (update 13): One H1 size across pages; the stack strip links only from its button; "Show JD" on the fit-check result
+
+Changed: `About`, `BuildLog`, `LogPost`, `Stack`, `StackMobile`, `Work`, `WorkIndex` (H1 only), plus `HomeStrip`, `Main`, `Mobile` and `Hero`. Nothing else changed (canvas sizes too).
+
+### 1. One page-title size everywhere
+- Every page H1 now matches the home hero H1: **serif 400, `clamp(32px, 4vw, 46px)`, line-height 1.1, letter-spacing −0.015em**. On mobile (StackMobile) it's a fixed **32px**, the same as the compact hero.
+- Pages affected: CV ("Aswin A"), Build log, the log post, /stack, /work and the case study.
+- Before, each page had its own size (up to 72px). Make the H1 size **one shared token**.
+- STACK-HANDOFF §2.2 (h1 `clamp(40px, 6vw, 64px)`, mobile 38px) is now out of date: use the values above.
+
+### 2. Homepage stack strip: only the button is a link (desktop, mobile and the HomeStrip spec)
+- The card is now a plain `div`, **not one big `<a>`**. Only the CTA is a link to `/stack`. The card itself isn't clickable and has no card-level focus ring.
+- The **`HOW I WORK WITH AI` eyebrow is removed.**
+- **Desktop:**
+  - The statement is a `<p>` (`flex: 1 1 320px`).
+  - The CTA is an `<a class="strip-cta">`: an outline button with a 1px accent border, radius 10, min-height 44.
+  - The row wraps (gap 16px 24px).
+- **Mobile:** the CTA is an `<a>` under the statement ("See how I work, layer by layer →", mono 13px accent, min-height 44px). The card no longer has the 76px minimum height.
+- Hover underlines the button text. Focus uses the site's standard ring on the link.
+- This **overrides STACK-HANDOFF §2.7** ("the whole strip is one link"), and also the update 12 eyebrow.
+
+### 3. Hero.dc.html: "Show JD ↓" on the result
+- The compact "Checked against **{role}**" bar now has a toggle right after the role: **`Show JD ↓` / `Hide JD ↑`** (mono 13px accent, min-height 32px, `aria-expanded`, `aria-controls="jd-view"`).
+- Opened, it shows `#jd-view` below the bar (top rule, padding-top 12px):
+  - A mono 11px label row:
+    - **`SAMPLE JOB DESCRIPTION`** · "one of the sample roles"
+    - **`THE JOB DESCRIPTION YOU PASTED`** · "kept for this check only · not stored"
+    - **`THE LINK YOU PASTED`** · "fetched for this check · not stored"
+  - The text in a scrollable box (max-height 220px, bg, rule border, radius 10, 15px/1.55, `white-space: pre-wrap`).
+- It closes again whenever a new check starts.
+- **Build:** the JD stays in client state only for this view. It is still never sent to logging or storage.
+
+### Spec impact
+- Add one shared `--h1` token for page titles. Update STACK-HANDOFF §2.2 and §2.7 to match (or treat them as superseded by this entry).
+- Fit-check result: add the Show JD panel, with a client-only state. Add a test that the JD text never appears in any network request except the fit-check call itself.
+
+## 2026-11-26 (update 12): Launch-readiness pass. "Coming soon" for unfinished links, real GitHub links, no precomputed fallback, `/work` index and a post page, sticky responsive Nav, swipe-to-close Ask
+
+Changed: `Nav`, `Hero`, `HeroStates`, `Main`, `Mobile`, `Ask`, `Footer`, `BuildLog`, `Work`, `Stack`, `StackMobile`, `StackDiagram`, `HomeStrip`, `canvas.json` (Main h 6080, Mobile h 5540, new boards and a new canvas row).
+**New:** `WorkIndex.dc.html` (`/work`, the products index) and `LogPost.dc.html` (`/log/[slug]`, a single build-log post).
+Unchanged: `About`, `FooterStates`, `MobileAsk`, `MobileFitStates`, `MobileNavStates`, `StackExpanded`.
+**Where this entry and `STACK-HANDOFF.md` disagree, this entry and the artboards win** (stack proof links and the LinkedIn button, §8).
+
+### 1. The "Coming soon" pattern (used site-wide)
+Anything whose destination doesn't exist yet is **not a link**. It becomes:
+- the label in mono muted, **without** the trailing `→`
+- followed by a pill `COMING SOON`: mono 11px, letter-spacing 0.04em, muted, `1px dashed rule`, radius 999px, padding 2px 8px
+
+Where it applies:
+- **Case studies** (`Work.dc.html` pages) aren't ready. Every "Read the case study" link is shown as Coming soon on home, mobile, `/work` and the build log.
+- On the fit-check result and in Ask, sources whose label starts with `Case study` show as plain muted text (no link, no arrow); other sources stay links.
+- **Hood cards:**
+  - `agents`: "Read the job-search study" is Coming soon (`hiddenStudy`).
+  - `human in loop` and `data privacy`: Coming soon (`soonPost`); they'll become build-log posts.
+  - `mcp server`: still planned. On desktop its CTA is hidden; on mobile it shows the pill with no text.
+  - Coming-soon cards aren't clickable at all (`href` undefined).
+- **Build log:**
+  - New posts "Shipping ML OCR with a person in the loop" (tag `human in loop`) and "Why I advised against sending patient data to LLMs" (tag `data privacy`), both `soon`. Their title is muted, not a link; they have no date or read time, a Coming soon pill, and a real one-line summary (not a placeholder box).
+  - Live post titles link to `LogPost.dc.html` (`/log/[slug]`).
+  - The empty state now reads "Build notes come first. Until then, try the fit check on the home page." and "Read a case study" is shown as Coming soon.
+- **Placeholder vs real text:** a summary or safeguard title that starts with `[` still renders as the dotted mono placeholder box. Real text renders as sans 16px with no box. The same rule applies on BuildLog and Work.
+
+### 2. Real GitHub links (products 01 and 04)
+- The primary button changes from "Watch the recorded run" to **"Add to Claude/ChatGPT"** (mobile: "Add to Claude/ChatGPT →"):
+  - 01 job-search agent → `https://github.com/aswin-a/linkedin-job-search-agent`
+  - 04 Instagram agent → `https://github.com/aswin-a/instagram-content-intelligence-agent`
+- Product 02's primary stays "Try it above ↑" (home), or "Try the fit check" → `/#fit-h` (on `/work`).
+- On mobile, the product cards drop the status label entirely, and product 03's name is shortened to "AI integration builder".
+- In `StackDiagram`, layer 04's proof now links to the real job-search repo (CTA `github.com/aswin-a/linkedin-job-search-agent →`), and layer 03's proof links home to the fit check.
+
+### 3. Fit check: the precomputed fallback is removed
+- **Error and rate-limited states show no matches at all.** The "Precomputed matches · same knowledge base" block is deleted.
+  - Error: "Nothing you did: the AI service didn't answer in time. Try again in a moment, or message Aswin about the role."
+  - Limited: "Live checks are capped per visitor per day to keep the AI bill predictable. Aswin is one message away."
+  - kb drill: "The fit check retried once, then stopped rather than answer without sources."
+- Drill traces end with `show the error state · no matches shown` (no more `fallback.precomputed`).
+- "How I built this" now says: "If the AI or knowledge base is down, it stops and says so instead of guessing".
+- Home `production` card proof: "Rate limit, budget cap, and a clear error instead of a guess when either trips." **CTA: "Try Break my AI →"**, which settles the question open since update 5.
+- `HeroStates` notes are updated to match (states 06 and 07: "No matches are shown").
+- **Steps now show the citation guard doing its job** (fit sample): `evidence.map` → "5 matches · 1 gap", then `guard.citations` → "1 match → gap", then `guard.honesty` → "pass". The final result is still 4 matches and 2 gaps. Bad-fit sample: `guard.honesty` → "1 gap reworded".
+- The X-ray nudge button ("Turn on X-ray →") now turns X-ray on **and smooth-scrolls to `#this-run`** (the "This run" panel, `scroll-margin-top: 88px`).
+- Minor desktop tokens: `jdPad` 22px, `breakPad` 20px, verdict line-height 1.1 (compact keeps 1.15).
+
+### 4. Nav.dc.html: sticky, and handles mobile itself
+- **Desktop header is now sticky** (`position: sticky; top: 0; z-index: 40`).
+- **Nav now renders the mobile header, menu, scrim and bottom dock itself below 640px** (props `compact` and `askOpen`). It's the same design as update 9/10, now inside Nav, so every page gets it, not just home.
+  - Menu: Case studies · Stack · Build log · CV · Contact, plus the X-ray switch.
+  - The scrim is `position: fixed` under the 52px bar.
+  - The dock is `position: fixed; bottom: 16px; z-index: 39` and is hidden while Ask or the menu is open.
+  - The one-time "New: X-ray." hint is dismissible (`newSeen`).
+- Resizing across 640px closes the menu.
+- **"Case studies" now links to the new `/work` index** (`WorkIndex.dc.html`), in the desktop nav and both mobile menus.
+
+### 5. New pages
+- **`WorkIndex.dc.html`: `/work`.** Eyebrow `CASE STUDIES`, H1 "Products I've built" (serif `clamp(44px, 6vw, 64px)`), the same sub-line and the same 4 product cards as home (`h2` names), with the Coming soon rule applied. Footer and Ask (`page="work"`).
+- **`LogPost.dc.html`: `/log/[slug]`, the post template.** Shown with "Why my job-search agent asks before it applies". Contents:
+  - "← Build log" back link
+  - meta line: tag · [date] · [read time]
+  - H1 serif `clamp(38px, 5vw, 56px)`, a serif 21px standfirst
+  - an article body in serif 20px/1.6 with H2 30px sections and a figure with a caption (all placeholders)
+  - a `RELATED` row: "Case study · Job-search agent" (Coming soon) and "GitHub · job-search agent →" (real link)
+  - a closing card "Get the next post on LinkedIn." with a "Follow Aswin [link]" button (placeholder)
+  - max-width 880px. Footer and Ask (`page="log"`).
+
+### 6. Ask.dc.html
+- **Swipe down to close the sheet (answers the update 10 question):**
+  - Drag from the handle (now a full-width hit area) or the input row. The row doesn't start a drag on its input or buttons, and uses `touch-action` to stop scrolling.
+  - The sheet follows the finger (`translateY`), with no transition while dragging and `transform 200ms ease-out` when released.
+  - It closes if dragged more than **25% of its height**, or on a **flick** (more than 0.6px/ms and more than 24px). Otherwise it springs back.
+- **Removed** from the empty state: the X-ray "Break my AI" chips and the "Jump to" links. Break my AI lives only in the hero.
+- Sources labelled `Case study…` render as muted chips with no link (see §1).
+
+### 7. Footer.dc.html
+- **Rate-limited state counts down:** `[time]` is replaced by the real remaining minutes ("1 minute" / "N minutes"). In the prototype it's re-checked every 15s and goes back to `idle` when the window ends; the new prop `limitMins` (default 23) is for the canvas only. In the build, use `retryAfterSec` from the API.
+- In the error and limited summary lines, "Send it on WhatsApp instead →" now **includes the typed message**: the role line, then a blank line, then the message.
+
+### 8. /stack (overrides STACK-HANDOFF §2.5 and §3 where they differ)
+- **Proof cards without a real URL** (layers 01 and 02) render as a **non-link card**: same box, kind, title and body, but **no CTA line**.
+- **Closing "Read the LinkedIn post" button is hidden** until `STACK_POST_URL` is set; the text stays. On mobile the same rule applies, and the menu's Case studies link goes to `/work`.
+
+### 9. HomeStrip (desktop and mobile, also on Main and Mobile)
+- The strip is now a **card inside a tinted band**:
+  - section background `#EFEAE0` (padding 28/24, mobile 20/16), with its top border kept
+  - the link is a paper card with a `1px rule` border and radius 14 (mobile 12), max-width 1040
+- Thumbnail: the tile is `bg` and the four bands are `paper` (they were swapped).
+- New eyebrow above the statement: `HOW I WORK WITH AI` (mono 11px, 0.08em, muted).
+
+### 10. Work.dc.html (case study template; currently Coming soon everywhere)
+- The **"Try to break it" section is removed** (and dropped from the rail).
+- Architecture X-ray rows show a per-step timing note: `[ms]`, or "no timing · user input" / "no timing · waits for a person" / "no timing · not run in the concept".
+- **Performance:** the two `LIVE USAGE` cards (cost per draft, response time) are hidden; only the offline-eval cards remain.
+- Safeguard titles use the placeholder-vs-real rule.
+
+### Spec impact
+- **Remove the precomputed fallback** from the fit-check pipeline and from SPEC. On a knowledge-base or LLM failure, or a rate limit: stop, show the error state, log it. Update the evals and Playwright tests that expected fallback matches.
+- **Routes:** add `/work` (index) and `/log/[slug]` (posts from `content/log/*.md` or MDX). The case-study routes (`/work/[slug]`) stay unbuilt until the content exists.
+- **Content flags:** add a `status: 'live' | 'soon'` (or a nullable `href`) to case studies, hood items, posts and stack proofs. A single `<SoonLink label>` component renders the Coming soon pattern. **Never render a link to an unbuilt page.**
+- `STACK_POST_URL`, the LinkedIn follow URL and the GitHub repo URLs go in content config.
+- **Nav owns the responsive header, menu and dock on every page;** remove any page-level copies. The header is sticky on desktop.
+- **Ask:** implement swipe-to-close with pointer events and the thresholds above, and respect reduced motion (no spring animation).
+- **Contact:** show the real remaining time from `retryAfterSec`. The WhatsApp fallback link carries the typed message (URL-encoded; truncate to about 1,500 characters).
+
+## 2026-11-26 (update 11): New `/stack` page ("My AI-powered operating stack"), Stack in the nav, homepage strip
+
+**The full build spec for this update is `design/STACK-HANDOFF.md`.** It covers tokens, components, layer content, responsive rules, states and accessibility. Follow it alongside the artboards; where the two disagree, the artboards win and you should ask Aswin. This entry only lists what changed in the files.
+
+**New artboards**
+- `Stack.dc.html`: /stack on desktop (1440)
+- `StackMobile.dc.html`: /stack on phones (390)
+- `StackExpanded.dc.html`: one layer open, desktop and mobile
+- `StackDiagram.dc.html`: the shared diagram component (Judgment band, rail, 4-layer accordion)
+- `HomeStrip.dc.html`: the homepage strip spec
+
+**Changed:** `Nav.dc.html`, `Main.dc.html`, `Mobile.dc.html` and `canvas.json` (new boards; Main h 6020, Mobile h 5490).
+
+### 1. Nav.dc.html
+- New item **Stack** between "Case studies" and "Build log" (`id: 'stack'`, href `/stack`). `'stack'` is added to the `current` enum.
+
+### 2. Mobile.dc.html
+- Menu rows are now: Case studies · **Stack** · Build log · CV · Contact.
+- **Homepage strip** (mobile version) added directly under the fit-check hero, above "ACROSS ALL MY WORK". Details are in STACK-HANDOFF §2.7: a 64px CSS thumbnail, a 19px serif statement, a mono accent CTA line, at least 76px tall, and the whole strip is one link.
+
+### 3. Main.dc.html
+- **Homepage strip** (desktop version) in the same place: a 112px thumbnail, a 26px serif statement, and an outline-styled CTA "See how I work, layer by layer →". The whole strip is one `<a>`. A top border only (no bottom border, to avoid a double rule). Hover underlines the CTA; focus shows an inset blue ring.
+- **Note: the production card CTA in this file still reads "Run the failure drills →".** A local edit to "Try Break my AI →" was overwritten by this sync. **Ask Aswin which wording to ship; don't assume either.**
+
+### Spec impact
+- Add the route `/stack` (title "My AI-powered operating stack — Aswin"; meta description = the subline) and a markdown twin `/stack.md` for GEO.
+- Add `content/stack.ts` (the 4 layers, as one data array) and `content/stack-rules.ts` (R1–R4). Copy all text word for word from `Stack.dc.html` and `StackDiagram.dc.html`.
+- `StackDiagram`: layers open independently (several can be open at once), all closed at first, deep links `#layer-N`, `<h3><button aria-expanded aria-controls>` triggers, panels as `role="region"`.
+- **Placeholders** (`[link]`, `[repo]`, the LinkedIn post): never ship them. Hide a CTA until its URL is real.
+- X-ray has no effect on /stack, and the intro banner isn't shown there.
+- Tests: Playwright on desktop and at 390px for accordion keyboard use, deep links, no horizontal scroll down to 320px, and the homepage strip link.
+
 ## 2026-11-25 (update 10): Ask becomes a real bottom sheet on phones; menu gets a scrim
 
 Changed: `Ask.dc.html`, `Mobile.dc.html`, `MobileAsk.dc.html`. Nothing else changed (canvas sizes too).

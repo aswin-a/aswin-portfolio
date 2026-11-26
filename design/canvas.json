@@ -45,7 +45,7 @@
     },
     "Main.dc.html": {
       "expand": "fill",
-      "h": 5900,
+      "h": 6080,
       "is_interactive": true,
       "title": "Home \u2014 fit-check hero, proof, contact",
       "w": 1440,
@@ -53,7 +53,7 @@
       "y": 0
     },
     "Mobile.dc.html": {
-      "h": 5400,
+      "h": 5540,
       "is_interactive": true,
       "title": "Mobile \u2014 recruiter from LinkedIn",
       "w": 390,
@@ -116,6 +116,65 @@
       "w": 1550,
       "x": 7040,
       "y": 3360
+    },
+    "Stack.dc.html": {
+      "x": 0,
+      "y": 14400,
+      "w": 1440,
+      "h": 2500,
+      "title": "/stack \u2014 desktop (1440)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "StackMobile.dc.html": {
+      "x": 1520,
+      "y": 14400,
+      "w": 390,
+      "h": 3400,
+      "title": "/stack \u2014 mobile (390)",
+      "is_interactive": true
+    },
+    "StackExpanded.dc.html": {
+      "x": 1990,
+      "y": 14400,
+      "w": 1640,
+      "h": 1800,
+      "title": "Expanded layer \u2014 desktop + mobile",
+      "is_interactive": true
+    },
+    "HomeStrip.dc.html": {
+      "x": 3710,
+      "y": 14400,
+      "w": 1440,
+      "h": 760,
+      "title": "Homepage strip linking to /stack \u2014 desktop + mobile",
+      "is_interactive": true
+    },
+    "StackDiagram.dc.html": {
+      "x": 5230,
+      "y": 14400,
+      "w": 1040,
+      "h": 760,
+      "title": "Component \u00b7 Stack diagram",
+      "is_interactive": true
+    },
+    "WorkIndex.dc.html": {
+      "x": 0,
+      "y": 18300,
+      "w": 1440,
+      "h": 3000,
+      "title": "/work \u2014 products index",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "LogPost.dc.html": {
+      "x": 1520,
+      "y": 18300,
+      "w": 1440,
+      "h": 2200,
+      "title": "/log/[slug] \u2014 single post",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -142,6 +201,20 @@
       "w": 240,
       "x": 0,
       "y": 7740
+    },
+    "row3": {
+      "kind": "title1",
+      "x": 0,
+      "y": 14100,
+      "text": "/stack \u2014 operating stack page, expanded layer and homepage strip",
+      "maxW": 6300
+    },
+    "row4": {
+      "kind": "title1",
+      "x": 0,
+      "y": 18000,
+      "text": "New pages from the build: /work index and a single build-log post",
+      "maxW": 2960
     }
   },
   "order": [
@@ -158,7 +231,14 @@
     "Nav.dc.html",
     "Ask.dc.html",
     "Footer.dc.html",
-    "FooterStates.dc.html"
+    "FooterStates.dc.html",
+    "Stack.dc.html",
+    "StackMobile.dc.html",
+    "StackExpanded.dc.html",
+    "HomeStrip.dc.html",
+    "StackDiagram.dc.html",
+    "WorkIndex.dc.html",
+    "LogPost.dc.html"
   ],
   "pages": [],
   "title": "Aswin \u2014 Portfolio Website Design & Prototype"

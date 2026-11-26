@@ -18,6 +18,8 @@ export type Product = {
   /** The main button. None while there is nothing to show (the Instagram agent has no run yet). */
   primary?: { label: string; href: string };
   secondary: { label: string; href: string };
+  /** The main button on the /work index, where there's no hero above (WorkIndex.dc.html, design update 12). Defaults to `primary`. */
+  indexPrimary?: { label: string; href: string };
   /** The shorter pitch on the phone card (Mobile.dc.html `MOB_WORK`, design update 9). */
   phonePitch: string;
 };
@@ -59,6 +61,7 @@ export const products: Product[] = [
     ],
     tags: ["tools", "guardrails", "evals"],
     primary: { label: "Try it above ↑", href: "#fit-h" },
+    indexPrimary: { label: "Try the fit check", href: "/#fit-h" },
     secondary: { label: "Read the case study →", href: "/work/fit-check" },
   },
   {

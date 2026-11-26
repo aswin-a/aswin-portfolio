@@ -18,6 +18,7 @@ const ROUTES = [
   "/log",
   ...POST_SLUGS.filter((s) => !COMING_SOON_POSTS.includes(s)).map((s) => `/log/${s}`),
   "/about",
+  "/stack",
 ];
 
 /**

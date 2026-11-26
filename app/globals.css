@@ -34,6 +34,15 @@
   --dock-shadow: 0 10px 28px rgba(16, 18, 20, 0.28);
   --hint-shadow: 0 8px 24px rgba(27, 26, 23, 0.14);
   --dock-rule: #3a4047;
+  /* /stack (design update 11, STACK-HANDOFF §1): the Judgment band's text and pill border on ink,
+     the rail line, and the homepage strip's thumbnail bands. */
+  --judg-label: #cfc8ba;
+  --judg-body: #e4ded2;
+  --judg-pill: #5a554c;
+  --stack-rail: #b9b1a3;
+  --strip-band: #cfc7b8;
+  /* One page-title size on every page (design update 13): the home hero H1's size. */
+  --h1: clamp(32px, 4vw, 46px);
 }
 
 :root {
@@ -59,6 +68,9 @@
 }
 
 @theme inline {
+  --text-h1: var(--h1);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.015em;
   --color-bg: var(--bg);
   --color-panel: var(--panel);
   --color-paper: var(--paper);
@@ -93,6 +105,11 @@
   --color-video-icon: var(--video-icon);
   --color-video-caption: var(--video-caption);
   --color-whatsapp: var(--whatsapp);
+  --color-judg-label: var(--judg-label);
+  --color-judg-body: var(--judg-body);
+  --color-judg-pill: var(--judg-pill);
+  --color-stack-rail: var(--stack-rail);
+  --color-strip-band: var(--strip-band);
   --shadow-ask: var(--ask-shadow);
   --font-serif: var(--font-newsreader), Georgia, serif;
   --font-sans: var(--font-plex-sans), system-ui, sans-serif;
@@ -193,4 +210,11 @@ html {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Homepage strip (Main.dc.html / Mobile.dc.html, design update 11): hover underlines the CTA, which is the only link. */
+.strip-cta:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }

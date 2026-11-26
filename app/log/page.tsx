@@ -17,7 +17,7 @@ export default async function BuildLog() {
       <main className="mx-auto flex max-w-[880px] flex-col gap-9 px-6 pt-[72px] pb-24">
         <header className="flex flex-col gap-[14px]">
           <p className="m-0 font-mono text-[12px] tracking-[0.08em] text-muted">BUILD LOG</p>
-          <h1 className="m-0 font-serif text-[clamp(44px,6vw,68px)] font-normal leading-[1.04] tracking-[-0.02em]">
+          <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">
             Notes from building AI products in public.
           </h1>
           <p className="m-0 font-serif text-[21px] leading-[1.45] text-muted">

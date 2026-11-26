@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Expanded layer — desktop and mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1640px; height: 1800px; box-sizing: border-box; padding: 48px; display: flex; gap: 64px; align-items: flex-start; background: #F6F3EC; color: #1B1A17; font-family: 'IBM Plex Sans', system-ui, sans-serif">
+
+<div style="width: 1040px; display: flex; flex-direction: column; gap: 16px">
+<p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C574E">DESKTOP · 1040 COLUMN · ONE LAYER OPEN</p>
+<dc-import name="StackDiagram" open="{{openDesk}}" id-prefix="xd" hint-size="1040px,900px"></dc-import>
+</div>
+
+<div style="width: 390px; display: flex; flex-direction: column; gap: 16px">
+<p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C574E">MOBILE · 390 · ONE LAYER OPEN</p>
+<div style="width: 390px; box-sizing: border-box; padding: 20px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 20px">
+<dc-import name="StackDiagram" compact="{{ true }}" open="{{openMob}}" id-prefix="xm" hint-size="350px,1250px"></dc-import>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"layer":{"editor":"enum","options":["1","2","3","4"],"default":"3"},"$preview":{"width":1640,"height":1800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var l = this.props.layer ?? '3';
+    return { openDesk: l, openMob: l };
+  }
+}
+</script>
+</body>
+</html>

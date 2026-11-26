@@ -2,35 +2,90 @@ import type { BreakReply, Drill, FitTool } from "./types";
 
 /** Copy and lookup tables from Hero.dc.html, word for word. These ship in production. */
 
-/** HERO_SAMPLES: the chips send this JD text through the real pipeline (SPEC §7). */
+/** HERO_SAMPLES: the chips send this JD text through the real pipeline (SPEC §7). Full-length JDs (Aswin, 2026-11-26). */
 export const HERO_SAMPLES = [
   {
     id: "platform",
     label: "Senior Platform PM",
-    role: "Senior Platform PM · APIs & integrations",
+    role: "Senior Product Manager · APIs & Integrations",
     bad: false,
-    jd: "Senior Platform Product Manager, APIs & integrations. Own our public API and partner integrations, ship AI agent features with clear guardrails, design human-in-the-loop workflows and work with business stakeholders on adoption. 3+ years shipping LLM features in production preferred.",
+    jd: `We're looking for a Senior Product Manager to lead our API and integrations platform. You'll work closely with engineering, design, solution architects and customer-facing teams to make it easier for customers and partners to connect our product with the rest of their technology stack.
+
+You'll own the product roadmap for our public APIs, developer experience and partner integrations. This includes identifying gaps in our current capabilities, improving API consistency and documentation, and making integrations easier to build, maintain and troubleshoot.
+
+We're also investing in AI-powered capabilities across the platform. You'll help define how AI agents interact with internal services and third-party systems, including the permissions, approval flows and safeguards needed to make these experiences reliable in real customer environments.
+
+The role involves working with enterprise customers to understand integration challenges, prioritising investments across multiple teams and taking initiatives from discovery through launch and adoption.
+
+What we're looking for:
+- 7+ years of product management experience, preferably with B2B SaaS or enterprise platforms.
+- Experience owning APIs, developer platforms, integrations or a technically complex product.
+- A good understanding of REST APIs, authentication, webhooks and common integration patterns.
+- Experience working with engineering teams on AI or LLM-powered product capabilities. Experience taking these to production is a plus.
+- Strong stakeholder management skills and the ability to make pragmatic trade-offs between customer needs and platform scalability.`,
   },
   {
     id: "ai",
-    label: "AI product PM (agents)",
-    role: "Product Manager · AI agents",
+    label: "AI Product PM (Agents)",
+    role: "Product Manager · AI Agents",
     bad: false,
-    jd: "Product Manager, AI Agents. Define and ship agent workflows that call internal and third-party tools. Partner with engineering on evals and safety. APIs and integrations experience required; production LLM experience preferred.",
+    jd: `We're building a new generation of AI-powered workflows that help teams get complex work done with less manual effort. We're looking for a Product Manager who is excited about the practical application of AI agents and can help turn early ideas into useful, dependable products.
+
+You'll work with engineering, design and business teams to identify workflows where AI can make a meaningful difference. This could involve agents that retrieve information, interact with internal systems, trigger actions or coordinate tasks across multiple tools.
+
+You'll be responsible for defining the product experience, breaking down ambiguous problems, prioritising the roadmap and getting features into the hands of customers. You'll also work closely with engineering on tool integrations, agent orchestration, evaluation frameworks and fallback mechanisms.
+
+We care about shipping products that work outside a demo environment. That means thinking through permissions, failure scenarios, human approvals, observability and how we measure whether an agent is actually doing its job.
+
+What we're looking for:
+- 5+ years of product management experience, ideally in B2B software or developer-facing products.
+- Hands-on experience building or launching products that use LLMs.
+- Familiarity with AI agents, tool calling, RAG and multi-step workflows.
+- An understanding of APIs and third-party integrations.
+- Experience defining product metrics and collaborating with engineering on evaluation and quality measurement.
+- Comfort working in an evolving space where the right product decisions aren't always obvious.`,
   },
   {
     id: "health",
-    label: "Healthcare integrations PM",
-    role: "Senior PM · Healthcare integrations",
+    label: "Healthcare Integrations PM",
+    role: "Senior Product Manager · Healthcare Integrations",
     bad: false,
-    jd: "Senior PM, Healthcare Integrations. Own integrations with hospital and partner systems, drive platform reliability and explore AI-assisted workflows with strong safeguards.",
+    jd: `We're looking for a Senior Product Manager to help scale our healthcare integration platform. Our customers include hospitals, healthcare networks and digital health companies that rely on our software to connect clinical and operational systems.
+
+In this role, you'll own the integrations roadmap and work with engineering, implementation and customer success teams to make complex integrations easier to deploy and manage. You'll spend time understanding how healthcare organisations exchange data, where existing workflows break down and what capabilities we need to build to support them at scale.
+
+You'll be responsible for integrations with systems such as EHRs, hospital information systems, laboratory platforms and external healthcare partners. You'll also help improve platform reliability, monitoring and the overall experience of configuring and maintaining integrations.
+
+We're exploring AI-assisted workflows to reduce manual effort in areas such as data handling, documentation and operational support. You'll help evaluate these opportunities while ensuring that patient data, clinical workflows and regulatory requirements are handled appropriately.
+
+What we're looking for:
+- 7+ years of product management experience, with experience in enterprise software or healthcare technology.
+- Experience building integrations with external systems or managing technically complex implementations.
+- Familiarity with healthcare data exchange standards such as HL7 and FHIR is preferred.
+- An understanding of platform reliability, data quality, security and interoperability.
+- Ability to work with engineering teams as well as hospital stakeholders and implementation partners.
+- Strong analytical and communication skills, with a track record of delivering products in complex customer environments.`,
   },
   {
     id: "bad",
     label: "A bad fit, on purpose",
-    role: "Head of Hardware Product · consumer electronics",
+    role: "Head of Hardware Product · Consumer Electronics",
     bad: true,
-    jd: "Head of Hardware Product, Consumer Electronics. Lead hardware roadmaps from prototype to mass production, manage contract manufacturers and supply chain, own retail channel P&L. 10+ years of consumer hardware launches.",
+    jd: `We're looking for a Head of Product to lead the development and commercialisation of our next generation of consumer electronics products. This is a senior leadership role for someone who has taken physical products from initial concept through engineering validation, manufacturing and large-scale market launch.
+
+You'll be responsible for the end-to-end hardware product roadmap, working closely with industrial design, mechanical and electrical engineering, manufacturing, sourcing and commercial teams. You'll make decisions on product specifications, component selection, product cost, quality targets and launch timelines.
+
+A key part of the role will be managing relationships with contract manufacturers and suppliers across multiple geographies. You'll oversee engineering builds, design validation, production readiness and ramp-up, ensuring that products meet quality and cost expectations.
+
+You'll also own the commercial performance of the product portfolio, including pricing, margins, inventory planning and retail channel strategy. The role requires frequent engagement with manufacturing partners and periodic travel to supplier and production locations.
+
+What we're looking for:
+- 10+ years of product management experience in consumer electronics or hardware-led businesses.
+- A proven track record of taking multiple hardware products from prototype to mass production.
+- Strong experience with contract manufacturing, supplier negotiations and supply chain operations.
+- Working knowledge of mechanical engineering, electronics design, BOM costing and manufacturing processes.
+- Experience managing product P&L, pricing, margins and retail distribution.
+- Strong leadership skills and experience managing cross-functional teams across engineering, operations and commercial functions.`,
   },
 ] as const;
 export type HeroSample = (typeof HERO_SAMPLES)[number];
@@ -82,11 +137,11 @@ export function isLink(jd: string): boolean {
 }
 
 type FallbackCopy = { tag: string; title: string; text: string };
-export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget: FallbackCopy; kb: FallbackCopy; rate: FallbackCopy } = {
+export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget: FallbackCopy; link: FallbackCopy; kb: FallbackCopy; rate: FallbackCopy } = {
   error: {
     tag: "Fit check · error",
     title: "The fit check couldn't finish this time.",
-    text: "Nothing you did: the AI service didn't answer in time. Try again, or message Aswin directly.",
+    text: "Nothing you did: the AI service didn't answer in time. Try again in a moment, or message Aswin about the role.",
   },
   limited: {
     tag: "Fit check · daily limit reached",
@@ -104,12 +159,32 @@ export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget
     title: "The knowledge base didn't answer, so the AI won't guess.",
     text: "The fit check retried once, then stopped rather than answer without sources.",
   },
+  // fetch_url couldn't read the link: no model call was made (Aswin, 2026-11-26).
+  link: {
+    tag: "Fit check · link couldn't be read",
+    title: "The fit check couldn't read that link.",
+    text: "The link didn't return a readable job post. Paste the job description text instead and the same check runs on it.",
+  },
   // The rate drill keeps the limited title and text with its own tag.
   rate: {
     tag: "Failure drill · rate limit",
     title: "That's today's limit for live checks.",
     text: "Live checks are capped per visitor per day to keep the AI bill predictable. Aswin is one message away.",
   },
+};
+
+/** The link state's text when the site blocked the reader (Aswin, 2026-11-26). */
+export const LINK_BLOCKED_TEXT = "Some job sites block automated readers, and this one did. Paste the job description text instead and the same check runs on it.";
+/** The link state's primary button: back to an empty input. */
+export const PASTE_INSTEAD = "Paste the text instead";
+
+/** "Show JD" on the compact result bar (Hero.dc.html, design update 13). Word for word. */
+export const JD_VIEW = {
+  show: "Show JD ↓",
+  hide: "Hide JD ↑",
+  sample: { label: "SAMPLE JOB DESCRIPTION", note: "one of the sample roles" },
+  pasted: { label: "THE JOB DESCRIPTION YOU PASTED", note: "kept for this check only · not stored" },
+  link: { label: "THE LINK YOU PASTED", note: "fetched for this check · not stored" },
 };
 
 export const NUDGE = {

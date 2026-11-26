@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { costUsd, tokensOf } from "@/lib/ai/cost";
 import type { EvidenceCard } from "@/lib/ai/schemas";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
-import { assertPublicUrl, htmlToText, isPrivateAddress } from "@/lib/run/fetch-url";
+import { FetchUrlError, assertPublicUrl, fetchFailure, fetchUrl, htmlToText, isPrivateAddress } from "@/lib/run/fetch-url";
 import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHonesty, hasScore, notDoneTopicFor } from "@/lib/run/guards";
 import { composeVerdict } from "@/lib/run/verdict";
 
@@ -61,6 +61,34 @@ describe("guard.honesty", () => {
   it("maps a match to the KB label and href", () => {
     const out = guardHonesty([{ type: "match", req: "Agents", evidence: "Designed it.", sourceId: "cloudeagle" }], notDone);
     expect(out.matches[0]).toEqual({ req: "Agents", evidence: "Designed it.", source: "Case study · CloudEagle concept", href: "/work/integration-builder" });
+  });
+});
+
+describe("fetch_url failures (Aswin, 2026-11-26)", () => {
+  const publicHost = async () => ["93.184.216.34"];
+  const page = (body: string, init: ResponseInit = {}) => async () =>
+    new Response(body, { ...init, headers: { "content-type": "text/html", ...(init.headers as Record<string, string>) } });
+  const run = (f: () => Promise<Response>) => fetchUrl("https://jobs.example.com/1", new AbortController().signal, publicHost, f as typeof fetch);
+  const failure = (f: () => Promise<Response>) => run(f).then(() => null, fetchFailure);
+
+  it("a bot check is blocked, by status, header or challenge page", async () => {
+    expect(await failure(page("<title>Just a moment...</title>", { status: 403 }))).toEqual({ kind: "blocked", cause: "403 · bot check" });
+    expect(await failure(page("x", { status: 401 }))).toEqual({ kind: "blocked", cause: "401 · bot check" });
+    expect(await failure(page("x", { status: 302, headers: { "cf-mitigated": "challenge" } }))).toMatchObject({ kind: "blocked" });
+    const challenge = `<html><head><title>Just a moment...</title></head><body>${"Checking your browser. ".repeat(5)}<script src="https://challenges.cloudflare.com/x.js"></script></body></html>`;
+    expect(await failure(page(challenge))).toEqual({ kind: "blocked", cause: "200 · bot check" });
+  });
+
+  it("anything else is unreadable", async () => {
+    expect(await failure(page("x", { status: 404 }))).toEqual({ kind: "unreadable", cause: "404" });
+    expect(await failure(page("tiny"))).toEqual({ kind: "unreadable", cause: "no readable text" });
+    expect(fetchFailure(Object.assign(new Error("t"), { name: "TimeoutError" }))).toEqual({ kind: "unreadable", cause: "timeout" });
+    expect(fetchFailure(new TypeError("fetch failed"))).toEqual({ kind: "unreadable", cause: "no response" });
+    expect(fetchFailure(new FetchUrlError("address not allowed"))).toEqual({ kind: "unreadable", cause: "address not allowed" });
+  });
+
+  it("a real job post still reads", async () => {
+    expect(await run(page(`<h1>Senior PM</h1><p>${"Own the agent platform. ".repeat(4)}</p>`))).toContain("Senior PM");
   });
 });
 

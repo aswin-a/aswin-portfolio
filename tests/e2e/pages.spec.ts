@@ -206,7 +206,10 @@ test("log: filters show counts, filter posts and the empty state (TIL stays uppe
   await expect(page.getByText("No teardowns yet. The first one is in the works.")).toBeVisible();
   await page.getByRole("button", { name: "TIL 0" }).click();
   await expect(page.getByText("No TIL yet. The first one is in the works.")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Read a case study →" })).toHaveAttribute("href", "/work");
+  // Every case study is hidden at launch, so the empty state shows it as Coming soon (design update 12).
+  await expect(page.getByText("Build notes come first. Until then, try the fit check on the home page.")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Read a case study/ })).toHaveCount(0);
+  await expect(page.getByText("Read a case study", { exact: true })).toBeVisible();
 });
 
 test("CV: header, stats, timeline lanes and links (update 6)", async ({ page }) => {
@@ -399,5 +402,33 @@ test("coming-soon posts: listed with title, summary and the pill; no page; proof
     await expect(grid.getByRole("link", { name: new RegExp(`^${card}`) })).toHaveCount(0);
     await expect(grid.getByText(cta, { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
     await expect(page.locator(`a[href="/log/${slug}"]`)).toHaveCount(0);
+  }
+});
+
+test("/work index and a post page follow WorkIndex and LogPost (design update 12)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/work");
+  await expect(page.getByRole("heading", { level: 1, name: "Products I've built" })).toHaveCSS("font-size", "46px");
+  await expect(page.getByRole("heading", { level: 2, name: "Job-fit AI on this site" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Try the fit check", exact: true })).toHaveAttribute("href", "/#fit-h");
+
+  await page.goto("/log/why-job-search-agent-asks-before-it-applies");
+  await expect(page.getByRole("link", { name: "← Build log" })).toHaveAttribute("href", "/log");
+  await expect(page.getByRole("heading", { level: 2, name: "Where it stops" })).toHaveCSS("font-size", "30px");
+  await expect(page.getByText("RELATED", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "GitHub · job-search agent →" })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent");
+  await expect(page.getByText("Get the next post on LinkedIn.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Follow Aswin" })).toHaveAttribute("href", /linkedin\.com\/in\//);
+});
+
+// Design update 13: one page-title size everywhere, the home hero's clamp(32px, 4vw, 46px) at 1.1.
+test("design update 13: every page H1 uses the shared --h1 size", async ({ page }, info) => {
+  const phone = info.project.name === "mobile";
+  for (const path of ["/", "/about", "/log", "/log/why-job-search-agent-asks-before-it-applies", "/stack", "/work", "/work/integration-builder"]) {
+    await page.goto(path);
+    const h1 = page.locator("h1:visible").first();
+    await expect(h1, path).toHaveCSS("font-size", phone ? "32px" : "46px");
+    await expect(h1, path).toHaveCSS("line-height", phone ? "35.2px" : "50.6px");
+    await expect(h1, path).toHaveCSS("letter-spacing", phone ? "-0.48px" : "-0.69px");
   }
 });

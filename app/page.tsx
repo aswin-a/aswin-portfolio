@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Hero } from "@/components/fit-check/hero";
 import { FromTheLog } from "@/components/home/from-the-log";
 import { ProductsSection } from "@/components/home/products";
+import { StackStrip } from "@/components/home/stack-strip";
 import { UnderTheHood } from "@/components/home/under-the-hood";
 import { IntroBanner } from "@/components/intro-banner";
 import { Nav } from "@/components/nav";
@@ -41,6 +42,7 @@ export default async function Home() {
             evalSet: { href: hrefOf(siteMeta.evalSetLink), todo: isTodo(siteMeta.evalSetLink) ? " [link]" : "" },
           }}
         />
+        <StackStrip />
         <UnderTheHood />
         <ProductsSection />
         {logPosts.length > 0 && <FromTheLog posts={logPosts} />}

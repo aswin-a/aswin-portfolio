@@ -197,12 +197,12 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("link", { name: "See my CV" })).toHaveAttribute("href", "/about");
 
     const memory = await page.evaluate(() => JSON.parse(window.sessionStorage.getItem("fit-memory") ?? "null"));
-    expect(memory).toMatchObject({ role: "Senior Platform PM · APIs & integrations", matchCount: 4 });
+    expect(memory).toMatchObject({ role: "Senior Product Manager · APIs & Integrations", matchCount: 4 });
     expect(memory.gaps.map((g: { req: string }) => g.req)).toEqual(["3+ years shipping LLM features in production", "Running evals at team scale"]);
 
     await hero(page).getByRole("button", { name: /^Ask my work/ }).click();
     const dialog = page.getByRole("dialog", { name: "Ask my work" });
-    await expect(dialog.getByText("Senior Platform PM · APIs & integrations")).toBeVisible();
+    await expect(dialog.getByText("Senior Product Manager · APIs & Integrations")).toBeVisible();
   });
 
   test("result at 390: matches and gaps stack, with their labels", async ({ page }) => {
@@ -289,7 +289,7 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("table").nth(1).getByText("—", { exact: true })).toHaveCount(4);
     await hero(page).getByRole("link", { name: "Talk to Aswin anyway" }).click();
     await expect(page).toHaveURL(/#contact$/);
-    await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Head of Hardware Product · consumer electronics");
+    await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Head of Hardware Product · Consumer Electronics");
     await expect(page.getByText("pre-filled from your fit check")).toBeVisible();
     // Design update 7: the WhatsApp line notes the role.
     await expect(page.locator("#contact").getByText(/ · WhatsApp anytime · role added to the message$/)).toBeVisible();
@@ -298,14 +298,35 @@ test.describe("fit check", () => {
     await expect(page.getByText("pre-filled from your fit check")).toHaveCount(0);
   });
 
-  test("a link takes the fetch_url branch; a page that can't be fetched ends in the error state", async ({ page }) => {
+  test("a link takes the fetch_url branch; a page that can't be fetched ends in the link state", async ({ page }) => {
     await page.goto("/");
     // .invalid never resolves (RFC 2606), so this runs offline and always fails the fetch.
     await paste(page, "https://www.jobs.example.invalid/1 apply here");
-    await expect(page.getByRole("heading", { name: "The fit check couldn't finish this time." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "The fit check couldn't read that link." })).toBeVisible();
+    await expect(hero(page).getByText("Fit check · link couldn't be read")).toBeVisible();
+    await expect(
+      hero(page).getByText("The link didn't return a readable job post. Paste the job description text instead and the same check runs on it."),
+    ).toBeVisible();
+    await expect(hero(page).getByRole("button", { name: "Try again" })).toHaveCount(0);
     // heroSummary: the link's first token without the scheme and www.
     await expect(hero(page).getByText("Checked against")).toBeVisible();
     await expect(hero(page).getByText("jobs.example.invalid/1", { exact: true })).toBeVisible();
+  });
+
+  test("link blocked by a bot check: its own text, Paste the text instead, and the trace in X-ray", async ({ page }) => {
+    await page.goto("/");
+    await xrayToggle(page).click();
+    await paste(page, `https://jobs.example.com/${FAKE.blocked}`);
+    await expect(page.getByRole("heading", { name: "The fit check couldn't read that link." })).toBeVisible();
+    await expect(
+      hero(page).getByText("Some job sites block automated readers, and this one did. Paste the job description text instead and the same check runs on it."),
+    ).toBeVisible();
+    await expect(hero(page).getByText(/^FALLBACK TRACE · run run_[0-9a-f]{12}$/)).toBeVisible();
+    await expect(hero(page).getByText(/^× fetch_url\(url\) → 403 · bot check · \d+ ms$/)).toBeVisible();
+    await expect(hero(page).getByText("› stop before jd.parse → no model call", { exact: true })).toBeVisible();
+    await hero(page).getByRole("button", { name: "Paste the text instead" }).click();
+    await expect(page.getByLabel(JD_LABEL)).toHaveValue("");
+    await expect(page.getByLabel(JD_LABEL)).toBeFocused();
   });
 
   test("Try another role resets to the empty state with the input focused", async ({ page }) => {
@@ -352,6 +373,61 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("button", { name: "knowledge base offline" })).toHaveCount(0);
     await expect(hero(page).getByRole("button", { name: "hit the rate limit" })).toHaveCount(0);
     await expect(hero(page).getByText("Failure drills · runs the real fallback in the fit check above")).toHaveCount(0);
+  });
+
+  test("Show JD: toggle on the compact bar, the sample label, closes on a new check (design update 13)", async ({ page }) => {
+    await page.goto("/");
+    await sample(page, "Senior Platform PM");
+    await expect(page.getByRole("heading", { name: "Strong on 4 of 6 requirements." })).toBeVisible();
+    const toggle = hero(page).getByRole("button", { name: "Show JD ↓" });
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toHaveAttribute("aria-controls", "jd-view");
+    await expect(toggle).toHaveCSS("font-size", "13px");
+    await expect(page.locator("#jd-view")).toHaveCount(0);
+    await toggle.click();
+    const view = page.locator("#jd-view");
+    await expect(hero(page).getByRole("button", { name: "Hide JD ↑" })).toHaveAttribute("aria-expanded", "true");
+    await expect(view.getByText("SAMPLE JOB DESCRIPTION", { exact: true })).toBeVisible();
+    await expect(view.getByText("one of the sample roles", { exact: true })).toBeVisible();
+    const box = view.locator("p");
+    await expect(box).toHaveText(HERO_SAMPLES[0].jd, { useInnerText: true });
+    await expect(box).toHaveCSS("max-height", "220px");
+    await expect(box).toHaveCSS("white-space", "pre-wrap");
+    await hero(page).getByRole("button", { name: "Hide JD ↑" }).click();
+    await expect(view).toHaveCount(0);
+
+    // A new check closes it again.
+    await toggle.click();
+    await hero(page).getByRole("button", { name: "Try another role" }).click();
+    await sample(page, "A bad fit, on purpose");
+    await expect(hero(page).getByRole("button", { name: "Show JD ↓" })).toBeVisible();
+    await expect(page.locator("#jd-view")).toHaveCount(0);
+  });
+
+  test("Show JD: a pasted JD is labelled as pasted and appears in no request but the fit-check call (design update 13)", async ({ page }) => {
+    const marker = "Zq7 unique pasted marker for the privacy test";
+    const seen: { url: string; fitCall: boolean }[] = [];
+    page.on("request", (req) => {
+      const body = req.postData() ?? "";
+      if (!req.url().includes(marker) && !body.includes(marker) && !decodeURIComponent(req.url()).includes(marker)) return;
+      const fitCall = new URL(req.url()).pathname === "/api/run" && req.method() === "POST" && body.includes('"jd"');
+      seen.push({ url: req.url(), fitCall });
+    });
+    await page.goto("/");
+    await paste(page, `Senior PM, platform APIs.\n${marker}`);
+    await expect(done(page)).toBeVisible();
+    await hero(page).getByRole("button", { name: "Show JD ↓" }).click();
+    const view = page.locator("#jd-view");
+    await expect(view.getByText("THE JOB DESCRIPTION YOU PASTED", { exact: true })).toBeVisible();
+    await expect(view.getByText("kept for this check only · not stored", { exact: true })).toBeVisible();
+    await expect(view.locator("p")).toContainText(marker);
+    // Let any later requests (analytics, prefetches) go out.
+    await page.waitForTimeout(1000);
+    expect(seen.filter((r) => !r.fitCall)).toEqual([]);
+    expect(seen.filter((r) => r.fitCall)).toHaveLength(1);
+    // Nor in browser storage.
+    const stored = await page.evaluate(() => JSON.stringify({ ...localStorage }) + JSON.stringify({ ...sessionStorage }));
+    expect(stored).not.toContain(marker);
   });
 });
 

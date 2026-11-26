@@ -37,6 +37,8 @@ export function contactConfig(env: Record<string, string | undefined> = process.
 }
 
 /** Footer.dc.html `waHref`: the greeting, with the role when the form has one. */
+export const WA_MESSAGE_MAX = 1500;
+
 export function waGreeting(role: string): string {
   const r = role.trim();
   return r ? `Hi Aswin, I found your portfolio. I’m hiring for a ${r} role.` : "Hi Aswin, I found your portfolio.";
@@ -48,7 +50,9 @@ export function waGreeting(role: string): string {
  */
 export function waHref(digits: string, role: string, message = ""): string {
   if (!digits) return "#";
-  const text = message.trim() ? `${waGreeting(role)}\n\n${message.trim()}` : waGreeting(role);
+  // The typed message is truncated to about 1,500 characters (design update 12 §7).
+  const msg = message.trim().slice(0, WA_MESSAGE_MAX);
+  const text = msg ? `${waGreeting(role)}\n\n${msg}` : waGreeting(role);
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 

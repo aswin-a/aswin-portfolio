@@ -94,7 +94,7 @@ export function HowBuilt({ meta }: { meta: HowIBuiltMeta }) {
               "Session memory: your role and gaps carry into Ask my work",
               "Nothing is kept after the session, and pasted JDs aren’t stored",
               "A per-visitor rate limit and a monthly budget cap",
-              "A clear failure message if the AI or knowledge base is down",
+              "If the AI or knowledge base is down, it stops and says so instead of guessing",
               `Limits: ${meta.whatBreaksFirstAtScale}`,
             ]}
           />

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Products I've built — Aswin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{opacity:0.82}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #4F7FC0;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+.strip-link:hover .strip-cta{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.strip-link:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
+<dc-import name="Nav" current="work" xray="{{xray}}" on-toggle-xray="{{toggleXray}}" on-ask="{{openAsk}}" ask-open="{{askOpen}}" hint-size="100%,73px"></dc-import>
+<main style="padding: 72px 24px 96px">
+<div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.08em; color: {{t.muted}}">CASE STUDIES</p>
+<h1 id="work-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(32px, 4vw, 46px); line-height: 1.1; letter-spacing: -0.015em">Products I've built</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: {{t.muted}}">Four AI products, each with a case study written like a PRD: the problem, the trade-offs, the safeguards and what's next.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 16px">
+<sc-for list="{{products}}" as="pr" hint-placeholder-count="4">
+<article style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px 40px; padding: 28px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 16px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{pr.num}}</span>
+<h2 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 30px; line-height: 1.15">{{pr.name}}</h2>
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: {{t.muted}}">{{pr.pitch}}</p>
+<p style="margin: 0; font-size: 15px; line-height: 1.5"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">What I built </span>{{pr.built}}</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; padding-top: 6px">
+<sc-if value="{{pr.showPrimary}}" hint-placeholder-val="{{ true }}"><a href="{{pr.primaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 14px; font-weight: 600; text-decoration: none">{{pr.primary}}</a></sc-if>
+<sc-if value="{{pr.secLive}}" hint-placeholder-val="{{ false }}"><a href="{{pr.secondaryHref}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{pr.secondary}}</a></sc-if>
+<sc-if value="{{pr.secSoon}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 4px"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{pr.secondaryText}}</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span></sc-if>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">How it works</span>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0">
+<sc-for list="{{pr.flow}}" as="fs" hint-placeholder-count="5">
+<li style="display: flex; gap: 12px; align-items: flex-start">
+<span style="display: flex; flex-direction: column; align-items: center; flex: 0 0 auto">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 999px; border: {{fs.dotBorder}}; background: {{fs.dotBg}}; font-family: {{t.mono}}; font-size: 11px; color: {{fs.dotInk}}">{{fs.n}}</span>
+<span style="display: block; width: 1px; height: {{fs.lineH}}; background: {{t.rule}}"></span>
+</span>
+<span style="padding-top: 2px; padding-bottom: 12px; font-size: 15px; line-height: 1.4; color: {{fs.ink}}">{{fs.text}}<span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.amberText}}">{{fs.note}}</span></span>
+</li>
+</sc-for>
+</ol>
+<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto">
+<sc-for list="{{pr.tags}}" as="tag" hint-placeholder-count="3">
+<span style="padding: 3px 8px; border: 1px solid {{t.rule}}; border-radius: 6px; font-family: {{t.mono}}; font-size: 11px; color: {{t.muted}}">{{tag}}</span>
+</sc-for>
+</div>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+</main>
+<dc-import name="Footer" hint-size="100%,640px"></dc-import>
+<dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="work" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+var MAIN_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
+function mainTokens(x) {
+  var c = x
+    ? { bg: '#101214', paper: '#171A1D', ink: '#E9E6DF', muted: '#A3A9B0', rule: '#2B3036', accent: '#8DBBF2', accentTint: '#17283D', amberText: '#EDB65E', amberBorder: '#B8862F', amberBg: '#241C10', btnBg: '#E9E6DF', btnInk: '#101214' }
+    : { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', amberText: '#8A5510', amberBorder: '#C08A2E', amberBg: '#FBF2E2', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
+  c.serif = MAIN_FONTS.serif; c.sans = MAIN_FONTS.sans; c.mono = MAIN_FONTS.mono;
+  return c;
+}
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { xray: false, askOpen: false }; }
+  renderVals() {
+    var s = this.state, x = s.xray, t = mainTokens(false);
+    return {
+      t: t, xray: x, askOpen: s.askOpen,
+      products: [
+        { num: '01', status: 'IN USE · RECORDED RUN', name: 'AI job search and apply agent', pitch: 'Finds roles that fit, tailors my resume to each one, and applies only after I say yes. Shown as a recorded run, since it signs in as me.',
+          built: 'The project instructions, step prompts A–F and the approval step.',
+          flow: [['Search LinkedIn and save matches'], ['Write the ideal resume for the JD'], ['Tailor mine with a three-way map'], ['Wait for my approval', 'person decides'], ['Apply']],
+          tags: ['agents', 'tools', 'orchestration'], primary: 'Add to Claude/ChatGPT', primaryHref: 'https://github.com/aswin-a/linkedin-job-search-agent', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
+        { num: '02', status: 'LIVE HERE', name: 'Job-fit AI on this site', pitch: 'Paste a job description and get an honest verdict: what fits with proof, and what doesn’t, stated plainly.',
+          built: 'The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.',
+          flow: [['Paste a JD or a link'], ['fetch_url, only for links'], ['Parse requirements, search the record'], ['Guardrails check every claim'], ['Cited verdict, gaps included']],
+          tags: ['tools', 'guardrails', 'evals'], primary: 'Try the fit check', primaryHref: 'Main.dc.html#fit-h', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
+        { num: '03', status: 'CONCEPT', name: 'AI integration builder for long-tail apps', pitch: 'Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.',
+          built: '[e.g. the spec, Figma flows and the clickable prototype]',
+          flow: [['Paste the app’s API docs'], ['AI drafts the connector'], ['Policy checks: scopes, secrets, allow-list'], ['A person approves the diff', 'person decides'], ['Deploy']],
+          tags: ['integrations', 'guardrails'], primary: 'Run it locally', primaryHref: '#', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
+        { num: '04', status: 'IN USE · RECORDED RUN', name: 'Instagram content intelligence agent', pitch: 'Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.',
+          built: 'The agent’s prompts and analysis steps.',
+          flow: [['Pick the competitors to watch'], ['Pull their recent posts'], ['Rank what performs'], ['Spot trending formats'], ['Suggest Dhee’s next posts']],
+          tags: ['agents', 'tools'], primary: 'Add to Claude/ChatGPT', primaryHref: 'https://github.com/aswin-a/instagram-content-intelligence-agent', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' }
+      ].map((p) => {
+        var live = p.status === 'LIVE HERE', inUse = p.status.indexOf('IN USE') === 0;
+        var secHidden = p.secondaryHref === 'Work.dc.html', primHidden = p.primaryHref === 'Work.dc.html';
+        var same = secHidden && primHidden;
+        return Object.assign(p, {
+          showPrimary: !primHidden, secLive: !secHidden, secSoon: secHidden,
+          secondaryText: same ? 'Case study' : p.secondary.replace(/\s*→\s*$/, ''),
+          statusBg: live ? t.accentTint : 'transparent',
+          statusBorder: live || inUse ? t.accent : t.rule,
+          statusInk: live || inUse ? t.accent : t.muted,
+          flow: p.flow.map((f, k) => {
+            var human = !!f[1];
+            return { n: k + 1, text: f[0], note: human ? '  · ' + f[1] : '', ink: human ? t.amberText : t.ink,
+              dotBorder: human ? '1.5px dashed ' + t.amberBorder : '1px solid ' + t.rule, dotBg: human ? t.amberBg : t.paper, dotInk: human ? t.amberText : t.muted,
+              lineH: k < p.flow.length - 1 ? '14px' : '0px' };
+          })
+        });
+      }),
+      toggleXray: () => this.setState({ xray: !this.state.xray }),
+      openAsk: () => this.setState({ askOpen: true }),
+      closeAsk: () => this.setState({ askOpen: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -22,7 +22,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <main style="max-width: 880px; margin: 0 auto; padding: 72px 24px 96px; display: flex; flex-direction: column; gap: 36px">
 <header style="display: flex; flex-direction: column; gap: 14px">
 <p style="margin: 0; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.08em; color: {{t.muted}}">BUILD LOG</p>
-<h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(44px, 6vw, 68px); line-height: 1.04; letter-spacing: -0.02em">Notes from building AI products in public.</h1>
+<h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(32px, 4vw, 46px); line-height: 1.1; letter-spacing: -0.015em">Notes from building AI products in public.</h1>
 <p style="margin: 0; font-family: {{t.serif}}; font-size: 21px; line-height: 1.45; color: {{t.muted}}">Build notes from my own projects first. Teardowns, essays and short TILs around them. A new post every [2–3] weeks, also on LinkedIn.</p>
 </header>
 
@@ -35,17 +35,18 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <div style="display: flex; flex-direction: column">
 <sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
 <article style="display: flex; flex-direction: column; gap: 10px; padding: 28px 0; border-top: 1px solid {{t.rule}}">
-<div style="display: flex; gap: 8px 16px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}"><span>{{p.tag}}</span><span>[date]</span><span>[read time]</span></div>
-<h2 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 32px; line-height: 1.2"><a href="BuildLog.dc.html" style="text-decoration: none">{{p.title}}</a></h2>
-<p style="margin: 0; padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}">{{p.hint}}</p>
-<a href="Work.dc.html" style="align-self: flex-start; padding: 6px 10px; border-radius: 6px; background: {{t.accentTint}}; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 12px; text-decoration: none">{{p.study}} →</a>
+<div style="display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}"><span>{{p.tag}}</span><sc-if value="{{p.live}}" hint-placeholder-val="{{ true }}"><span>[date]</span><span>[read time]</span></sc-if><sc-if value="{{p.soon}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></sc-if></div>
+<sc-if value="{{p.live}}" hint-placeholder-val="{{ true }}"><h2 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 32px; line-height: 1.2"><a href="LogPost.dc.html" style="text-decoration: none">{{p.title}}</a></h2></sc-if>
+<sc-if value="{{p.soon}}" hint-placeholder-val="{{ false }}"><h2 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 32px; line-height: 1.2; color: {{t.muted}}">{{p.title}}</h2></sc-if>
+<p style="margin: 0; padding: {{p.pad}}; border: {{p.box}}; border-radius: 8px; font-family: {{p.font}}; font-size: {{p.size}}; line-height: 1.55; color: {{t.muted}}">{{p.hint}}</p>
+<sc-if value="{{p.hasStudy}}" hint-placeholder-val="{{ true }}"><span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px"><span style="padding: 6px 10px; border-radius: 6px; border: 1px solid {{t.rule}}; color: {{t.muted}}; font-family: {{t.mono}}; font-size: 12px">{{p.study}}</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span></sc-if>
 </article>
 </sc-for>
 <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
 <div style="padding: 36px 0; border-top: 1px solid {{t.rule}}; display: flex; flex-direction: column; gap: 8px">
 <p style="margin: 0; font-family: {{t.serif}}; font-size: 24px">{{emptyTitle}}</p>
-<p style="margin: 0; font-size: 15px; color: {{t.muted}}">Build notes come first. Until then, the case studies go deeper.</p>
-<a href="Work.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; color: {{t.accent}}">Read a case study →</a>
+<p style="margin: 0; font-size: 15px; color: {{t.muted}}">Build notes come first. Until then, try the fit check on the home page.</p>
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px"><span style="font-size: 15px; color: {{t.muted}}">Read a case study</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span>
 </div>
 </sc-if>
 </div>
@@ -73,7 +74,9 @@ function logTokens(x) {
 var LOG_POSTS = [
   { cat: 'build', tag: 'Build notes', title: 'Why my job-search agent asks before it applies', hint: '[Two-line summary: the approval step, what it costs, why it stays]', study: 'Case study · Job-search agent' },
   { cat: 'build', tag: 'Build notes', title: 'Designing safeguards for an AI that writes integrations', hint: '[Two-line summary: the safeguard you would defend in any interview]', study: 'Case study · CloudEagle concept' },
-  { cat: 'essay', tag: 'Essay', title: 'Integrations experience is agent experience', hint: '[Two-line summary: what platform PMs already know about agents]', study: 'Case study · Platform & API work' }
+  { cat: 'essay', tag: 'Essay', title: 'Integrations experience is agent experience', hint: '[Two-line summary: what platform PMs already know about agents]' },
+  { cat: 'build', tag: 'human in loop', title: 'Shipping ML OCR with a person in the loop', hint: 'How low-confidence prescription and bill reads went to a person, and how accuracy held at 95%.', soon: true },
+  { cat: 'essay', tag: 'data privacy', title: 'Why I advised against sending patient data to LLMs', hint: 'The security and privacy case I made at a healthcare SaaS platform, and what we did instead.', soon: true }
 ];
 class Component extends DCLogic {
   constructor(props) { super(props); this.state = { xray: !!props.startInXray, askOpen: false, filter: 'all' }; }
@@ -92,7 +95,9 @@ class Component extends DCLogic {
         var n = c[0] === 'all' ? LOG_POSTS.length : LOG_POSTS.filter((p) => p.cat === c[0]).length;
         return { label: c[1], count: n, on: on, bg: on ? t.btnBg : 'transparent', ink: on ? t.btnInk : t.ink, border: on ? t.btnBg : t.rule, pick: () => this.setState({ filter: c[0] }) };
       }),
-      posts: posts, empty: posts.length === 0,
+      posts: posts.map((pp) => { var ph = /^\[/.test(pp.hint); return Object.assign({}, pp, { live: !pp.soon, soon: !!pp.soon, hasStudy: !!pp.study && !pp.soon,
+        box: ph ? '1px dotted ' + t.muted : '0', pad: ph ? '10px 12px' : '0', font: ph ? t.mono : t.sans, size: ph ? '13px' : '16px' }); }),
+      empty: posts.length === 0,
       emptyTitle: 'No ' + label.toLowerCase() + ' yet. The first one is in the works.',
       toggleXray: () => this.setState({ xray: !this.state.xray }),
       openAsk: () => this.setState({ askOpen: true }),

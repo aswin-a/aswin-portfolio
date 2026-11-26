@@ -106,8 +106,13 @@ export type TraceLine = z.infer<typeof TraceLineSchema>;
 /** Terminal event when the run can't produce a result (SPEC §7). */
 export const FallbackEventSchema = z.object({
   type: z.literal("fallback"),
-  /** `error` → the error state; `limited` → the rate-limited state; `budget` → the monthly AI budget is spent. */
-  reason: z.enum(["error", "limited", "budget"]),
+  /**
+   * `error` → the error state; `limited` → the rate-limited state; `budget` → the monthly AI budget is spent;
+   * `link` → fetch_url couldn't read the pasted link (Aswin, 2026-11-26).
+   */
+  reason: z.enum(["error", "limited", "budget", "link"]),
+  /** `link` only: the site blocked an automated reader, or the page wasn't readable. */
+  link: z.optional(z.enum(["blocked", "unreadable"])),
   drill: z.optional(z.enum(DRILLS)),
   runId: z.optional(z.string()),
   trace: z.optional(z.array(TraceLineSchema)),

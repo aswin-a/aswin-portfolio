@@ -5,10 +5,11 @@ import { useEffect, useRef } from "react";
 import { MobileNav } from "@/components/mobile-nav";
 import { useShowIntro, useSite } from "@/components/xray-provider";
 
-export type NavCurrent = "home" | "work" | "log" | "about";
+export type NavCurrent = "home" | "work" | "stack" | "log" | "about";
 
 const LINKS: { id: NavCurrent; label: string; href: string }[] = [
   { id: "work", label: "Case studies", href: "/work" },
+  { id: "stack", label: "Stack", href: "/stack" }, // design update 11
   { id: "log", label: "Build log", href: "/log" },
   { id: "about", label: "CV", href: "/about" },
 ];

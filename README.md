@@ -2,7 +2,7 @@
 
 A product manager's portfolio that is itself an AI product. Paste a job description and the site checks it against a knowledge base of real roles and projects, then says plainly where Aswin fits and where not. Turn on **X-ray** to see how each answer was built: the steps, the sources, the guardrails and the cost.
 
-The site will live at **aswin-a.com**; it isn't deployed yet.
+It's live at **[aswin-a.com](https://aswin-a.com)**.
 
 Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK and Anthropic Claude.
 
@@ -10,12 +10,14 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 
 | Feature | What it does |
 | --- | --- |
-| **Fit check** (home hero) | A fixed pipeline streams each step to the page as it runs: `fetch_url` → `jd.parse` → `kb.search` → `evidence.map` → `guard.citations` → `guard.honesty` → `verdict.compose`. It shows matches and gaps as tables, with no scores or percentages. Every match cites a source. |
-| **Ask my work** (⌘K / Ctrl+K) | Questions answered from the same knowledge base, with source chips. Answers can carry on from a fit check through session memory, and "Forget this" clears it. |
+| **Fit check** (home hero) | A fixed pipeline streams each step to the page as it runs: `fetch_url` → `jd.parse` → `kb.search` → `evidence.map` → `guard.citations` → `guard.honesty` → `verdict.compose`. It shows up to 10 matches and gaps, with no scores or percentages, and every match cites a source. The guard steps say what they changed. If a job site blocks the link reader, the run stops before any model call and asks for the pasted text instead. |
+| **Ask my work** (⌘K / Ctrl+K) | Questions answered from the same knowledge base, with source chips. Suggested questions are picked from what each page shows. Answers can carry on from a fit check through session memory, and "Forget this" clears it. The CV page opens it on a topic ("Ask about this role →"). On phones it's a bottom sheet you can swipe down to close. |
 | **X-ray mode** | Reveals inline panels on every page: the live run's trace, build details, "How I built this", and **Break my AI**, a red-team panel for trying prompt injections and other attacks against the real guardrails. |
-| **Case studies** (`/work`) | Product write-ups in a PRD format, with before/after views. |
+| **Operating stack** (`/stack`) | "My AI-powered operating stack": Judgment on top, then four layers (thinking and challenging, context, building and communicating, automation), each with its tools, how I use them, my call and a proof card, plus four Judgment rules. A strip under the home hero links to it, and `/stack#layer-N` opens a layer. A markdown twin is at `/stack.md`. |
+| **Case studies** (`/work`) | The four products, each written up in a PRD format with before/after views. A case study stays hidden (shown as COMING SOON) until it's published in `content/case-studies/visibility.ts`. |
 | **Build log** (`/log`) | Build notes, teardowns, essays and TILs, with filters. |
 | **CV** (`/about`) | The CV as a timeline of roles with outcomes, certificates, "Copy as plain text" and a markdown twin at `/about.md`. |
+| **Phone layout** (below 640 px) | A phone header and menu, a bottom dock with the X-ray toggle and "Ask my work", a compact fit check, and accordions for the proof section and the product cards. |
 | **Contact** (every page) | A contact form with its own ready, invalid, sending, sent, error and rate-limited states, plus WhatsApp and call links. The fit check pre-fills the role. |
 
 ## How the AI is kept honest
@@ -25,7 +27,7 @@ Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, the Vercel AI SDK 
 - **Real traces only.** The steps, timings, tokens and costs shown in X-ray come from the actual run. Nothing on screen is scripted.
 - **Privacy.** Pasted job descriptions and questions are never stored or logged. Only run metrics (steps, tokens, cost, latency) go to Supabase.
 - **Guardrails on every model call.** Input is validated with Zod, Cloudflare Turnstile is verified, each visitor is rate-limited, a monthly budget cap applies, and `maxOutputTokens` is set. User text is wrapped and treated as data, and the model has no tools that can change anything.
-- **A public eval set.** [`evals/`](evals) runs the sample JDs, every Break my AI attack and the case-study cases through the real pipeline with [Promptfoo](https://www.promptfoo.dev/). It checks for valid output, no uncited matches, no "Strong" verdict for a bad fit, no not-done topic as a match, refused injections and no percentages. The eval numbers on the site come only from a real run (see [Evals and CI](#evals-and-ci)).
+- **A public eval set.** [`evals/`](evals) runs the sample JDs and every Break my AI attack through the real pipeline with [Promptfoo](https://www.promptfoo.dev/). It checks for valid output, no uncited matches, no "Strong" verdict for a bad fit, no not-done topic as a match, refused injections and no percentages. The eval numbers on the site come only from a real run (see [Evals and CI](#evals-and-ci)).
 
 ## Stack
 
@@ -105,7 +107,7 @@ To add a real job description to the eval set, fill one of the slots in [`evals/
 
 ## Deploying
 
-The site is built for Vercel. In outline:
+The site runs on Vercel at [aswin-a.com](https://aswin-a.com). To set up a new deployment:
 
 1. Import the GitHub repository as a Vercel project (framework: Next.js, install command `pnpm install`).
 2. Set every variable from [`.env.example`](.env.example) for the Production environment. Leave `AI_FAKE` unset: it is refused in production.
@@ -118,8 +120,9 @@ A production build (`VERCEL_ENV=production`) runs `check:content` over the built
 ## Project layout
 
 ```
-app/              Routes: /, /work, /work/[slug], /log, /log/[slug], /about, /api/run, /api/contact
-components/       UI: nav, fit-check hero, Ask, X-ray panels, case study, home sections
+app/              Routes: /, /stack, /work, /work/[slug], /log, /log/[slug], /about, the markdown twins
+                  (/about.md, /stack.md), /llms.txt, /llms-full.txt, /rss.xml, /api/run, /api/contact
+components/       UI: nav and phone header, dock, fit-check hero, Ask, X-ray panels, case study, home sections, /stack
 content/          Everything the site and the AI say
   kb/             Knowledge base: roles, projects, not-done, facts, fallback
   case-studies/   Case studies (MDX)
@@ -131,7 +134,7 @@ lib/
   fit-check/      Fit-check client, types and copy
   ask/            Ask my work client, session memory and copy
   server/         Rate limits, budget, Turnstile, run logging
-design/           The approved design artboards (.dc.html) and CHANGES.md
+design/           The approved design artboards (.dc.html), CHANGES.md and STACK-HANDOFF.md (/stack build spec)
 evals/            The public eval set (Promptfoo): cases, assertions, provider, real-JD slots
 scripts/          check:content, evals and eval-results
 supabase/         Database migrations
@@ -154,10 +157,11 @@ Done:
 - Backend (`/api/run`, guards, limits, run logging)
 - Contact form, analytics and SEO
 - Quality: unit tests, Playwright with screenshot baselines, Promptfoo evals and CI
-- Design updates 1–7
+- Design updates 1–11, including the phone layout (updates 8–10) and the `/stack` page (update 11)
 - Launch checks: Lighthouse, accessibility pass, README
+- Deployed to Vercel at [aswin-a.com](https://aswin-a.com)
 
-Still to come: the remaining content and the deployment itself.
+Still to come: the remaining content, such as the hidden case studies, the coming-soon posts and the `/stack` proof links.
 
 Some content is still placeholder text, marked `TODO(aswin)` or `[bracketed]`. `pnpm check:content` lists it.
 

@@ -32,6 +32,21 @@ export async function checkLimit(bucket: Bucket, visitor: string, env: ServerEnv
   return (await takeToken(bucket, visitor, env)).success;
 }
 
+/**
+ * Gives back one token taken by checkLimit, for a run that stopped before any model call (a link
+ * fetch_url couldn't read, Aswin 2026-11-26). Upstash refunds with a negative rate.
+ */
+export async function refundToken(bucket: Bucket, visitor: string, env: ServerEnv): Promise<void> {
+  const redis = redisOrNull(env);
+  if (!redis) {
+    memory.get(`${bucket}:${visitor}`)?.pop();
+    return;
+  }
+  const { tokens, window } = rule(bucket, env);
+  const limiter = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(tokens, window), prefix: `rl:${bucket}`, analytics: false });
+  await limiter.limit(visitor, { rate: -1 });
+}
+
 /** Like checkLimit, plus the seconds until the window frees a slot (0 on success). The contact form shows it (SPEC §9). */
 export async function takeToken(bucket: Bucket, visitor: string, env: ServerEnv): Promise<{ success: boolean; retryAfterSec: number }> {
   const { tokens, windowMs, window } = rule(bucket, env);

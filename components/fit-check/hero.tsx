@@ -19,6 +19,7 @@ import {
   HERO_SAMPLES,
   isLink,
   isStrongFit,
+  JD_VIEW,
   heroSummary,
   NUDGE,
   SKIPPED_FETCH,
@@ -31,7 +32,7 @@ import { FIT_TOOLS, FitEventSchema, type Drill, type FallbackEvent, type ResultE
 export type { BuildMeta, HowIBuiltMeta };
 
 /** "break" is no longer a state (design update 3): Break my AI is an X-ray panel below the fit check. */
-type Phase = "empty" | "running" | "result" | "badfit" | "error" | "limited" | "budget";
+type Phase = "empty" | "running" | "result" | "badfit" | "error" | "limited" | "budget" | "link";
 
 const statusLabel = "m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-muted";
 
@@ -45,6 +46,8 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
 
   const [phase, setPhase] = useState<Phase>("empty");
   const [jd, setJd] = useState("");
+  // "Show JD" (design update 13): the JD stays in this client state only. It is never logged or stored.
+  const [jdOpen, setJdOpen] = useState(false);
   const [role, setRole] = useState("");
   const [drill, setDrill] = useState<Drill | null>(null);
   const [steps, setSteps] = useState<StepEvent[]>([]);
@@ -81,6 +84,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
     const ac = new AbortController();
     abortRef.current = ac;
     setJd(text);
+    setJdOpen(false);
     setRole(runRole);
     setDrill(runDrill);
     setSteps([]);
@@ -181,8 +185,9 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
 
   const talk = () => rolePrefill.send(role);
   const isResult = (phase === "result" || phase === "badfit") && result !== null;
-  const showFallback = (phase === "error" || phase === "limited" || phase === "budget") && fallback !== null;
+  const showFallback = (phase === "error" || phase === "limited" || phase === "budget" || phase === "link") && fallback !== null;
   const linkRun = isLink(jd);
+  const jdView = HERO_SAMPLES.some((s) => s.jd === jd) ? JD_VIEW.sample : linkRun ? JD_VIEW.link : JD_VIEW.pasted;
   const showSteps = (phase === "running" && !drill) || isResult;
   // "Checking… step n of 7": the step running now, counted from the real step events.
   const stepNum = Math.min(steps.filter((st) => st.status !== "running").length + 1, FIT_TOOLS.length);
@@ -196,7 +201,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
       <div className="mx-auto flex max-w-[1040px] flex-col gap-7 max-[640px]:gap-5">
         <div className="flex flex-col gap-[18px]">
           <p className="m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-muted">Aswin · Senior Product Manager</p>
-          <h1 className="m-0 font-serif text-[clamp(32px,4vw,46px)] font-normal max-[640px]:text-[32px] leading-[1.1] tracking-[-0.015em]">
+          <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">
             Platform PM who builds for agents.
           </h1>
           <p className="m-0 max-w-[720px] font-serif text-[20px] leading-[1.45] text-muted max-[640px]:text-[18px]">
@@ -233,12 +238,22 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
           )}
 
           {phase !== "empty" && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-rule bg-paper px-[18px] py-[14px]">
+            <div className="flex flex-col gap-3 rounded-[14px] border border-rule bg-paper px-[18px] py-[14px]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="m-0 min-w-0 flex-[1_1_320px] text-[15px] leading-[1.45]">
                 <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-muted">
                   {drill ? "Drill running against" : phase === "running" ? "Checking against" : "Checked against"}{" "}
                 </span>
-                <b className="font-semibold [overflow-wrap:anywhere]">{role}</b>
+                <b className="font-semibold [overflow-wrap:anywhere]">{role}</b>{" "}
+                <button
+                  type="button"
+                  onClick={() => setJdOpen((o) => !o)}
+                  aria-expanded={jdOpen}
+                  aria-controls="jd-view"
+                  className="ml-1 min-h-8 cursor-pointer whitespace-nowrap border-0 bg-transparent px-1 py-[2px] font-mono text-[13px] text-accent"
+                >
+                  {jdOpen ? JD_VIEW.hide : JD_VIEW.show}
+                </button>
               </p>
               {phase === "running" ? (
                 <div role="status" aria-live="polite" className="flex min-w-[180px] flex-col gap-[6px]">
@@ -258,6 +273,18 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
                   {drill ? "Back to the fit check" : "Try another role"}
                 </button>
               )}
+            </div>
+            {jdOpen && (
+              <div id="jd-view" className="flex flex-col gap-2 border-t border-rule pt-3">
+                <span className="flex flex-wrap justify-between gap-x-4 gap-y-2 font-mono text-[11px] tracking-[0.06em] text-muted">
+                  <span>{jdView.label}</span>
+                  <span>{jdView.note}</span>
+                </span>
+                <p className="m-0 max-h-[220px] overflow-y-auto whitespace-pre-wrap rounded-[10px] border border-rule bg-bg px-[14px] py-3 text-[15px] leading-[1.55] [overflow-wrap:anywhere]">
+                  {jd}
+                </p>
+              </div>
+            )}
             </div>
           )}
 
@@ -344,6 +371,7 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
               event={fallback}
               xray={xray}
               onRetry={() => run(jd, role)}
+              onPaste={reset}
               onTalk={talk}
               headingRef={setFocusTarget}
             />
