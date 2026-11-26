@@ -31,7 +31,7 @@
 </nav>
 </header>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"current":{"editor":"enum","options":["home","work","log","about"],"default":"home"},"xray":{"editor":"boolean","default":false},"isNew":{"editor":"boolean","default":false},"onToggleXray":{"editor":null},"onAsk":{"editor":null},"$preview":{"width":1280,"height":96}}'>
+<script type="text/x-dc" data-dc-script data-props='{"current":{"editor":"enum","options":["home","work","stack","log","about"],"default":"home"},"xray":{"editor":"boolean","default":false},"isNew":{"editor":"boolean","default":false},"onToggleXray":{"editor":null},"onAsk":{"editor":null},"$preview":{"width":1280,"height":96}}'>
 var NAV_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function navTokens(x) {
   var c = x
@@ -49,6 +49,7 @@ class Component extends DCLogic {
     var cur = this.props.current || 'home';
     var items = [
       { id: 'work', label: 'Case studies', href: 'Work.dc.html' },
+      { id: 'stack', label: 'Stack', href: 'Stack.dc.html' },
       { id: 'log', label: 'Build log', href: 'BuildLog.dc.html' },
       { id: 'about', label: 'CV', href: 'About.dc.html' },
       { id: 'contact', label: 'Contact', href: '#contact' }
