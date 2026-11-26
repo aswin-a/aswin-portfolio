@@ -80,6 +80,13 @@ export function XrayProvider({ children }: { children: ReactNode }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [askOpen, openAsk, closeAsk]);
 
+  // Marks the page interactive. This provider wraps the whole app and React runs a parent's effects after
+  // its children's, so by now every component's listeners (⌘K above included) are attached. The e2e
+  // tests wait for it after each navigation (tests/e2e/fixtures.ts); nothing on the page reads it.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-hydrated", "");
+  }, []);
+
   const value = useMemo(
     () => ({ xray, introSeen, setXray, toggleXray, dismissIntro, openAsk, menuOpen, setMenuOpen }),
     [xray, introSeen, setXray, toggleXray, dismissIntro, openAsk, menuOpen, setMenuOpen],

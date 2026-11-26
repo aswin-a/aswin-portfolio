@@ -65,9 +65,8 @@ test.describe("keyboard", () => {
     test(`Tab reaches every control on ${path}, each with the 2px #4F7FC0 ring`, async ({ page }) => {
       test.slow();
       await page.setViewportSize({ width: 1440, height: 900 });
+      // goto waits for hydration (fixtures.ts), so the X-ray toggle responds.
       await page.goto(path);
-      // Hydrated: the X-ray toggle responds.
-      await page.waitForLoadState("networkidle");
       const all = await tabbables(page);
       expect(all.length).toBeGreaterThan(5);
       const reached = new Set<string>();
