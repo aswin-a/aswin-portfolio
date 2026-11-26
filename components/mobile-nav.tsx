@@ -56,6 +56,15 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close, headerRef]);
 
+  // Resizing across 640px closes the menu (Nav.dc.html, design update 12).
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(width < 640px)");
+    const onChange = () => close();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [open, close]);
+
   const onRow = (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     close();
     if (id !== "contact") return;

@@ -61,7 +61,7 @@
 <span aria-hidden="true" style="flex: none; font-family: {{t.mono}}; font-size: 12px; letter-spacing: 0.06em; color: {{lineInk}}; padding-top: 2px">{{lineTag}}</span>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 15px; line-height: 1.5; color: {{t.ink}}">{{lineText}}</span>
-<sc-if value="{{lineWa}}" hint-placeholder-val="{{ false }}"><a href="{{waHref}}" target="_blank" rel="noopener" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">Send it on WhatsApp instead →</a></sc-if>
+<sc-if value="{{lineWa}}" hint-placeholder-val="{{ false }}"><a href="{{lineWaHref}}" target="_blank" rel="noopener" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">Send it on WhatsApp instead →</a></sc-if>
 </div>
 </div>
 </sc-if>
@@ -89,7 +89,7 @@
 </footer>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"initial":{"editor":"enum","options":["idle","invalid","sending","sent","error","limited"],"default":"idle"},"still":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":640}}'>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"initial":{"editor":"enum","options":["idle","invalid","sending","sent","error","limited"],"default":"idle"},"limitMins":{"editor":"number","default":23},"still":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":640}}'>
 var FOOT_PHONE = '+91 [number]';
 var FOOT_PHONE_DIGITS = '91XXXXXXXXXX';
 var FOOT_HOURS = '[Mon–Fri, 10am–7pm IST]';
@@ -99,11 +99,21 @@ class Component extends DCLogic {
     var init = props.initial || 'idle';
     var sample = { name: 'Priya Raman', email: 'priya@acme.com', role: props.role || 'Senior Platform PM', msg: 'We’re hiring a Senior Platform PM for our integrations team. Open to a call this week?' };
     var form = init === 'idle' ? { name: '', email: '', role: props.role || '', msg: '' } : (init === 'invalid' ? { name: 'Priya Raman', email: 'priya@acme', role: props.role || '', msg: '' } : sample);
-    this.state = { status: init, prefilled: !!props.role, tick: 0, narrow: typeof window !== 'undefined' && window.innerWidth < 640, form: form };
+    this.state = { status: init, limitUntil: init === 'limited' ? Date.now() + (props.limitMins || 23) * 60000 : 0, prefilled: !!props.role, tick: 0, narrow: typeof window !== 'undefined' && window.innerWidth < 640, form: form };
     this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
   }
-  componentDidMount() { if (this.state.status === 'sending' && !this.props.still) this.startSending(); if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize); }
-  componentWillUnmount() { this.stop(); if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  componentDidMount() {
+    if (this.state.status === 'sending' && !this.props.still) this.startSending();
+    if (this.state.status === 'limited' && !this.props.still) this.startLimitClock(); if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize); }
+  componentWillUnmount() { this.stop(); if (this.ltimer) clearInterval(this.ltimer); if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  startLimitClock() {
+    if (this.ltimer) clearInterval(this.ltimer);
+    this.ltimer = setInterval(() => {
+      if (this.state.status !== 'limited') { clearInterval(this.ltimer); this.ltimer = null; return; }
+      if (Date.now() >= this.state.limitUntil) { clearInterval(this.ltimer); this.ltimer = null; this.setState({ status: 'idle' }); }
+      else this.setState({ tick: this.state.tick + 1 });
+    }, 15000);
+  }
   stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
   errors(f) {
     return { name: !f.name.trim(), email: !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim()), role: false, msg: !f.msg.trim() };
@@ -135,16 +145,19 @@ class Component extends DCLogic {
     var amber = { text: '#8A5510', border: '#C08A2E', bg: '#FBF2E2' };
     t.amberText = amber.text;
     var fieldVal = (k) => ({ bad: !!err[k], border: err[k] ? amber.border : (k === 'role' && pre ? t.accent : t.rule), bg: err[k] ? amber.bg : (k === 'role' && pre ? t.accentTint : t.bg) });
+    var waitMins = s.status === 'limited' ? Math.max(1, Math.ceil((s.limitUntil - Date.now()) / 60000)) : 0;
+    var waitText = waitMins === 1 ? '1 minute' : waitMins + ' minutes';
     var lines = {
       invalid: { tag: 'CHECK', text: nBad === 1 ? 'One field needs a fix before this can go.' : nBad + ' fields need a fix before this can go.', ink: amber.text, border: amber.border, bg: amber.bg, style: 'solid', role: 'alert', wa: false },
       error: { tag: 'NOT SENT', text: 'That didn’t go through, but your message is still here. Try again, or reach me another way.', ink: amber.text, border: amber.border, bg: amber.bg, style: 'solid', role: 'alert', wa: true },
-      limited: { tag: 'PAUSED', text: 'This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in [time], or right now on WhatsApp.', ink: t.muted, border: t.rule, bg: t.bg, style: 'dashed', role: 'status', wa: true }
+      limited: { tag: 'PAUSED', text: 'This form takes 3 messages an hour from one connection, to keep spam out. Your message is saved here; send it again in ' + waitText + ', or right now on WhatsApp.', ink: t.muted, border: t.rule, bg: t.bg, style: 'dashed', role: 'status', wa: true }
     };
     var line = lines[st] && !(st === 'invalid' && nBad === 0) ? lines[st] : null;
     var sending = st === 'sending', limited = st === 'limited';
     return {
       phone: FOOT_PHONE, hours: FOOT_HOURS,
       telHref: 'tel:+' + FOOT_PHONE_DIGITS,
+      lineWaHref: 'https://wa.me/' + FOOT_PHONE_DIGITS + '?text=' + encodeURIComponent((s.form.role ? 'Hi Aswin, I found your portfolio. I’m hiring for a ' + s.form.role + ' role.' : 'Hi Aswin, I found your portfolio.') + (s.form.msg.trim() ? '\n\n' + s.form.msg.trim() : '')),
       waHref: 'https://wa.me/' + FOOT_PHONE_DIGITS + '?text=' + encodeURIComponent(s.form.role ? 'Hi Aswin, I found your portfolio. I’m hiring for a ' + s.form.role + ' role.' : 'Hi Aswin, I found your portfolio.'),
       waNote: pre ? ' · role added to the message' : '',
       t: t, pad: s.narrow ? '48px 20px 56px' : '72px 24px 88px',

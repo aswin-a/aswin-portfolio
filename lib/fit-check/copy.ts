@@ -86,7 +86,7 @@ export const FALLBACK_COPY: { error: FallbackCopy; limited: FallbackCopy; budget
   error: {
     tag: "Fit check · error",
     title: "The fit check couldn't finish this time.",
-    text: "Nothing you did: the AI service didn't answer in time. Try again, or message Aswin directly.",
+    text: "Nothing you did: the AI service didn't answer in time. Try again in a moment, or message Aswin about the role.",
   },
   limited: {
     tag: "Fit check · daily limit reached",

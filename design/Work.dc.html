@@ -100,7 +100,7 @@ html{scroll-behavior:smooth}
 <span style="position: absolute; top: 10px; right: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid {{d.accent}}; font-family: {{d.mono}}; font-size: 10px; letter-spacing: 0.1em; color: {{d.accent}}">X-RAY</span>
 <p style="margin: 0; color: {{d.muted}}">LOGGED TRACE · run [run id] · real run, never a simulation</p>
 <sc-for list="{{arch}}" as="a" hint-placeholder-count="6">
-<div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid {{d.rule}}"><span><span style="color: {{d.accent}}">✓ </span>{{a.fn}}</span><span style="color: {{d.muted}}">[ms]</span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid {{d.rule}}"><span><span style="color: {{d.accent}}">✓ </span>{{a.fn}}</span><span style="color: {{d.muted}}">{{a.ms}}</span></div>
 </sc-for>
 </div>
 </sc-if>
@@ -122,7 +122,7 @@ html{scroll-behavior:smooth}
 <sc-for list="{{safeguards}}" as="g" hint-placeholder-count="4">
 <article style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 12px">
 <span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">{{g.num}}</span>
-<p style="margin: 0; padding: 10px 12px; border: 1px dotted {{t.muted}}; border-radius: 8px; font-family: {{t.mono}}; font-size: 13px; line-height: 1.55; color: {{t.muted}}">{{g.title}}</p>
+<p style="margin: 0; padding: {{g.pad}}; border: {{g.box}}; border-radius: 8px; font-family: {{g.font}}; font-size: {{g.size}}; line-height: 1.55; color: {{g.ink}}">{{g.title}}</p>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.muted}}">STOPS</span><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">[the failure it prevents]</span></div>
 <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: {{t.mono}}; font-size: 11px; color: {{t.muted}}">USER SEES</span><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">[the UI when it fires]</span></div>
 </article>
@@ -130,36 +130,6 @@ html{scroll-behavior:smooth}
 </div>
 </section>
 
-<section id="s-break" aria-labelledby="h-break" style="display: flex; flex-direction: column; gap: 18px">
-<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap">
-<div style="display: flex; flex-direction: column; gap: 8px">
-<h2 id="h-break" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 34px">Try to break it</h2>
-<p style="margin: 0; font-size: 16px; color: {{t.muted}}">The same attack types as Break my AI on the home page. Pick one or write your own.</p>
-</div>
-<div role="status" aria-live="polite" style="display: flex; align-items: baseline; gap: 8px; font-family: {{t.mono}}"><sc-if value="{{noLog}}" hint-placeholder-val="{{ true }}"><span style="font-size: 14px; color: {{t.muted}}">No attempts yet</span></sc-if><sc-if value="{{hasLog}}" hint-placeholder-val="{{ false }}"><span style="font-size: 40px; color: {{t.accent}}">{{stopped}}</span><span style="font-size: 14px; color: {{t.muted}}">held up of {{attempts}}</span></sc-if></div>
-</div>
-<div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px">
-<div style="display: flex; gap: 8px; flex-wrap: wrap">
-<sc-for list="{{attacks}}" as="k" hint-placeholder-count="6">
-<button type="button" onClick="{{k.run}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 44px; padding: 8px 12px; border-radius: 8px; border: 1px solid {{t.rule}}; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.mono}}; font-size: 13px; text-align: left; cursor: pointer"><span style="font-size: 11px; color: {{t.muted}}">{{k.type}}</span>{{k.text}}</button>
-</sc-for>
-</div>
-<form onSubmit="{{submitAttack}}" style="display: flex; gap: 10px; flex-wrap: wrap">
-<input type="text" value="{{attackText}}" onChange="{{onAttack}}" aria-label="Your own attempt" placeholder="Or write your own instruction to the builder…" style="flex: 1 1 280px; min-height: 44px; padding: 8px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.mono}}; font-size: 14px">
-<button type="submit" style="min-height: 44px; padding: 8px 18px; border-radius: 8px; border: 0; background: {{t.btnBg}}; color: {{t.btnInk}}; font-family: {{t.sans}}; font-size: 15px; font-weight: 600; cursor: pointer">Run</button>
-</form>
-<sc-if value="{{noLog}}" hint-placeholder-val="{{ true }}">
-<p style="margin: 0; padding: 14px 0 2px; border-top: 1px solid {{t.rule}}; font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">No attempts yet.</p>
-</sc-if>
-<sc-for list="{{log}}" as="l" hint-placeholder-count="0">
-<div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; padding: 12px 0 2px; border-top: 1px solid {{t.rule}}; font-family: {{t.mono}}; font-size: 13px; line-height: 1.5">
-<span style="flex: 0 0 auto; padding: 2px 8px; border-radius: 6px; background: {{l.pillBg}}; color: {{l.pillInk}}; border: {{l.pillBorder}}">{{l.verdict}}</span>
-<span style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 2px"><span>“{{l.text}}”</span><span style="color: {{t.muted}}">{{l.reason}}</span><sc-if value="{{xray}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; margin-top: 4px; padding: 3px 8px; border-radius: 6px; background: {{d.bg}}; color: {{d.muted}}">guardrail fired: {{l.guard}} · trace [run id] · [ms]</span></sc-if></span>
-</div>
-</sc-for>
-<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 40px; padding-top: 6px; border-top: 1px solid {{t.rule}}; font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">These red-team cases ship with the public eval set · GitHub [link] →</a>
-</div>
-</section>
 
 <section id="s-measure" aria-labelledby="h-measure" style="display: flex; flex-direction: column; gap: 18px">
 <h2 id="h-measure" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 34px">How success is measured</h2>
@@ -306,16 +276,16 @@ class Component extends DCLogic {
     var s = this.state, x = s.xray, t = workTokens(false), d = workTokens(true);
     var sections = [
       ['s-demo', 'Demo'], ['s-problem', 'Users & problem'], ['s-decisions', 'Decisions'], ['s-arch', 'Architecture'],
-      ['s-built', 'What I built'], ['s-safeguards', 'Safeguards'], ['s-break', 'Try to break it'], ['s-measure', 'Success'],
+      ['s-built', 'What I built'], ['s-safeguards', 'Safeguards'], ['s-measure', 'Success'],
       ['s-perf', 'Performance'], ['s-ba', 'Before / after'], ['s-lessons', 'v2 & lessons'], ['s-questions', 'Questions'], ['s-links', 'Links']
     ];
     var arch = [
-      ['Pick app / paste API docs', 'input.receive(docs)', false],
-      ['LLM drafts connector config', 'llm.draft(config)', false],
-      ['Policy checks', 'guard.scope · guard.secrets · guard.allowlist', true],
-      ['Sandbox test run', 'sandbox.run(config)', false],
-      ['Person approves the diff', 'review.await_approval()', true],
-      ['Deploy', 'deploy(config)', false]
+      ['Pick app / paste API docs', 'input.receive(docs)', false, 'no timing · user input'],
+      ['LLM drafts connector config', 'llm.draft(config)', false, '[ms]'],
+      ['Policy checks', 'guard.scope · guard.secrets · guard.allowlist', true, '[ms]'],
+      ['Sandbox test run', 'sandbox.run(config)', false, '[ms]'],
+      ['Person approves the diff', 'review.await_approval()', true, 'no timing · waits for a person'],
+      ['Deploy', 'deploy(config)', false, 'no timing · not run in the concept']
     ];
     var all = s.log;
     var stopped = all.filter((l) => l.verdict !== 'DRAFTED').length;
@@ -334,7 +304,7 @@ class Component extends DCLogic {
       t: t, d: d, xray: x, askOpen: s.askOpen,
       xrayLink: x ? 'Close How I built this' : 'How I built this (X-ray)',
       rail: sections.map((sec, i) => ({ href: '#' + sec[0], label: sec[1], num: (i < 9 ? '0' : '') + (i + 1) })),
-      arch: arch.map((a, i) => ({ label: a[0], fn: a[1], sep: i < arch.length - 1 ? '›' : '', border: a[2] ? t.accent : t.rule })),
+      arch: arch.map((a, i) => ({ ms: a[3], label: a[0], fn: a[1], sep: i < arch.length - 1 ? '›' : '', border: a[2] ? t.accent : t.rule })),
       evals: [
         { case: 'prompt injection hidden in API docs', expected: 'refused, nothing changes' },
         { case: 'request for write scope', expected: 'held for approval' },
@@ -354,7 +324,7 @@ class Component extends DCLogic {
         { num: '02', title: '[e.g. Least-privilege scopes by default]' },
         { num: '03', title: "[e.g. Secrets stay out of the model's context]" },
         { num: '04', title: '[e.g. Allow-listed apps only]' }
-      ],
+      ].map((g) => { var ph = /^\[/.test(g.title); return Object.assign(g, { box: ph ? '1px dotted ' + t.muted : '0', pad: ph ? '10px 12px' : '0', font: ph ? t.mono : t.sans, size: ph ? '13px' : '16px', ink: ph ? t.muted : t.ink }); }),
       attacks: WORK_ATTACKS.map((a) => ({ type: a.type, text: a.text, run: () => this.addAttempt(a.text, a) })),
       attackText: s.attackText,
       onAttack: (e) => this.setState({ attackText: e.target.value }),
@@ -372,11 +342,11 @@ class Component extends DCLogic {
         { kind: 'ADOPTION', hint: '[e.g. admins who build a second connector]' }
       ],
       perf: [
-        { source: 'LIVE USAGE', name: 'Cost per draft' },
-        { source: 'LIVE USAGE', name: 'Response time (median)' },
+        { source: 'LIVE USAGE', name: 'Cost per draft', hidden: true },
+        { source: 'LIVE USAGE', name: 'Response time (median)', hidden: true },
         { source: 'OFFLINE EVAL', name: 'Eval pass rate' },
         { source: 'OFFLINE EVAL', name: 'Red-team cases held' }
-      ].map((p) => Object.assign(p, { tagBorder: p.source === 'OFFLINE EVAL' ? t.accent : t.rule, tagInk: p.source === 'OFFLINE EVAL' ? t.accent : t.muted })),
+      ].filter((p) => !p.hidden).map((p) => Object.assign(p, { tagBorder: p.source === 'OFFLINE EVAL' ? t.accent : t.rule, tagInk: p.source === 'OFFLINE EVAL' ? t.accent : t.muted })),
       baTabs: [['manual', 'Manual'], ['agent', 'With AI'], ['both', 'Both']].map((b) => ({
         label: b[1], on: s.ba === b[0],
         bg: s.ba === b[0] ? t.btnBg : 'transparent', ink: s.ba === b[0] ? t.btnInk : t.ink,

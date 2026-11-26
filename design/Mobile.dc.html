@@ -45,17 +45,17 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <div id="top"></div>
 <dc-import name="Hero" initial="result" compact="{{ true }}" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-xray="{{xrayOn}}" hint-size="390px,2500px"></dc-import>
 
-<section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0">
-<a href="Stack.dc.html" class="strip-link" style="display: flex; align-items: center; gap: 14px; min-height: 76px; box-sizing: border-box; padding: 14px 20px; text-decoration: none; color: #1B1A17">
-<span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 2px; width: 64px; box-sizing: border-box; padding: 6px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 6px">
+<section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0; background: #EFEAE0; padding: 20px 16px">
+<a href="Stack.dc.html" class="strip-link" style="display: flex; align-items: center; gap: 14px; min-height: 76px; box-sizing: border-box; padding: 14px 16px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 12px; text-decoration: none; color: #1B1A17">
+<span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 2px; width: 64px; box-sizing: border-box; padding: 6px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 6px">
 <span style="display: block; height: 9px; border-radius: 2px; background: #1B1A17"></span>
 <span style="display: block; height: 2px"></span>
-<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
-<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #F6F3EC"></span>
+<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
+<span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 </span>
-<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><span class="strip-cta" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">See how I work, layer by layer →</span></span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I WORK WITH AI</span><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><span class="strip-cta" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">See how I work, layer by layer →</span></span>
 </a>
 </section>
 
@@ -87,7 +87,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </span>
 <span style="font-size: 14px; line-height: 1.5">{{u.proof}}</span>
 <sc-if value="{{u.hasLink}}" hint-placeholder-val="{{ true }}"><a href="{{u.href}}" onClick="{{u.click}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{u.cta}}</a></sc-if>
-<sc-if value="{{u.planned}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{u.cta}}</span></sc-if>
+<sc-if value="{{u.soon}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px"><sc-if value="{{u.hasSoonText}}" hint-placeholder-val="{{ true }}"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">{{u.soonText}}</span></sc-if><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span></sc-if>
 </li>
 </sc-for>
 </ul>
@@ -109,7 +109,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{t.muted}}">{{w.pitch}}</p>
 <div style="display: flex; gap: 4px 18px; flex-wrap: wrap">
 <a href="{{w.primaryHref}}" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{w.primary}}</a>
-<a href="Work.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">Read the case study →</a>
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px"><span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.muted}}">Read the case study</span><span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed {{t.rule}}; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.04em; color: {{t.muted}}">COMING SOON</span></span>
 </div>
 <sc-if value="{{w.open}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid {{t.rule}}">
@@ -161,34 +161,34 @@ function mobTokens(x) {
   return c;
 }
 var MOB_WORK = [
-  { num: '01', status: 'IN USE · RECORDED RUN', name: 'AI job search and apply agent', pitch: 'Finds roles that fit, tailors my resume to each, and applies only after I say yes.',
-    built: 'The project instructions, step prompts A–F and the approval step.', primary: 'Watch the run →', primaryHref: 'Work.dc.html',
+  { num: '01', name: 'AI job search and apply agent', pitch: 'Finds roles that fit, tailors my resume to each, and applies only after I say yes.',
+    built: 'The project instructions, step prompts A–F and the approval step.', primary: 'Add to Claude/ChatGPT →', primaryHref: 'https://github.com/aswin-a/linkedin-job-search-agent',
     flow: [['Search LinkedIn and save matches'], ['Write the ideal resume for the JD'], ['Tailor mine with a three-way map'], ['Wait for my approval', 1], ['Apply']] },
-  { num: '02', status: 'LIVE HERE', name: 'Job-fit AI on this site', pitch: 'Paste a job description and get an honest verdict: what fits, with proof, and what doesn’t.',
+  { num: '02', name: 'Job-fit AI on this site', pitch: 'Paste a job description and get an honest verdict: what fits, with proof, and what doesn’t.',
     built: 'The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.', primary: 'Try it above ↑', primaryHref: '#fit-h',
     flow: [['Paste a JD or a link'], ['fetch_url, only for links'], ['Parse requirements, search the record'], ['Guardrails check every claim'], ['Cited verdict, gaps included']] },
-  { num: '03', status: 'CONCEPT', name: 'AI integration builder for long-tail apps', pitch: 'AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A CloudEagle.ai take-home.',
+  { num: '03', name: 'AI integration builder', pitch: 'AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A CloudEagle.ai take-home.',
     built: '[e.g. the spec, Figma flows and the clickable prototype]', primary: 'Run it locally →', primaryHref: '#',
     flow: [['Paste the app’s API docs'], ['AI drafts the connector'], ['Policy checks: scopes, secrets, allow-list'], ['A person approves the diff', 1], ['Deploy']] },
-  { num: '04', status: 'IN USE · RECORDED RUN', name: 'Instagram content intelligence agent', pitch: 'Finds what competing pet-food brands post that performs, and suggests what Dhee’s should post next.',
-    built: 'The agent’s prompts and analysis steps.', primary: 'Watch the run →', primaryHref: 'Work.dc.html',
+  { num: '04', name: 'Instagram content intelligence agent', pitch: 'Finds what competing pet-food brands post that performs, and suggests what Dhee’s should post next.',
+    built: 'The agent’s prompts and analysis steps.', primary: 'Add to Claude/ChatGPT →', primaryHref: 'https://github.com/aswin-a/instagram-content-intelligence-agent',
     flow: [['Pick the competitors to watch'], ['Pull their recent posts'], ['Rank what performs'], ['Spot trending formats'], ['Suggest Dhee’s next posts']] }
 ];
 var MOB_GROUPS = [
   { name: 'Agent building blocks', summary: 'A 4-step agent, a Claude Skill, and tool calls you can watch live.', items: [
-    { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html' },
+    { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html', hiddenStudy: true },
     { name: 'skills', status: 'GitHub', proof: 'I wrote a Claude Skill that scores JD fit against my master resume.', cta: 'View the skill →', href: '#' },
     { name: 'tools', status: 'live here', proof: 'The fit check calls three tools: fetch_url, jd.parse and kb.search.', cta: 'See the calls in X-ray →', live: true, href: '#top' } ] },
   { name: 'Running it reliably', summary: 'A fixed pipeline with a retry, session-only memory, and limits with a fallback.', items: [
     { name: 'orchestration', status: 'live here', proof: 'A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.', cta: 'Open X-ray →', live: true, href: '#top' },
     { name: 'memory', status: 'live here', proof: 'Your fit result carries into Ask my work for this session, and nothing is stored after.', cta: 'Open X-ray →', live: true, href: '#top' },
-    { name: 'production', status: 'live here', proof: 'Rate limit, budget cap, and a precomputed fallback when either trips.', cta: 'Try Break my AI →', live: true, href: '#break-my-ai' } ] },
+    { name: 'production', status: 'live here', proof: 'Rate limit, budget cap, and a clear error instead of a guess when either trips.', cta: 'Try Break my AI →', live: true, href: '#break-my-ai' } ] },
   { name: 'Trust and checking', summary: 'Every claim cited, a public eval set, and a person reviewing low-confidence output.', items: [
     { name: 'guardrails', status: 'live here', proof: 'Every claim is cited, gaps are stated, and injected instructions are refused.', cta: 'Try Break my AI →', live: true, href: '#break-my-ai' },
     { name: 'evals', status: 'GitHub', proof: '[25] test JDs and red-team cases, run before every change.', cta: 'View the eval set →', href: '#' },
-    { name: 'human in loop', status: 'shipped', proof: 'I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.', cta: 'Read the OCR story →', href: '#' } ] },
+    { name: 'human in loop', status: 'shipped', proof: 'I shipped ML OCR for a pharma client: 95% accuracy, with low-confidence results sent to a person.', cta: 'Read the OCR story →', href: '#', soonPost: true } ] },
   { name: 'Data and context', summary: 'Patient data kept away from LLMs, a docs assistant, and an MCP server next.', items: [
-    { name: 'data privacy', status: 'shipped', proof: 'Advised against sending patient data to LLMs at a healthcare SaaS platform.', cta: 'Read more →', href: '#' },
+    { name: 'data privacy', status: 'shipped', proof: 'Advised against sending patient data to LLMs at a healthcare SaaS platform.', cta: 'Read more →', href: '#', soonPost: true },
     { name: 'rag', status: 'prototype', proof: 'A docs Q&A assistant over a platform’s documentation. This site skips a vector DB in v1, on purpose.', cta: 'Why no vector DB yet →', href: '#' },
     { name: 'mcp server', status: 'planned', proof: 'My agent uses MCP connectors today. Next: kb.search as an MCP server you can add to Claude.', cta: 'Coming soon', planned: true } ] }
 ];
@@ -201,7 +201,7 @@ class Component extends DCLogic {
       showIntro: !s.introSeen && !x,
       menuOpen: s.menuOpen, menuLabel: s.menuOpen ? 'Close' : 'Menu', menuIcon: s.menuOpen ? '✕' : '☰',
       toggleMenu: () => this.setState({ menuOpen: !this.state.menuOpen }),
-      menuLinks: [['Case studies', 'Work.dc.html'], ['Stack', 'Stack.dc.html'], ['Build log', 'BuildLog.dc.html'], ['CV', 'About.dc.html'], ['Contact', '#contact']].map((l) => ({
+      menuLinks: [['Case studies', 'WorkIndex.dc.html'], ['Stack', 'Stack.dc.html'], ['Build log', 'BuildLog.dc.html'], ['CV', 'About.dc.html'], ['Contact', '#contact']].map((l) => ({
         label: l[0], href: l[1], mark: l[1] === '#contact' ? '↓' : '→', current: undefined,
         click: (e) => {
           this.setState({ menuOpen: false });
@@ -216,9 +216,9 @@ class Component extends DCLogic {
       dockXLabel: x ? 'X-ray on' : 'X-ray',
       openAskDock: () => this.setState({ askOpen: true, menuOpen: false, askCtx: this.state.askCtx ? Object.assign({}, this.state.askCtx, { focus: null }) : null }),
       work: MOB_WORK.map((w, wi) => {
-        var open = s.openWork === wi, live = w.status === 'LIVE HERE', inUse = w.status.indexOf('IN USE') === 0;
+        var open = s.openWork === wi, live = false, inUse = false;
         return {
-          num: w.num, status: w.status, name: w.name, pitch: w.pitch, built: w.built, primary: w.primary, primaryHref: w.primaryHref,
+          num: w.num, name: w.name, pitch: w.pitch, built: w.built, primary: w.primary, primaryHref: w.primaryHref,
           open: open, border: open ? t.accent : t.rule, cue: open ? 'Collapse ↑' : 'Expand ↓',
           statusBg: live ? t.accentTint : 'transparent', statusBorder: live || inUse ? t.accent : t.rule, statusInk: live || inUse ? t.accent : t.muted,
           toggle: () => this.setState({ openWork: this.state.openWork === wi ? -1 : wi }),
@@ -240,7 +240,8 @@ class Component extends DCLogic {
           toggle: () => this.setState({ openGroup: this.state.openGroup === gi ? -1 : gi }),
           chips: g.items.map((u) => { var c = style(u.status); return { name: u.name, dot: c.dot, dotBorder: c.dotBorder }; }),
           items: g.items.map((u) => { var c = style(u.status); return {
-            name: u.name, status: u.status, proof: u.proof, cta: u.cta, href: u.href || '#', hasLink: !u.planned, planned: !!u.planned,
+            name: u.name, status: u.status, proof: u.proof, cta: u.cta, href: u.href || '#', hasLink: !(u.planned || u.hiddenStudy || u.soonPost), planned: !!u.planned,
+            soon: !!(u.planned || u.hiddenStudy || u.soonPost), hasSoonText: !u.planned, soonText: (u.cta || '').replace(/\s*→\s*$/, ''),
             click: u.live ? () => this.setState({ xray: true, introSeen: true }) : undefined,
             statusBg: c.bg, statusBorder: c.border, statusInk: c.ink }; })
         };

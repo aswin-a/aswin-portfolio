@@ -16,12 +16,15 @@ function A({ href, className, children }: { href: string | undefined; className:
 
 /**
  * "Products I've built" (Main.dc.html, design update 4) plus the phone's expandable cards (Mobile.dc.html, < 640px, design update 9).
- * `headingLevel` is 1 on the standalone /work page (a design gap, SPEC §4), where the hero's
- * `#fit-h` anchor lives on `/`, so `anchorBase` is "/".
+ * `headingLevel` is 1 on the /work index (WorkIndex.dc.html, design update 12): no top border, the page's
+ * H1 size, product names as h2 and each product's `indexPrimary`. The hero's `#fit-h` anchor lives on `/`,
+ * so `anchorBase` is "/".
  */
 export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { headingLevel?: 1 | 2; anchorBase?: "" | "/" }) {
-  const H = headingLevel === 1 ? "h1" : "h2";
-  const items = published(products);
+  const index = headingLevel === 1;
+  const H = index ? "h1" : "h2";
+  const Name = index ? "h2" : "h3";
+  const items = published(products).map((p) => (index && p.indexPrimary ? { ...p, primary: p.indexPrimary } : p));
   // A button to an unpublished case study is left out (Aswin, 2026-11-24); the card stays. A button to a
   // hidden one (content/case-studies/visibility.ts) shows "COMING SOON" instead.
   const isLive = await workLinkIsLive();
@@ -58,11 +61,16 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
 
   return (
     <>
-      <section aria-labelledby="work-h" className="border-t border-rule px-6 py-16 max-[640px]:hidden">
+      <section aria-labelledby="work-h" className={`px-6 max-[640px]:hidden ${index ? "pt-[72px] pb-24" : "border-t border-rule py-16"}`}>
         <div className="mx-auto flex max-w-[1040px] flex-col gap-7">
           <div className="flex flex-col gap-[10px]">
             <p className="m-0 font-mono text-[12px] tracking-[0.08em] text-muted">CASE STUDIES</p>
-            <H id="work-h" className="m-0 font-serif text-[40px] font-normal leading-[1.1] tracking-[-0.01em]">
+            <H
+              id="work-h"
+              className={`m-0 font-serif font-normal ${
+                index ? "text-[clamp(44px,6vw,64px)] leading-[1.04] tracking-[-0.015em]" : "text-[40px] leading-[1.1] tracking-[-0.01em]"
+              }`}
+            >
               Products I&apos;ve built
             </H>
             <p className="m-0 text-[16px] leading-[1.5] text-muted">
@@ -78,7 +86,7 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
               >
                 <div className="flex flex-col gap-3">
                   <span className="font-mono text-[12px] text-muted">{p.num}</span>
-                  <h3 className="m-0 font-serif text-[30px] font-normal leading-[1.15]">{p.name}</h3>
+                  <Name className="m-0 font-serif text-[30px] font-normal leading-[1.15]">{p.name}</Name>
                   <p className="m-0 text-[16px] leading-[1.5] text-muted">{p.pitch}</p>
                   <p className="m-0 text-[15px] leading-[1.5]">
                     <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">What I built </span>
@@ -149,12 +157,12 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
         </div>
       </section>
 
-      <section aria-labelledby="m-work" className="hidden flex-col gap-3 border-t border-rule px-5 pt-9 pb-14 max-[640px]:flex">
+      <section aria-labelledby="m-work" className={`hidden flex-col gap-3 px-5 pt-9 pb-14 max-[640px]:flex ${index ? "" : "border-t border-rule"}`}>
         <p className="m-0 font-mono text-[11px] tracking-[0.08em] text-muted">CASE STUDIES</p>
         <H id="m-work" className="m-0 mb-1 font-serif text-[30px] font-normal">
           Products I&apos;ve built
         </H>
-        <ProductCards items={items.map(phoneCard)} />
+        <ProductCards items={items.map(phoneCard)} nameLevel={index ? 2 : 3} />
       </section>
     </>
   );

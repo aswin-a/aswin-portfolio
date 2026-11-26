@@ -169,6 +169,10 @@ describe("contact config (design update 7)", () => {
     expect(u.origin + u.pathname).toBe("https://wa.me/919876543210");
     expect(u.searchParams.get("text")).toBe("Hi Aswin, I found your portfolio. I’m hiring for a Senior Platform PM role.\n\nOpen to a call?");
   });
+  it("wa.me text: the typed message is cut to 1,500 characters (design update 12)", () => {
+    const text = new URL(waHref("919876543210", "", "x".repeat(4000))).searchParams.get("text")!;
+    expect(text).toBe(`Hi Aswin, I found your portfolio.\n\n${"x".repeat(1500)}`);
+  });
 });
 
 describe("form checks", () => {

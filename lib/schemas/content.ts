@@ -69,6 +69,10 @@ export const PostSchema = z.object({
   date: z.string(),
   readTime: z.string(),
   summary: z.string(),
+  /** The serif line under the post title (LogPost.dc.html, design update 12). Not shown until Aswin writes it. */
+  standfirst: z.string().optional(),
+  /** Links in the post's RELATED row after the case-study chip, e.g. "GitHub · job-search agent" (design update 12). */
+  related: z.array(z.object({ label: z.string(), href: z.string() })).optional(),
   /** The related case study. Optional since Platform & API work was removed (Aswin, 2026-11-20). */
   study: z.object({ label: z.string(), slug: z.string() }).optional(),
   /**
