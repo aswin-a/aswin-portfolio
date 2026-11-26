@@ -60,8 +60,9 @@
 </sc-if>
 
 <sc-if value="{{showCompact}}" hint-placeholder-val="{{ false }}">
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px; padding: 14px 18px">
-<p style="margin: 0; flex: 1 1 320px; min-width: 0; font-size: 15px; line-height: 1.45"><span style="font-family: {{t.mono}}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: {{t.muted}}">{{compactLabel}} </span><b style="font-weight: 600; overflow-wrap: anywhere">{{role}}</b></p>
+<div style="display: flex; flex-direction: column; gap: 12px; background: {{t.paper}}; border: 1px solid {{t.rule}}; border-radius: 14px; padding: 14px 18px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<p style="margin: 0; flex: 1 1 320px; min-width: 0; font-size: 15px; line-height: 1.45"><span style="font-family: {{t.mono}}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: {{t.muted}}">{{compactLabel}} </span><b style="font-weight: 600; overflow-wrap: anywhere">{{role}}</b> <button type="button" onClick="{{toggleJd}}" aria-expanded="{{jdOpen}}" aria-controls="jd-view" style="min-height: 32px; padding: 2px 4px; margin-left: 4px; border: 0; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer; white-space: nowrap">{{jdToggleLabel}}</button></p>
 <sc-if value="{{isRunning}}" hint-placeholder-val="{{ false }}">
 <div role="status" aria-live="polite" style="display: flex; flex-direction: column; gap: 6px; min-width: 180px">
 <span style="font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}">Checking… step {{stepNum}} of {{stepTotal}}</span>
@@ -70,6 +71,13 @@
 </sc-if>
 <sc-if value="{{notRunning}}" hint-placeholder-val="{{ true }}">
 <button type="button" onClick="{{reset}}" style="min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid {{t.rule}}; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 14px; cursor: pointer">{{resetLabel}}</button>
+</sc-if>
+</div>
+<sc-if value="{{jdOpen}}" hint-placeholder-val="{{ false }}">
+<div id="jd-view" style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid {{t.rule}}">
+<span style="display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.muted}}"><span>{{jdViewLabel}}</span><span>{{jdViewNote}}</span></span>
+<p style="margin: 0; max-height: 220px; overflow-y: auto; padding: 12px 14px; border-radius: 10px; background: {{t.bg}}; border: 1px solid {{t.rule}}; font-size: 15px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere">{{jdViewText}}</p>
+</div>
 </sc-if>
 </div>
 </sc-if>
@@ -552,7 +560,7 @@ class Component extends DCLogic {
     }, 650);
   }
   run(jd, role, kind) {
-    this.setState({ phase: 'running', jd: jd, role: role, kind: kind, step: 0, drill: null, isLink: heroIsLink(jd) });
+    this.setState({ phase: 'running', jd: jd, role: role, kind: kind, step: 0, drill: null, isLink: heroIsLink(jd), jdOpen: false });
     this.startTimer();
   }
   runAttack(a, text) {
@@ -580,6 +588,9 @@ class Component extends DCLogic {
     var isResult = phase === 'result' || phase === 'badfit';
     var data = phase === 'badfit' ? HERO_BAD : HERO_FIT;
     var noJd = !s.jd || s.jd.trim() === '';
+    var jdSampleObj = HERO_SAMPLES.find((x) => x.jd === s.jd) || (!s.jd ? HERO_SAMPLES.find((x) => x.role === s.role) : null);
+    var jdSample = !!jdSampleObj;
+    var jdShown = s.jd || (jdSampleObj ? jdSampleObj.jd : '');
     var allSteps = heroSteps(s.kind, s.isLink);
     var lastVisible = Math.min(s.step, allSteps.length - 1);
     var steps = allSteps.map((st, i) => {
@@ -658,6 +669,11 @@ class Component extends DCLogic {
       stepsTitle: phase === 'running' ? 'Agent · streaming from the live run' : 'Agent · done · ' + HERO_STEP_COUNT + ' steps from the live run',
       isError: phase === 'error' && !drill, showFallback: showFallback,
       showCompact: phase !== 'empty',
+      jdOpen: !!s.jdOpen, jdToggleLabel: s.jdOpen ? 'Hide JD ↑' : 'Show JD ↓',
+      toggleJd: () => this.setState({ jdOpen: !this.state.jdOpen }),
+      jdViewText: jdShown,
+      jdViewLabel: jdSample ? 'SAMPLE JOB DESCRIPTION' : (s.isLink ? 'THE LINK YOU PASTED' : 'THE JOB DESCRIPTION YOU PASTED'),
+      jdViewNote: jdSample ? 'one of the sample roles' : (s.isLink ? 'fetched for this check · not stored' : 'kept for this check only · not stored'),
       compactLabel: drill ? 'Drill running against' : (phase === 'running' ? 'Checking against' : 'Checked against'),
       notRunning: phase !== 'running',
       stepNum: Math.min(s.step + 1, HERO_STEP_COUNT), stepTotal: HERO_STEP_COUNT,

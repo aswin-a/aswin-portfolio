@@ -74,7 +74,7 @@ export function CaseStudyPage({ cs, next, related }: { cs: CaseStudy; next: Case
             <span className="rounded-full border border-rule px-[10px] py-[6px] font-mono text-[12px] text-muted">{cs.disclaimer}</span>
           )}
         </div>
-        <h1 className="m-0 font-serif text-[clamp(44px,6vw,72px)] font-normal leading-[1.02] tracking-[-0.02em]">{cs.title}</h1>
+        <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">{cs.title}</h1>
         <p className="m-0 font-serif text-[26px] leading-[1.35] text-muted">{cs.lede}</p>
         <p className="m-0 flex flex-wrap items-baseline gap-[10px] text-[17px]">
           <span className="font-mono text-[12px] tracking-[0.06em] text-muted">WHAT I BUILT</span>

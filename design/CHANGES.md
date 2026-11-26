@@ -2,6 +2,42 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-26 (update 13): One H1 size across pages; the stack strip links only from its button; "Show JD" on the fit-check result
+
+Changed: `About`, `BuildLog`, `LogPost`, `Stack`, `StackMobile`, `Work`, `WorkIndex` (H1 only), plus `HomeStrip`, `Main`, `Mobile` and `Hero`. Nothing else changed (canvas sizes too).
+
+### 1. One page-title size everywhere
+- Every page H1 now matches the home hero H1: **serif 400, `clamp(32px, 4vw, 46px)`, line-height 1.1, letter-spacing −0.015em**. On mobile (StackMobile) it's a fixed **32px**, the same as the compact hero.
+- Pages affected: CV ("Aswin A"), Build log, the log post, /stack, /work and the case study.
+- Before, each page had its own size (up to 72px). Make the H1 size **one shared token**.
+- STACK-HANDOFF §2.2 (h1 `clamp(40px, 6vw, 64px)`, mobile 38px) is now out of date: use the values above.
+
+### 2. Homepage stack strip: only the button is a link (desktop, mobile and the HomeStrip spec)
+- The card is now a plain `div`, **not one big `<a>`**. Only the CTA is a link to `/stack`. The card itself isn't clickable and has no card-level focus ring.
+- The **`HOW I WORK WITH AI` eyebrow is removed.**
+- **Desktop:**
+  - The statement is a `<p>` (`flex: 1 1 320px`).
+  - The CTA is an `<a class="strip-cta">`: an outline button with a 1px accent border, radius 10, min-height 44.
+  - The row wraps (gap 16px 24px).
+- **Mobile:** the CTA is an `<a>` under the statement ("See how I work, layer by layer →", mono 13px accent, min-height 44px). The card no longer has the 76px minimum height.
+- Hover underlines the button text. Focus uses the site's standard ring on the link.
+- This **overrides STACK-HANDOFF §2.7** ("the whole strip is one link"), and also the update 12 eyebrow.
+
+### 3. Hero.dc.html: "Show JD ↓" on the result
+- The compact "Checked against **{role}**" bar now has a toggle right after the role: **`Show JD ↓` / `Hide JD ↑`** (mono 13px accent, min-height 32px, `aria-expanded`, `aria-controls="jd-view"`).
+- Opened, it shows `#jd-view` below the bar (top rule, padding-top 12px):
+  - A mono 11px label row:
+    - **`SAMPLE JOB DESCRIPTION`** · "one of the sample roles"
+    - **`THE JOB DESCRIPTION YOU PASTED`** · "kept for this check only · not stored"
+    - **`THE LINK YOU PASTED`** · "fetched for this check · not stored"
+  - The text in a scrollable box (max-height 220px, bg, rule border, radius 10, 15px/1.55, `white-space: pre-wrap`).
+- It closes again whenever a new check starts.
+- **Build:** the JD stays in client state only for this view. It is still never sent to logging or storage.
+
+### Spec impact
+- Add one shared `--h1` token for page titles. Update STACK-HANDOFF §2.2 and §2.7 to match (or treat them as superseded by this entry).
+- Fit-check result: add the Show JD panel, with a client-only state. Add a test that the JD text never appears in any network request except the fit-check call itself.
+
 ## 2026-11-26 (update 12): Launch-readiness pass. "Coming soon" for unfinished links, real GitHub links, no precomputed fallback, `/work` index and a post page, sticky responsive Nav, swipe-to-close Ask
 
 Changed: `Nav`, `Hero`, `HeroStates`, `Main`, `Mobile`, `Ask`, `Footer`, `BuildLog`, `Work`, `Stack`, `StackMobile`, `StackDiagram`, `HomeStrip`, `canvas.json` (Main h 6080, Mobile h 5540, new boards and a new canvas row).

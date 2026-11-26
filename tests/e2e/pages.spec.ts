@@ -408,7 +408,7 @@ test("coming-soon posts: listed with title, summary and the pill; no page; proof
 test("/work index and a post page follow WorkIndex and LogPost (design update 12)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/work");
-  await expect(page.getByRole("heading", { level: 1, name: "Products I've built" })).toHaveCSS("font-size", "64px");
+  await expect(page.getByRole("heading", { level: 1, name: "Products I've built" })).toHaveCSS("font-size", "46px");
   await expect(page.getByRole("heading", { level: 2, name: "Job-fit AI on this site" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Try the fit check", exact: true })).toHaveAttribute("href", "/#fit-h");
 
@@ -419,4 +419,16 @@ test("/work index and a post page follow WorkIndex and LogPost (design update 12
   await expect(page.getByRole("link", { name: "GitHub · job-search agent →" })).toHaveAttribute("href", "https://github.com/aswin-a/linkedin-job-search-agent");
   await expect(page.getByText("Get the next post on LinkedIn.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Follow Aswin" })).toHaveAttribute("href", /linkedin\.com\/in\//);
+});
+
+// Design update 13: one page-title size everywhere, the home hero's clamp(32px, 4vw, 46px) at 1.1.
+test("design update 13: every page H1 uses the shared --h1 size", async ({ page }, info) => {
+  const phone = info.project.name === "mobile";
+  for (const path of ["/", "/about", "/log", "/log/why-job-search-agent-asks-before-it-applies", "/stack", "/work", "/work/integration-builder"]) {
+    await page.goto(path);
+    const h1 = page.locator("h1:visible").first();
+    await expect(h1, path).toHaveCSS("font-size", phone ? "32px" : "46px");
+    await expect(h1, path).toHaveCSS("line-height", phone ? "35.2px" : "50.6px");
+    await expect(h1, path).toHaveCSS("letter-spacing", phone ? "-0.48px" : "-0.69px");
+  }
 });

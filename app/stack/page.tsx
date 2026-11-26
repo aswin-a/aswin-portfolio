@@ -28,7 +28,7 @@ export default function StackPage() {
             <p className="m-0 font-mono text-[12px] tracking-[0.08em] text-muted max-[640px]:text-[11px]">{stackHero.eyebrow}</p>
             <h1
               id="stack-h"
-              className="m-0 max-w-[820px] font-serif text-[clamp(40px,6vw,64px)] font-normal leading-[1.04] tracking-[-0.015em] max-[640px]:text-[38px] max-[640px]:leading-[1.06] max-[640px]:tracking-[-0.01em]"
+              className="m-0 max-w-[820px] font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]"
             >
               {stackHero.title}
             </h1>

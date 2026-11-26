@@ -178,6 +178,15 @@ export const LINK_BLOCKED_TEXT = "Some job sites block automated readers, and th
 /** The link state's primary button: back to an empty input. */
 export const PASTE_INSTEAD = "Paste the text instead";
 
+/** "Show JD" on the compact result bar (Hero.dc.html, design update 13). Word for word. */
+export const JD_VIEW = {
+  show: "Show JD ↓",
+  hide: "Hide JD ↑",
+  sample: { label: "SAMPLE JOB DESCRIPTION", note: "one of the sample roles" },
+  pasted: { label: "THE JOB DESCRIPTION YOU PASTED", note: "kept for this check only · not stored" },
+  link: { label: "THE LINK YOU PASTED", note: "fetched for this check · not stored" },
+};
+
 export const NUDGE = {
   result: "See the trace, sources and cost behind this result.",
   drill: "See the fallback path this drill just ran.",

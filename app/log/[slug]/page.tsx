@@ -50,7 +50,7 @@ export default async function PostPage({ params }: Props) {
             <span>{meta.date}</span>
             <span>{meta.readTime}</span>
           </p>
-          <h1 className="m-0 font-serif text-[clamp(38px,5vw,56px)] font-normal leading-[1.08] tracking-[-0.015em]">{meta.title}</h1>
+          <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">{meta.title}</h1>
           {meta.standfirst && <p className="m-0 font-serif text-[21px] leading-[1.45] text-muted">{meta.standfirst}</p>}
         </header>
         <article className="flex flex-col gap-5">
