@@ -1,5 +1,4 @@
-import { expect, test } from "@playwright/test";
-import { JD_LABEL } from "./fixtures";
+import { expect, JD_LABEL, test, type Page } from "./fixtures";
 import { evalMeta } from "@/lib/eval-results";
 import { products } from "@/content/products";
 import { siteMeta } from "@/content/site-meta";
@@ -7,10 +6,10 @@ import { siteMeta } from "@/content/site-meta";
 /** The eval numbers the site shows: content/eval-results.json, or the design placeholders before a real run. */
 const EVAL = evalMeta();
 
-const theme = async (page: import("@playwright/test").Page) =>
+const theme = async (page: Page) =>
   (await page.locator("html").getAttribute("data-xray")) === null ? null : "xray";
 
-const hoodGrid = (page: import("@playwright/test").Page) => page.locator("#uh-h").locator("xpath=../..");
+const hoodGrid = (page: Page) => page.locator("#uh-h").locator("xpath=../..");
 
 test("home: live 'How I build' card turns X-ray on and jumps to the hero", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

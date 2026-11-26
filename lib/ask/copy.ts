@@ -22,11 +22,40 @@ export const ASK_QUESTIONS = {
 } as const;
 export type AskQuestionId = keyof typeof ASK_QUESTIONS;
 
-export const ASK_BY_PAGE: Record<AskPage, AskQuestionId[]> = {
-  home: ["apis", "win", "llm", "hardware"],
-  work: ["whysafe", "failed", "isce", "llm"],
-  log: ["now", "apis", "llm"],
-  about: ["apis", "health", "win", "hardware"],
+/**
+ * "Suggested for this page" (Aswin, 2026-11-26, replacing the design's ASK_BY_PAGE ids): picked from
+ * what each page shows, and each one checked to hit the knowledge base (kb.search). They go to the live
+ * endpoint like any other question; the AI_FAKE test model replays a design answer only for the ones
+ * that are also in ASK_QUESTIONS.
+ */
+export const ASK_BY_PAGE: Record<AskPage, string[]> = {
+  // Fit check, Under the hood, the four products and the log teaser.
+  home: [
+    ASK_QUESTIONS.apis,
+    "How does the fit check avoid making things up?",
+    ASK_QUESTIONS.llm,
+    ASK_QUESTIONS.win,
+  ],
+  // The four products (/work and the case studies).
+  work: [
+    "Which AI agents has he built?",
+    "How does the integration builder keep AI out of production?",
+    "Is the integration builder CloudEagle's product?",
+    ASK_QUESTIONS.llm,
+  ],
+  // The posts: safeguards, integrations as agent experience, the approval step.
+  log: [
+    "Why does the job-search agent wait for approval?",
+    "How do his platform skills carry over to AI agents?",
+    ASK_QUESTIONS.now,
+  ],
+  // The CV. Its own Ask box already suggests Zelthy, integrations at scale and leading a team.
+  about: [
+    ASK_QUESTIONS.health,
+    ASK_QUESTIONS.win,
+    "What did he build as a founder?",
+    "Has he worked with enterprise clients?",
+  ],
 };
 
 /**
@@ -48,19 +77,13 @@ export const ASK_LABELS: Partial<Record<AskKind, [string, AskTone]>> = {
   clarify: ["NEEDS CLARIFYING", "muted"],
 };
 
-export const ASK_JUMP_TO = [
-  { label: "CloudEagle case study", href: "/work/integration-builder" },
-  { label: "Build log", href: "/log" },
-  { label: "About · resume", href: "/about" },
-];
-
 export const CTX_QUESTION = "What should I ask him about these gaps?";
 export const gapQuestion = (req: string) => `About the gap: ${req}`;
 
 export const CONTACT_SOURCE = { label: "Contact", href: "/#contact" };
 
 /** The input while idle and while thinking, and the submit label (Ask.dc.html, update 2). */
-export const ASK_PLACEHOLDER = "Ask about Aswin's work, or jump to a page…";
+export const ASK_PLACEHOLDER = "Ask about Aswin's work…";
 export const ASK_LOADING = "Answering from the knowledge base…";
 export const ASK_SUBMIT = "Ask";
 export const ASK_THINKING = "Thinking…";

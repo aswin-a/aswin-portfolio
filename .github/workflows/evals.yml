@@ -101,11 +101,22 @@ jobs:
           git push --force origin "$RESULTS_BRANCH"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
           body="Real eval run of \`/evals\` on ${GITHUB_SHA::7} ($FIT_CHECK_MODEL, $CHAT_MODEL): $summary. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          if gh pr view "$RESULTS_BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
-            gh pr edit "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
-          else
-            gh pr create --base main --head "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
-          fi
+          # GitHub's API sometimes fails for a moment ("Something went wrong while executing your
+          # query"), so this retries. Each try checks for an open PR first, so a create that went
+          # through but reported an error is edited on the next try, never opened twice.
+          upsert() {
+            if gh pr view "$RESULTS_BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
+              gh pr edit "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
+            else
+              gh pr create --base main --head "$RESULTS_BRANCH" --title "Eval results: $summary" --body "$body"
+            fi
+          }
+          for try in 1 2 3; do
+            upsert && break
+            if [ "$try" = 3 ]; then exit 1; fi
+            echo "::warning::Opening or updating the results PR failed (try $try of 3); retrying in $((try * 15))s."
+            sleep $((try * 15))
+          done
 
       # Pushes and PRs made with the built-in token don't trigger other workflows, except
       # workflow_dispatch. So CI is started here, on the results branch; its checks attach to the
