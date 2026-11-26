@@ -93,7 +93,9 @@ for (const width of [1440, 390]) {
     // The card isn't a link (Aswin, 2026-11-26).
     await strip.getByText("I run on an AI-powered operating stack.").click();
     await expect(page).toHaveURL(/\/$/);
-    if (width === 390) expect((await strip.locator("> div").boundingBox())!.height).toBeGreaterThanOrEqual(76);
+    // Design update 13: no 76px minimum on phones; the desktop row wraps.
+    await expect(strip.locator("> div")).not.toHaveCSS("min-height", "76px");
+    if (width === 1440) await expect(strip.locator("> div > div")).toHaveCSS("flex-wrap", "wrap");
     await link.click();
     await expect(page).toHaveURL(/\/stack$/);
   });

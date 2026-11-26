@@ -51,7 +51,7 @@ export default function About() {
             <p className="m-0 font-mono text-[12px] tracking-[0.08em] text-muted">{cvHeader.eyebrow}</p>
             <div className="flex flex-wrap items-start justify-between gap-x-12 gap-y-5">
               <div className="flex max-w-[760px] flex-[1_1_480px] flex-col gap-2">
-                <h1 className="m-0 font-serif text-[clamp(40px,5vw,56px)] font-normal leading-[1.05] tracking-[-0.015em]">
+                <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">
                   {cvHeader.name}
                 </h1>
                 <p className="m-0 text-[18px] font-medium">{cvHeader.role}</p>

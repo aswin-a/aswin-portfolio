@@ -68,7 +68,7 @@ export async function ProductsSection({ headingLevel = 2, anchorBase = "" }: { h
             <H
               id="work-h"
               className={`m-0 font-serif font-normal ${
-                index ? "text-[clamp(44px,6vw,64px)] leading-[1.04] tracking-[-0.015em]" : "text-[40px] leading-[1.1] tracking-[-0.01em]"
+                index ? "text-h1 leading-[1.1] tracking-[-0.015em]" : "text-[40px] leading-[1.1] tracking-[-0.01em]"
               }`}
             >
               Products I&apos;ve built

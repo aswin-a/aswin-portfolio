@@ -13,8 +13,7 @@
 body{margin:0}
 a{color:inherit}
 a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2px}
-.strip-link:hover .strip-cta{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
-.strip-link:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
+.strip-cta:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;opacity:1}
 </style>
 </helmet>
 <div style="width: 390px; min-height: 4300px; box-sizing: border-box; position: relative; overflow-x: clip; background: {{t.bg}}; color: {{t.ink}}; font-family: {{t.sans}}">
@@ -46,7 +45,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <dc-import name="Hero" initial="result" compact="{{ true }}" xray="{{xray}}" on-ask="{{openAsk}}" on-ask-gap="{{askGap}}" on-result="{{setCtx}}" on-xray="{{xrayOn}}" hint-size="390px,2500px"></dc-import>
 
 <section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0; background: #EFEAE0; padding: 20px 16px">
-<a href="Stack.dc.html" class="strip-link" style="display: flex; align-items: center; gap: 14px; min-height: 76px; box-sizing: border-box; padding: 14px 16px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 12px; text-decoration: none; color: #1B1A17">
+<div style="display: flex; align-items: center; gap: 14px; box-sizing: border-box; padding: 14px 16px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 12px; color: #1B1A17">
 <span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 2px; width: 64px; box-sizing: border-box; padding: 6px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 6px">
 <span style="display: block; height: 9px; border-radius: 2px; background: #1B1A17"></span>
 <span style="display: block; height: 2px"></span>
@@ -55,8 +54,8 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 <span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 </span>
-<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I WORK WITH AI</span><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><span class="strip-cta" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">See how I work, layer by layer →</span></span>
-</a>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><a href="Stack.dc.html" class="strip-cta" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86; text-decoration: none">See how I work, layer by layer →</a></span>
+</div>
 </section>
 
 <section aria-labelledby="m-hood" style="border-top: 1px solid {{t.rule}}; padding: 36px 20px; display: flex; flex-direction: column; gap: 10px">

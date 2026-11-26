@@ -41,6 +41,8 @@
   --judg-pill: #5a554c;
   --stack-rail: #b9b1a3;
   --strip-band: #cfc7b8;
+  /* One page-title size on every page (design update 13): the home hero H1's size. */
+  --h1: clamp(32px, 4vw, 46px);
 }
 
 :root {
@@ -66,6 +68,9 @@
 }
 
 @theme inline {
+  --text-h1: var(--h1);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.015em;
   --color-bg: var(--bg);
   --color-panel: var(--panel);
   --color-paper: var(--paper);

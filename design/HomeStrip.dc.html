@@ -10,8 +10,7 @@
 <helmet>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
 <style>
-.strip-link:hover .strip-cta{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
-.strip-link:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
+.strip-cta:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;opacity:1}
 body{margin:0}
 a{color:inherit}
 a:hover .strip-cta{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
@@ -23,8 +22,8 @@ a:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
 <p style="margin: 0; padding: 0 48px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C574E">DESKTOP · SITS BETWEEN THE FIT-CHECK HERO AND “ACROSS ALL MY WORK”</p>
 
 <section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0; background: #EFEAE0; padding: 28px 24px">
-<a href="Stack.dc.html" class="strip-link" style="display: block; max-width: 1040px; margin: 0 auto; box-sizing: border-box; padding: 20px 24px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 14px; text-decoration: none; color: #1B1A17">
-<span style="display: flex; align-items: center; gap: 24px">
+<div style="max-width: 1040px; margin: 0 auto; box-sizing: border-box; padding: 20px 24px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 14px; color: #1B1A17">
+<div style="display: flex; align-items: center; gap: 16px 24px; flex-wrap: wrap">
 <span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 3px; width: 112px; box-sizing: border-box; padding: 8px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 8px">
 <span style="display: block; height: 14px; border-radius: 3px; background: #1B1A17"></span>
 <span style="display: block; height: 4px"></span>
@@ -33,10 +32,10 @@ a:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
 <span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 <span style="display: block; height: 9px; border-radius: 2px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 </span>
-<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I WORK WITH AI</span><span style="font-family: 'Newsreader', Georgia, serif; font-size: 26px; line-height: 1.25">I run on an AI-powered operating stack.</span></span>
-<span class="strip-cta" style="flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #1F4C86; border-radius: 10px; font-size: 15px; font-weight: 600; color: #1F4C86">See how I work, layer by layer <span aria-hidden="true">→</span></span>
-</span>
-</a>
+<p style="flex: 1 1 320px; margin: 0; font-family: 'Newsreader', Georgia, serif; font-size: 26px; line-height: 1.25">I run on an AI-powered operating stack.</p>
+<a href="Stack.dc.html" class="strip-cta" style="flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #1F4C86; border-radius: 10px; font-size: 15px; font-weight: 600; color: #1F4C86; text-decoration: none">See how I work, layer by layer <span aria-hidden="true">→</span></a>
+</div>
+</div>
 </section>
 
 <div style="display: flex; gap: 64px; padding: 28px 48px 0; align-items: flex-start">
@@ -44,7 +43,7 @@ a:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
 <p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C574E">MOBILE · 390</p>
 <div style="width: 390px; box-sizing: border-box; padding: 24px 0; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 20px; overflow: hidden">
 <section aria-label="Operating stack" style="border-top: 1px solid #E2DCD0; background: #EFEAE0; padding: 20px 16px">
-<a href="Stack.dc.html" class="strip-link" style="display: flex; align-items: center; gap: 14px; min-height: 76px; box-sizing: border-box; padding: 14px 16px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 12px; text-decoration: none; color: #1B1A17">
+<div style="display: flex; align-items: center; gap: 14px; box-sizing: border-box; padding: 14px 16px; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 12px; color: #1B1A17">
 <span aria-hidden="true" style="flex: none; display: flex; flex-direction: column; gap: 2px; width: 64px; box-sizing: border-box; padding: 6px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 6px">
 <span style="display: block; height: 9px; border-radius: 2px; background: #1B1A17"></span>
 <span style="display: block; height: 2px"></span>
@@ -53,15 +52,15 @@ a:focus-visible{outline:2px solid #4F7FC0;outline-offset:-2px}
 <span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 <span style="display: block; height: 6px; border-radius: 1px; border: 1px solid #CFC7B8; background: #FFFDF8"></span>
 </span>
-<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I WORK WITH AI</span><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><span class="strip-cta" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">See how I work, layer by layer →</span></span>
-</a>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Newsreader', Georgia, serif; font-size: 19px; line-height: 1.3">I run on an AI-powered operating stack.</span><a href="Stack.dc.html" class="strip-cta" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86; text-decoration: none">See how I work, layer by layer →</a></span>
+</div>
 </section>
 </div>
 </div>
 <div style="max-width: 560px; display: flex; flex-direction: column; gap: 10px; padding-top: 32px">
 <p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #5C574E">BEHAVIOUR</p>
 <ul style="margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5">
-<li>It sits in its own tinted band (#EFEAE0) as a paper card with a small “HOW I WORK WITH AI” label, so it reads as a separate section rather than the end of the fit check. The whole card is one link to /stack. The statement says what it is; the CTA says what you get by clicking. Hover underlines the CTA; keyboard focus draws the site’s blue ring inside the strip.</li>
+<li>It sits in its own tinted band (#EFEAE0) as a paper card, so it reads as a separate section rather than the end of the fit check. Only the button links to /stack; the card itself is not clickable. Hover underlines the button text.</li>
 <li>The thumbnail is drawn in CSS (one dark band, four light bands), so it stays crisp and costs no image request. It is hidden from screen readers.</li>
 <li>On mobile the CTA drops under the statement as a mono accent line; the tap target stays at least 76px tall.</li>
 </ul>

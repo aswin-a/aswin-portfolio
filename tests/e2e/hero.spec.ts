@@ -374,6 +374,61 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("button", { name: "hit the rate limit" })).toHaveCount(0);
     await expect(hero(page).getByText("Failure drills · runs the real fallback in the fit check above")).toHaveCount(0);
   });
+
+  test("Show JD: toggle on the compact bar, the sample label, closes on a new check (design update 13)", async ({ page }) => {
+    await page.goto("/");
+    await sample(page, "Senior Platform PM");
+    await expect(page.getByRole("heading", { name: "Strong on 4 of 6 requirements." })).toBeVisible();
+    const toggle = hero(page).getByRole("button", { name: "Show JD ↓" });
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toHaveAttribute("aria-controls", "jd-view");
+    await expect(toggle).toHaveCSS("font-size", "13px");
+    await expect(page.locator("#jd-view")).toHaveCount(0);
+    await toggle.click();
+    const view = page.locator("#jd-view");
+    await expect(hero(page).getByRole("button", { name: "Hide JD ↑" })).toHaveAttribute("aria-expanded", "true");
+    await expect(view.getByText("SAMPLE JOB DESCRIPTION", { exact: true })).toBeVisible();
+    await expect(view.getByText("one of the sample roles", { exact: true })).toBeVisible();
+    const box = view.locator("p");
+    await expect(box).toHaveText(HERO_SAMPLES[0].jd, { useInnerText: true });
+    await expect(box).toHaveCSS("max-height", "220px");
+    await expect(box).toHaveCSS("white-space", "pre-wrap");
+    await hero(page).getByRole("button", { name: "Hide JD ↑" }).click();
+    await expect(view).toHaveCount(0);
+
+    // A new check closes it again.
+    await toggle.click();
+    await hero(page).getByRole("button", { name: "Try another role" }).click();
+    await sample(page, "A bad fit, on purpose");
+    await expect(hero(page).getByRole("button", { name: "Show JD ↓" })).toBeVisible();
+    await expect(page.locator("#jd-view")).toHaveCount(0);
+  });
+
+  test("Show JD: a pasted JD is labelled as pasted and appears in no request but the fit-check call (design update 13)", async ({ page }) => {
+    const marker = "Zq7 unique pasted marker for the privacy test";
+    const seen: { url: string; fitCall: boolean }[] = [];
+    page.on("request", (req) => {
+      const body = req.postData() ?? "";
+      if (!req.url().includes(marker) && !body.includes(marker) && !decodeURIComponent(req.url()).includes(marker)) return;
+      const fitCall = new URL(req.url()).pathname === "/api/run" && req.method() === "POST" && body.includes('"jd"');
+      seen.push({ url: req.url(), fitCall });
+    });
+    await page.goto("/");
+    await paste(page, `Senior PM, platform APIs.\n${marker}`);
+    await expect(done(page)).toBeVisible();
+    await hero(page).getByRole("button", { name: "Show JD ↓" }).click();
+    const view = page.locator("#jd-view");
+    await expect(view.getByText("THE JOB DESCRIPTION YOU PASTED", { exact: true })).toBeVisible();
+    await expect(view.getByText("kept for this check only · not stored", { exact: true })).toBeVisible();
+    await expect(view.locator("p")).toContainText(marker);
+    // Let any later requests (analytics, prefetches) go out.
+    await page.waitForTimeout(1000);
+    expect(seen.filter((r) => !r.fitCall)).toEqual([]);
+    expect(seen.filter((r) => r.fitCall)).toHaveLength(1);
+    // Nor in browser storage.
+    const stored = await page.evaluate(() => JSON.stringify({ ...localStorage }) + JSON.stringify({ ...sessionStorage }));
+    expect(stored).not.toContain(marker);
+  });
 });
 
 test.describe("Break my AI", () => {
