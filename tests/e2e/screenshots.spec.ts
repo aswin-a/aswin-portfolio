@@ -23,6 +23,8 @@ const BASELINES = new Set([
   "about-group-open-390",
   "ask-topic-1440",
   "ask-topic-390",
+  // /stack (design update 11): the page and layer 3 open (StackExpanded.dc.html).
+  ...["stack", "stack-layer-3-open"].flatMap((p) => [`${p}-1440`, `${p}-390`]),
 ]);
 
 /**
@@ -48,7 +50,7 @@ async function snap(page: Page, file: string, target: Page | Locator = page, ful
   else await expect(target).toHaveScreenshot(`${file}.png`, { mask, ...tolerance });
 }
 
-const PAGES = ["/", "/work", "/work/integration-builder", "/work/job-search-agent", "/work/fit-check", "/log", "/log/integrations-experience-is-agent-experience", "/about"];
+const PAGES = ["/", "/work", "/work/integration-builder", "/work/job-search-agent", "/work/fit-check", "/log", "/log/integrations-experience-is-agent-experience", "/about", "/stack"];
 const SIZES = [
   ["1440", 1440, 900],
   ["390", 390, 844],
@@ -197,4 +199,14 @@ for (const [name, width, height] of SIZES) {
       await snap(page, `contact-${state}-${name}`, section);
     });
   }
+}
+
+// /stack with layer 3 open, for the side-by-side check against StackExpanded.dc.html (design update 11).
+for (const [name, width, height] of SIZES) {
+  test(`screen stack-layer-3-open-${name}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/stack#layer-3");
+    await expect(page.locator("#pg-layer-3")).toHaveAttribute("aria-expanded", "true");
+    await snap(page, `stack-layer-3-open-${name}`, page, true);
+  });
 }

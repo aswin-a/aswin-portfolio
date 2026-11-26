@@ -5,8 +5,10 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 import type { NavCurrent } from "@/components/nav";
 import { useSite } from "@/components/xray-provider";
 
+// The current page's row shows • in place of its mark (StackMobile.dc.html; every page, Aswin, 2026-11-26).
 const ROWS: { id: NavCurrent | "contact"; label: string; href: string; mark: string }[] = [
   { id: "work", label: "Case studies", href: "/work", mark: "→" },
+  { id: "stack", label: "Stack", href: "/stack", mark: "→" }, // design update 11
   { id: "log", label: "Build log", href: "/log", mark: "→" },
   { id: "about", label: "CV", href: "/about", mark: "→" },
   { id: "contact", label: "Contact", href: "#contact", mark: "↓" },
@@ -105,7 +107,7 @@ export function MobileNav({ current, headerRef }: { current: NavCurrent; headerR
               <>
                 {r.label}
                 <span aria-hidden="true" className="font-mono text-[13px] text-muted">
-                  {r.mark}
+                  {r.id === current ? "•" : r.mark}
                 </span>
               </>
             );

@@ -42,7 +42,7 @@ test.describe("phone header and menu", () => {
     await expect(menuButton(page)).toHaveAttribute("aria-expanded", "true");
     await expect(menu(page)).toHaveCSS("box-shadow", "rgba(27, 26, 23, 0.12) 0px 16px 32px 0px");
     const rows = menu(page).getByRole("link");
-    await expect(rows).toHaveText(["Case studies→", "Build log→", "CV→", "Contact↓"]);
+    await expect(rows).toHaveText(["Case studies→", "Stack→", "Build log→", "CV→", "Contact↓"]);
     await expect(rows.first()).toHaveCSS("min-height", "52px");
     await expect(rows.first()).toHaveCSS("font-size", "18px");
     await expect(menu(page).getByText("Shows how the AI works: sources, guardrails, cost.")).toBeVisible();
@@ -362,4 +362,16 @@ test.describe("Ask sheet and menu scrim (update 10)", () => {
     await page.mouse.up();
     await expect(sheet(page)).toHaveCount(0);
   });
+});
+
+test("the phone menu lists Stack and marks the current page with •", async ({ page }) => {
+  await page.goto("/stack");
+  await page.getByRole("button", { name: /Menu/ }).click();
+  const menu = page.locator("#m-menu");
+  const rows = menu.getByRole("link");
+  await expect(rows.nth(0)).toContainText("Case studies");
+  await expect(rows.nth(1)).toContainText("Stack");
+  await expect(rows.nth(1)).toHaveAttribute("aria-current", "page");
+  await expect(rows.nth(1)).toContainText("•");
+  await expect(rows.nth(2)).toContainText("Build log");
 });

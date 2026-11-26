@@ -2,6 +2,38 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-26 (update 11): New `/stack` page ("My AI-powered operating stack"), Stack in the nav, homepage strip
+
+**The full build spec for this update is `design/STACK-HANDOFF.md`.** It covers tokens, components, layer content, responsive rules, states and accessibility. Follow it alongside the artboards; where the two disagree, the artboards win and you should ask Aswin. This entry only lists what changed in the files.
+
+**New artboards**
+- `Stack.dc.html`: /stack on desktop (1440)
+- `StackMobile.dc.html`: /stack on phones (390)
+- `StackExpanded.dc.html`: one layer open, desktop and mobile
+- `StackDiagram.dc.html`: the shared diagram component (Judgment band, rail, 4-layer accordion)
+- `HomeStrip.dc.html`: the homepage strip spec
+
+**Changed:** `Nav.dc.html`, `Main.dc.html`, `Mobile.dc.html` and `canvas.json` (new boards; Main h 6020, Mobile h 5490).
+
+### 1. Nav.dc.html
+- New item **Stack** between "Case studies" and "Build log" (`id: 'stack'`, href `/stack`). `'stack'` is added to the `current` enum.
+
+### 2. Mobile.dc.html
+- Menu rows are now: Case studies · **Stack** · Build log · CV · Contact.
+- **Homepage strip** (mobile version) added directly under the fit-check hero, above "ACROSS ALL MY WORK". Details are in STACK-HANDOFF §2.7: a 64px CSS thumbnail, a 19px serif statement, a mono accent CTA line, at least 76px tall, and the whole strip is one link.
+
+### 3. Main.dc.html
+- **Homepage strip** (desktop version) in the same place: a 112px thumbnail, a 26px serif statement, and an outline-styled CTA "See how I work, layer by layer →". The whole strip is one `<a>`. A top border only (no bottom border, to avoid a double rule). Hover underlines the CTA; focus shows an inset blue ring.
+- **Note: the production card CTA in this file still reads "Run the failure drills →".** A local edit to "Try Break my AI →" was overwritten by this sync. **Ask Aswin which wording to ship; don't assume either.**
+
+### Spec impact
+- Add the route `/stack` (title "My AI-powered operating stack — Aswin"; meta description = the subline) and a markdown twin `/stack.md` for GEO.
+- Add `content/stack.ts` (the 4 layers, as one data array) and `content/stack-rules.ts` (R1–R4). Copy all text word for word from `Stack.dc.html` and `StackDiagram.dc.html`.
+- `StackDiagram`: layers open independently (several can be open at once), all closed at first, deep links `#layer-N`, `<h3><button aria-expanded aria-controls>` triggers, panels as `role="region"`.
+- **Placeholders** (`[link]`, `[repo]`, the LinkedIn post): never ship them. Hide a CTA until its URL is real.
+- X-ray has no effect on /stack, and the intro banner isn't shown there.
+- Tests: Playwright on desktop and at 390px for accordion keyboard use, deep links, no horizontal scroll down to 320px, and the homepage strip link.
+
 ## 2026-11-25 (update 10): Ask becomes a real bottom sheet on phones; menu gets a scrim
 
 Changed: `Ask.dc.html`, `Mobile.dc.html`, `MobileAsk.dc.html`. Nothing else changed (canvas sizes too).

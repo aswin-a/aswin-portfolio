@@ -1,11 +1,13 @@
 import { cvHeader } from "@/content/cv";
 import { products } from "@/content/products";
 import { siteMeta } from "@/content/site-meta";
+import { stackHero } from "@/content/stack";
 import { hrefOf, isTodo, published } from "@/lib/content";
 import { linkedCaseStudies } from "@/lib/case-studies";
 import { isHiddenStudy } from "@/lib/case-study-visibility";
 import { cvMarkdown } from "@/lib/cv";
 import { posts } from "@/lib/posts";
+import { stackMarkdown } from "@/lib/stack";
 import { absolute, DESCRIPTIONS, SITE_URL } from "@/lib/seo";
 
 /**
@@ -39,6 +41,11 @@ export async function llmsTxt(): Promise<string> {
     "",
     link("CV", "/about", "roles, side projects, education and skills"),
     link("CV as markdown", "/about.md"),
+    "",
+    "## How I work with AI",
+    "",
+    link(stackHero.title, "/stack", stackHero.subline),
+    link("Operating stack as markdown", "/stack.md"),
     "",
     ...(studies.length ? ["## Case studies", "", ...studies.map((cs) => link(cs.title, `/work/${cs.slug}`, cs.lede)), ""] : []),
     "## Build log",
@@ -78,6 +85,7 @@ export async function llmsFullTxt(): Promise<string> {
   }
   out.push("## Build log", "");
   for (const p of logPosts) out.push(`### ${p.title}`, "", `${p.tag} · ${p.date} · ${absolute(`/log/${p.slug}`)}`, "", p.summary, "");
+  out.push("## Operating stack", "", stackMarkdown().replace(/^# .*\n\n/, "").replace(/^#/gm, "##"), "");
   out.push("## CV", "", cvMarkdown().replace(/^# .*\n\n/, ""));
   return out.join("\n");
 }

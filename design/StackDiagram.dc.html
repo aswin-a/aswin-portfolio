@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stack diagram — judgment band and four layers</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="display: flex; flex-direction: column; gap: 0; color: #1B1A17; font-family: 'IBM Plex Sans', system-ui, sans-serif">
+
+<section aria-labelledby="{{ids.judg}}" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 40px; padding: {{judgPad}}; background: #1B1A17; color: #FFFDF8; border-radius: 16px">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<p style="margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; color: #CFC8BA">THE TOP LAYER · NEVER OUTSOURCED</p>
+<h2 id="{{ids.judg}}" style="margin: 0; font-family: 'Newsreader', Georgia, serif; font-weight: 400; font-size: {{judgSize}}; line-height: 1.12; letter-spacing: -0.01em">Judgment — the layer I never outsource.</h2>
+<p style="margin: 0; font-family: 'Newsreader', Georgia, serif; font-size: {{judgBody}}; line-height: 1.45; color: #E4DED2">AI researches, synthesizes, challenges and executes. I stay accountable for what matters, what’s true and what ships.</p>
+</div>
+<ul aria-label="What I stay accountable for" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px">
+<li style="padding: 6px 12px; border: 1px solid #5A554C; border-radius: 999px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px">what matters</li>
+<li style="padding: 6px 12px; border: 1px solid #5A554C; border-radius: 999px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px">what’s true</li>
+<li style="padding: 6px 12px; border: 1px solid #5A554C; border-radius: 999px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px">what ships</li>
+</ul>
+</section>
+
+<div aria-hidden="true" style="display: flex; align-items: center; gap: 12px; padding-left: {{railPad}}; height: 40px">
+<span style="display: block; width: 1px; height: 40px; background: #B9B1A3"></span>
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C574E">governs every layer below</span>
+</div>
+
+<ol aria-label="Operating stack layers" style="margin: 0; padding: 0; list-style: none; background: #FFFDF8; border: 1px solid #E2DCD0; border-radius: 16px; overflow: hidden">
+<sc-for list="{{layers}}" as="l" hint-placeholder-count="4">
+<li style="border-top: {{l.divider}}; background: {{l.rowBg}}">
+<h3 style="margin: 0; font-weight: inherit; font-size: inherit">
+<button type="button" id="{{l.btnId}}" onClick="{{l.toggle}}" aria-expanded="{{l.open}}" aria-controls="{{l.panelId}}" style="display: grid; grid-template-columns: {{cols}}; align-items: center; gap: 4px 20px; width: 100%; box-sizing: border-box; min-height: 64px; padding: {{rowPad}}; border: 0; background: transparent; color: #1B1A17; font-family: 'IBM Plex Sans', system-ui, sans-serif; text-align: left; cursor: pointer">
+<span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; width: {{numSize}}; height: {{numSize}}; border-radius: 999px; border: 1px solid {{l.numBorder}}; background: {{l.numBg}}; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: {{l.numInk}}">{{l.num}}</span>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px">
+<span style="font-family: 'Newsreader', Georgia, serif; font-size: {{nameSize}}; line-height: 1.2">{{l.name}}</span>
+</span>
+<span style="font-size: {{sumSize}}; line-height: 1.45; color: #5C574E">{{l.summary}}</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; justify-self: end; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86; white-space: nowrap">{{l.cue}}<span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; border: 1px solid {{l.iconBorder}}; font-size: 15px; line-height: 1">{{l.icon}}</span></span>
+</button>
+</h3>
+<sc-if value="{{l.open}}" hint-placeholder-val="{{ false }}">
+<div id="{{l.panelId}}" role="region" aria-labelledby="{{l.btnId}}" style="display: grid; grid-template-columns: {{panelCols}}; gap: 20px 32px; padding: {{panelPad}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">TOOLS</span>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{l.tools}}" as="tool" hint-placeholder-count="3">
+<li style="padding: 4px 10px; border: 1px solid #E2DCD0; border-radius: 6px; background: #F6F3EC; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #1B1A17">{{tool}}</li>
+</sc-for>
+</ul>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">HOW I USE IT</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.55">{{l.how}}</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A5510"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em">MY CALL · </span>{{l.call}}</p>
+</div>
+<a href="{{l.proofHref}}" style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #F6F3EC; border: 1px solid #E2DCD0; border-radius: 12px; color: #1B1A17; text-decoration: none">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; color: #5C574E">PROOF · {{l.proofKind}}</span>
+<span style="font-size: 16px; font-weight: 600; line-height: 1.35">{{l.proofTitle}}</span>
+<span style="font-size: 14px; line-height: 1.5; color: #5C574E">{{l.proofBody}}</span>
+<span style="margin-top: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #1F4C86">{{l.proofCta}}</span>
+</a>
+</div>
+</sc-if>
+</li>
+</sc-for>
+</ol>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"open":{"editor":"enum","options":["none","1","2","3","4"],"default":"none"},"compact":{"editor":"boolean","default":false},"idPrefix":{"editor":"text","default":"st"},"$preview":{"width":1040,"height":760}}'>
+var LAYERS = [
+  { num: '01', name: 'Thinking & challenging', summary: 'Claude with my PM Skills library; ChatGPT and Gemini to challenge big decisions.',
+    tools: ['Claude', 'PM Skills library', 'ChatGPT', 'Gemini'],
+    how: 'I frame the problem myself, then use Claude with my PM Skills to research and draft options. For big decisions I ask a second model to argue against my plan.',
+    call: 'Which problem is worth solving, and which option I back.',
+    proofKind: 'BEFORE / AFTER', proofTitle: 'A decision, before and after the challenge round', proofBody: 'My first draft, the objections a second model raised, and what I changed.', proofCta: 'See the example → [link]', proofHref: '#' },
+  { num: '02', name: 'Context', summary: 'A product context repo (strategy, personas, metrics, decisions) and OpenSpec for specs.',
+    tools: ['Context repo', 'OpenSpec', 'Markdown', 'Git'],
+    how: 'Strategy, personas, metrics and past decisions live in one repo every AI session starts from. Specs are written in OpenSpec, so a build starts from an agreed spec, not a chat.',
+    call: 'What goes into the context, and what is out of date.',
+    proofKind: 'MASTER RESUME + PRD', proofTitle: 'One source of truth, and a site built from a PRD', proofBody: 'My master resume feeds every tailored CV and the fit check. This site was built from a written PRD.', proofCta: 'Read the PRD → [link]', proofHref: '#' },
+  { num: '03', name: 'Building & communicating', summary: 'Claude Code prototypes and data checks, to learn, not to ship; PRDs and decision docs.',
+    tools: ['Claude Code', 'PRDs', 'Decision docs'],
+    how: 'I build throwaway prototypes and quick data checks to test an idea before asking engineering for time. What I learn goes into a PRD or a decision doc.',
+    call: 'What the prototype proved, and what still needs engineering.',
+    proofKind: 'LIVE ON THIS SITE', proofTitle: 'The JD fit check, and how I built it', proofBody: 'Paste a job description and get a cited verdict. “How I built this” shows the spec, the trade-offs and the evals.', proofCta: 'Try the fit check →', proofHref: 'Main.dc.html' },
+  { num: '04', name: 'Automation', summary: 'Scheduled agents for feedback and competitor digests, metrics summaries and meeting briefs.',
+    tools: ['Scheduled agents', 'MCP connectors', 'Claude'],
+    how: 'Agents run on a schedule and leave a digest for me to read. Anything that sends, applies or publishes waits for my approval.',
+    call: 'Every action that leaves my desk.',
+    proofKind: 'OPEN SOURCE', proofTitle: 'Job-search agent on GitHub', proofBody: 'Searches LinkedIn, tailors my resume to each JD, and applies only after I approve.', proofCta: 'github.com/aswin-a/[repo] →', proofHref: 'https://github.com/aswin-a' }
+];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var o = {}; if (props.open && props.open !== 'none') o[props.open] = true;
+    this.state = { open: o };
+  }
+  componentDidUpdate(prev) {
+    if (prev.open !== this.props.open) { var o = {}; if (this.props.open && this.props.open !== 'none') o[this.props.open] = true; this.setState({ open: o }); }
+  }
+  renderVals() {
+    var c = !!this.props.compact, p = this.props.idPrefix || 'st';
+    return {
+      ids: { judg: p + '-judgment' },
+      judgPad: c ? '22px 20px' : '32px 36px', judgSize: c ? '26px' : '34px', judgBody: c ? '17px' : '20px',
+      railPad: c ? '34px' : '51px',
+      cols: c ? '32px minmax(0, 1fr) auto' : '40px minmax(0, 1fr) auto',
+      numSize: c ? '32px' : '40px', nameSize: c ? '21px' : '26px', sumSize: c ? '14px' : '15px',
+      rowPad: c ? '16px 16px' : '22px 28px',
+      panelCols: c ? 'minmax(0, 1fr)' : 'minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1fr)',
+      panelPad: c ? '4px 16px 20px 16px' : '4px 28px 28px 88px',
+      layers: LAYERS.map((l, i) => {
+        var key = String(i + 1), open = !!this.state.open[key];
+        return Object.assign({}, l, {
+          open: open,
+          btnId: p + '-layer-' + key, panelId: p + '-layer-' + key + '-panel',
+          cue: c ? '' : (open ? 'Close' : 'Open'), icon: open ? '−' : '+',
+          iconBorder: open ? '#1F4C86' : '#E2DCD0',
+          divider: i === 0 ? '0' : '1px solid #E2DCD0',
+          rowBg: open ? '#FFFDF8' : '#FFFDF8',
+          numBorder: open ? '#1B1A17' : '#E2DCD0', numBg: open ? '#1B1A17' : '#FFFDF8', numInk: open ? '#FFFDF8' : '#5C574E',
+          toggle: () => { var o = Object.assign({}, this.state.open); o[key] = !o[key]; this.setState({ open: o }); }
+        });
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
