@@ -137,7 +137,6 @@ export const STACK_POST_URL: string = "";
 /** Homepage strip (HomeStrip.dc.html, Main.dc.html, Mobile.dc.html). */
 export const stackStrip = {
   label: "Operating stack",
-  eyebrow: "HOW I WORK WITH AI", // design update 12 §9
   statement: "I run on an AI-powered operating stack.",
   cta: "See how I work, layer by layer",
   arrow: "→",

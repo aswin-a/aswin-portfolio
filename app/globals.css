@@ -207,12 +207,9 @@ html {
   display: none;
 }
 
-/* Homepage strip (Main.dc.html / Mobile.dc.html, design update 11): hover underlines the CTA; focus draws the ring inside. */
-.strip-link:hover .strip-cta {
+/* Homepage strip (Main.dc.html / Mobile.dc.html, design update 11): hover underlines the CTA, which is the only link. */
+.strip-cta:hover {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-}
-.strip-link:focus-visible {
-  outline-offset: -2px;
 }

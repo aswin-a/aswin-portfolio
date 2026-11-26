@@ -77,9 +77,7 @@ test.describe("keyboard", () => {
         const f = await focused(page);
         if (!f) continue;
         if (f.id) reached.add(f.id);
-        // The homepage strip draws its ring inside the strip (HomeStrip.dc.html, design update 11).
-        const inset = f.name.startsWith("HOW I WORK WITH AI") && f.ring === "solid 2px rgb(79, 127, 192) -2px";
-        if (f.ring !== "solid 2px rgb(79, 127, 192) 2px" && !inset && !NO_RING_BY_DESIGN.includes(f.name)) noRing.push(`${f.name}: ${f.ring}`);
+        if (f.ring !== "solid 2px rgb(79, 127, 192) 2px" && !NO_RING_BY_DESIGN.includes(f.name)) noRing.push(`${f.name}: ${f.ring}`);
       }
       const missed = all.filter((id) => !reached.has(id));
       const missedNames = await Promise.all(

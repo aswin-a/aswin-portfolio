@@ -197,12 +197,12 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("link", { name: "See my CV" })).toHaveAttribute("href", "/about");
 
     const memory = await page.evaluate(() => JSON.parse(window.sessionStorage.getItem("fit-memory") ?? "null"));
-    expect(memory).toMatchObject({ role: "Senior Platform PM · APIs & integrations", matchCount: 4 });
+    expect(memory).toMatchObject({ role: "Senior Product Manager · APIs & Integrations", matchCount: 4 });
     expect(memory.gaps.map((g: { req: string }) => g.req)).toEqual(["3+ years shipping LLM features in production", "Running evals at team scale"]);
 
     await hero(page).getByRole("button", { name: /^Ask my work/ }).click();
     const dialog = page.getByRole("dialog", { name: "Ask my work" });
-    await expect(dialog.getByText("Senior Platform PM · APIs & integrations")).toBeVisible();
+    await expect(dialog.getByText("Senior Product Manager · APIs & Integrations")).toBeVisible();
   });
 
   test("result at 390: matches and gaps stack, with their labels", async ({ page }) => {
@@ -289,7 +289,7 @@ test.describe("fit check", () => {
     await expect(hero(page).getByRole("table").nth(1).getByText("—", { exact: true })).toHaveCount(4);
     await hero(page).getByRole("link", { name: "Talk to Aswin anyway" }).click();
     await expect(page).toHaveURL(/#contact$/);
-    await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Head of Hardware Product · consumer electronics");
+    await expect(page.getByLabel("Role", { exact: true })).toHaveValue("Head of Hardware Product · Consumer Electronics");
     await expect(page.getByText("pre-filled from your fit check")).toBeVisible();
     // Design update 7: the WhatsApp line notes the role.
     await expect(page.locator("#contact").getByText(/ · WhatsApp anytime · role added to the message$/)).toBeVisible();

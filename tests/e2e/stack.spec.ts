@@ -83,14 +83,17 @@ test("the Stack nav item marks /stack as current", async ({ page }) => {
 });
 
 for (const width of [1440, 390]) {
-  test(`the homepage strip at ${width}px is one link to /stack`, async ({ page }) => {
+  test(`the homepage strip at ${width}px: only the CTA links to /stack`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const strip = page.getByRole("region", { name: "Operating stack" });
     await expect(strip.getByRole("link")).toHaveCount(1);
     const link = strip.getByRole("link");
-    await expect(link).toHaveAccessibleName(/I run on an AI-powered operating stack\. See how I work, layer by layer/);
-    if (width === 390) expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(76);
+    await expect(link).toHaveAccessibleName(/^See how I work, layer by layer/);
+    // The card isn't a link (Aswin, 2026-11-26).
+    await strip.getByText("I run on an AI-powered operating stack.").click();
+    await expect(page).toHaveURL(/\/$/);
+    if (width === 390) expect((await strip.locator("> div").boundingBox())!.height).toBeGreaterThanOrEqual(76);
     await link.click();
     await expect(page).toHaveURL(/\/stack$/);
   });
