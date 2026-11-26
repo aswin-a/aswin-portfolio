@@ -54,7 +54,7 @@ export const gapQuestion = (req: string) => `About the gap: ${req}`;
 export const CONTACT_SOURCE = { label: "Contact", href: "/#contact" };
 
 /** The input while idle and while thinking, and the submit label (Ask.dc.html, update 2). */
-export const ASK_PLACEHOLDER = "Ask about Aswin's work, or jump to a page…";
+export const ASK_PLACEHOLDER = "Ask about Aswin's work…";
 export const ASK_LOADING = "Answering from the knowledge base…";
 export const ASK_SUBMIT = "Ask";
 export const ASK_THINKING = "Thinking…";

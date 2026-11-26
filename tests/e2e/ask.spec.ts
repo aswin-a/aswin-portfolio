@@ -217,7 +217,7 @@ test.describe("answers", () => {
     await expect(dialog(page).getByText("Suggested for this page")).toBeVisible();
     await expect(input(page)).toBeEnabled();
     await expect(input(page)).toHaveAttribute("aria-busy", "false");
-    await expect(input(page)).toHaveAttribute("placeholder", "Ask about Aswin's work, or jump to a page…");
+    await expect(input(page)).toHaveAttribute("placeholder", "Ask about Aswin's work…");
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
   });
 
