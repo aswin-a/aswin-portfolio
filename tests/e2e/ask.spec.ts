@@ -89,7 +89,7 @@ test.describe("open, close and focus", () => {
     expect(await page.evaluate(() => document.documentElement.style.overflow)).toBe("hidden");
     // Shift+Tab from the input wraps to the last control, Tab from there back to the first.
     await page.keyboard.press("Shift+Tab");
-    await expect(dialog(page).getByRole("link", { name: "About · resume" })).toBeFocused();
+    await expect(dialog(page).getByRole("button", { name: "Has he led a hardware launch?" })).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(input(page)).toBeFocused();
     for (let i = 0; i < 20; i++) {
@@ -99,14 +99,6 @@ test.describe("open, close and focus", () => {
     await page.keyboard.press("Escape");
     expect(await page.locator("main").evaluate((el) => el.closest("[inert]") !== null)).toBe(false);
     expect(await page.evaluate(() => document.documentElement.style.overflow)).toBe("");
-  });
-
-  test("Jump to navigates and closes", async ({ page }) => {
-    await open(page);
-    await dialog(page).getByRole("link", { name: "Build log" }).click();
-    await expect(page).toHaveURL(/\/log$/);
-    await expect(dialog(page)).toHaveCount(0);
-    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveCount(0);
   });
 });
 
@@ -126,7 +118,7 @@ test.describe("before a question", () => {
     });
   }
 
-  test("no Break my AI in Ask, even in X-ray (Aswin, 2026-11-23); Jump to links always", async ({ page }) => {
+  test("no Break my AI in Ask, even in X-ray (Aswin, 2026-11-23); no Jump to (Aswin, 2026-11-26)", async ({ page }) => {
     await open(page, "/?xray=1");
     await expect(dialog(page).getByText("Break my AI", { exact: true })).toHaveCount(0);
     for (const chip of ["prompt injection", "something he hasn't done", "conflicting info", "ambiguous ask"]) {
@@ -134,10 +126,8 @@ test.describe("before a question", () => {
     }
     // The dialog itself stays light; only the scrim darkens.
     await expect(dialog(page)).toHaveCSS("background-color", "rgb(255, 253, 248)");
-    // The case study is hidden for now (content/case-studies/visibility.ts), so Jump to leaves it out.
-    await expect(dialog(page).getByRole("link", { name: "CloudEagle case study" })).toHaveCount(0);
-    await expect(dialog(page).getByRole("link", { name: "Build log" })).toHaveAttribute("href", "/log");
-    await expect(dialog(page).getByRole("link", { name: "About · resume" })).toHaveAttribute("href", "/about");
+    await expect(dialog(page).getByText("Jump to", { exact: true })).toHaveCount(0);
+    await expect(dialog(page).getByRole("link")).toHaveCount(0);
   });
 
   test("no session memory box without a fit check", async ({ page }) => {

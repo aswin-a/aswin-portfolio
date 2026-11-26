@@ -48,12 +48,6 @@ export const ASK_LABELS: Partial<Record<AskKind, [string, AskTone]>> = {
   clarify: ["NEEDS CLARIFYING", "muted"],
 };
 
-export const ASK_JUMP_TO = [
-  { label: "CloudEagle case study", href: "/work/integration-builder" },
-  { label: "Build log", href: "/log" },
-  { label: "About · resume", href: "/about" },
-];
-
 export const CTX_QUESTION = "What should I ask him about these gaps?";
 export const gapQuestion = (req: string) => `About the gap: ${req}`;
 
