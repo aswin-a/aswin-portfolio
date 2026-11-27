@@ -171,7 +171,7 @@ for (const [name, width, height] of SIZES) {
   test(`screen ask-topic-${name}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/about");
-    await page.getByRole("main").locator("ol > li").nth(5).getByRole("button", { name: "Ask about this role →" }).click();
+    await page.getByRole("main").locator("ol > li").nth(6).getByRole("button", { name: "Ask about this role →" }).click();
     await page.getByRole("dialog", { name: "Ask my work" }).getByText(/^ASKING ABOUT/).waitFor();
     await snap(page, `ask-topic-${name}`);
   });
