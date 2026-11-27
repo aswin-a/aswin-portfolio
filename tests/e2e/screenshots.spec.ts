@@ -165,7 +165,7 @@ for (const [name, width, height] of SIZES) {
   test(`screen about-group-open-${name}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/about");
-    await page.getByRole("button", { name: /^Core platform and integrations/ }).click();
+    await page.getByRole("button", { name: /^Identity, Integrations and Data Sync/ }).click();
     await snap(page, `about-group-open-${name}`, page, true);
   });
   test(`screen ask-topic-${name}`, async ({ page }) => {

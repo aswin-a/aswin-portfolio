@@ -1,3 +1,4 @@
+import { cvAt, cvHref } from "@/lib/cv-link";
 import type { AskQuestionId } from "./copy";
 import type { AskKind, AskSource } from "./types";
 
@@ -5,8 +6,9 @@ import type { AskKind, AskSource } from "./types";
  * ASK_ANSWERS from Ask.dc.html, word for word. Replayed only by the AI_FAKE test model
  * (lib/ai/fake.ts), which production refuses; real answers come from `/api/run` (SPEC §8).
  *
- * Prototype links are mapped to routes: About.dc.html → /about (its `#cv=` deep links kept as they
- * are, design update 14), Work.dc.html → the matching
+ * Prototype links are mapped to routes: About.dc.html → /about, its `#cv=` deep links generated from
+ * the same CV lines by locator (design update 15: the targets are the design's, never hand-written
+ * hashes), Work.dc.html → the matching
  * case study or /work, BuildLog.dc.html → /log, Main.dc.html → the fit check (/#top) or /#contact.
  */
 export type AskFixture = { kind: AskKind; text: string; todo: string; guard?: string; sources: AskSource[] };
@@ -20,13 +22,13 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     text: "Yes. His platform PM work is APIs and integrations, including healthcare integrations. Agents run on the same plumbing: a tool call is an API call with judgment attached.",
     todo: "",
     // The Platform & API work case study was removed (Aswin, 2026-11-20).
-    sources: [{ label: "CV · Zelthy · APIs and integrations", href: "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F" }],
+    sources: [{ label: "CV · Zelthy · APIs and integrations", href: cvHref(cvAt("zelthy", "integrations", [1, 2]), "Has he worked on APIs?") }],
   },
   win: {
     kind: "fit",
     text: "At Zelthy he delivered 17 software packages in 8 months: 95% of new apps adopted them and time to deploy fell 80%. His roadmap work contributed to 125% growth in B2B product revenue over 3 years.",
     todo: "",
-    sources: [{ label: "CV · Zelthy · delivery", href: "/about#cv=zelthy.1.0-1&req=What%27s%20his%20biggest%20platform%20win%3F" }],
+    sources: [{ label: "CV · Zelthy · delivery", href: cvHref(cvAt("zelthy", "delivery", [0, 1]), "What's his biggest platform win?") }],
   },
   llm: {
     kind: "gap",
@@ -46,7 +48,7 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     guard: "guard.conflicting_info",
     text: "That doesn't match the record. It shows no professional LLM role; his AI work is agents he built and shipped on his own projects. Going with the record.",
     todo: "",
-    sources: [{ label: "CV · Zelthy · data and AI", href: "/about#cv=zelthy.3&req=Does%20he%20have%20professional%20LLM%20experience%3F" }, STUDIES],
+    sources: [{ label: "CV · Zelthy · data and AI", href: cvHref(cvAt("zelthy", "ai-ml"), "Does he have professional LLM experience?") }, STUDIES],
   },
   ambig: {
     kind: "clarify",
@@ -60,7 +62,7 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     guard: "guard.not_done",
     text: "Closest: running Dhee's, a direct-to-consumer fresh dog-food brand. A physical product, but not hardware.",
     todo: "",
-    sources: [{ label: "CV · Dhee's", href: "/about#cv=dhees" }],
+    sources: [{ label: "CV · Dhee's", href: cvHref(cvAt("dhees")) }],
   },
   whysafe: {
     kind: "fit",
@@ -74,17 +76,11 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     todo: "[What the first eval run got wrong, and the fix]",
     sources: [{ label: "Case study · v2 & lessons", href: "/work/integration-builder" }],
   },
-  isce: {
-    kind: "fit",
-    text: "No. It's a take-home concept from his interview with CloudEagle.ai, shared with their permission. It isn't their product and shows no internal details.",
-    todo: "",
-    sources: [{ label: "Case study · CloudEagle concept", href: "/work/integration-builder" }],
-  },
   health: {
     kind: "fit",
     text: "Four years at Zelthy, a platform for healthcare and pharma clients: integrations with client EHR systems, an HL7 and FHIR evaluation, GDPR, HIPAA and SOC2 compliance, and ML-based OCR for prescriptions with a person reviewing low-confidence results.",
     todo: "",
-    sources: [{ label: "CV · Zelthy · healthcare", href: "/about#cv=zelthy.0.7,10+zelthy.2.3+zelthy.3.0&req=What%27s%20his%20healthcare%20experience%3F" }],
+    sources: [{ label: "CV · Zelthy · healthcare", href: cvHref([...cvAt("zelthy", "integrations", [1, 2]), ...cvAt("zelthy", "releases", [2]), ...cvAt("zelthy", "ai-ml", [0])], "What's his healthcare experience?") }],
   },
   now: {
     kind: "fit",

@@ -9,11 +9,11 @@ export const meta = {
   readTime: "4 min", // L1 (Aswin, 2026-11-24)
   summary: "The safeguard I'd defend in any interview isn't a better prompt. It's an AI that can't send a write call at all, because the form it fills, the engine and the network all refuse one.",
   // TODO(aswin): standfirst, the one-line serif intro under the title (LogPost.dc.html, design update 12).
-  study: { label: "Case study · CloudEagle concept", slug: "integration-builder" },
-  related: [{ label: "GitHub · integration builder", href: "https://github.com/aswin-a/cloudeagle-ai-integration-builder" }], // Aswin, 2026-11-26
+  study: { label: "Case study · Integration builder", slug: "integration-builder" },
+  related: [{ label: "GitHub · integration builder", href: "https://github.com/aswin-a/ai-integration-builder" }], // Aswin, 2026-11-26
 };
 
-CloudEagle's take-home asked for AI that generates integration code from an app's API docs: an API client, auth, user and usage retrieval, error handling, pagination and logging. Taken literally, that gives you a new codebase for every app, written by a model and reviewed by an IT admin who can't read it. So before designing safeguards, I changed what the AI is allowed to produce.
+The obvious version of this product is AI that generates integration code from an app's API docs: an API client, auth, user and usage retrieval, error handling, pagination and logging. Taken literally, that gives you a new codebase for every app, written by a model and reviewed by an IT admin who can't read it. So before designing safeguards, I changed what the AI is allowed to produce.
 
 ## The AI fills a form, not a file
 Auth, pagination, retries and logging work the same way for every REST app. Only the specifics change: which header, which cursor field, which endpoint lists users. So the AI fills in a declarative connector form, and one hardened engine runs every form. That move is itself the biggest safeguard: the form can only express GET or HEAD calls to one host. Whatever the model gets wrong, it can't express a write.
@@ -35,7 +35,7 @@ When the first test fails, the AI repairs the form in test mode, with at most 3 
 One Okta detail changed the design. A token without an admin role doesn't fail: the users endpoint returns 200 with an empty list. A naive test passes that as "connected, 0 users". In this design, nobody found is a failure, and the Connect screen shows how many members the token can see before any test runs.
 
 ## The gate that matters is ours, not the vendor's
-My first instinct was "build against the vendor's sandbox, then promote to production". Long-tail apps rarely have a data sandbox, so that plan breaks on most of them. And the real risk of a read-only connector isn't in the vendor's production. It's in CloudEagle's: a bad mapping marks active people as idle, and an automation reclaims their seats. So new connectors go live in shadow mode. Their data is visible and labelled "Custom (AI-built)", but no automation acts on it until 3 clean syncs and the owner marks it trusted. Each last-active value carries its source and a confidence based on the type of evidence, and a proxy signal never triggers a reclaim on its own.
+My first instinct was "build against the vendor's sandbox, then promote to production". Long-tail apps rarely have a data sandbox, so that plan breaks on most of them. And the real risk of a read-only connector isn't in the vendor's production. It's in the platform's own: a bad mapping marks active people as idle, and an automation reclaims their seats. So new connectors go live in shadow mode. Their data is visible and labelled "Custom (AI-built)", but no automation acts on it until 3 clean syncs and the owner marks it trusted. Each last-active value carries its source and a confidence based on the type of evidence, and a proxy signal never triggers a reclaim on its own.
 
 ## The one I'd defend in any interview
 If I could keep only one, it would be read-only by construction. Prompts drift, models change and tokens are over-privileged more often than not. A system that physically can't send a write doesn't depend on any of those going right. The others limit how wrong the AI can be. This one limits how much damage being wrong can do.

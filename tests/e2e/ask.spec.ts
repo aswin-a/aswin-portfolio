@@ -104,7 +104,7 @@ test.describe("open, close and focus", () => {
 
 test.describe("before a question", () => {
   const HOME = ["Has he worked on APIs?", "How does the fit check avoid making things up?", "Has he shipped LLM features at a company?", "What's his biggest platform win?"];
-  const WORK = ["Which AI agents has he built?", "How does the integration builder keep AI out of production?", "Is the integration builder CloudEagle's product?", "Has he shipped LLM features at a company?"];
+  const WORK = ["Which AI agents has he built?", "How does the integration builder keep AI out of production?", "Why are safeguards the centrepiece?", "Has he shipped LLM features at a company?"];
   const SUGGESTIONS: [string, string[]][] = [
     ["/", HOME],
     ["/work/integration-builder", WORK],
@@ -233,9 +233,9 @@ test.describe("answers", () => {
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
     await expect(input(page)).toBeFocused();
     // Design update 14: the source deep-links to the CV lines the answer cites.
-    await expect(status(page).getByRole("link", { name: "CV · Zelthy · Core platform and integrations →" })).toHaveAttribute(
+    await expect(status(page).getByRole("link", { name: "CV · Zelthy · Identity, Integrations and Data Sync →" })).toHaveAttribute(
       "href",
-      "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F",
+      "/about#cv=zelthy.integrations.1-2&req=Has%20he%20worked%20on%20APIs%3F",
     );
     await expect(status(page).getByRole("link", { name: /Platform & API work/ })).toHaveCount(0);
     await status(page).getByRole("button", { name: "← Ask another" }).click();
@@ -244,12 +244,12 @@ test.describe("answers", () => {
   });
 
   test("todo box for content Aswin still has to supply", async ({ page }) => {
-    // The box lists placeholders in the cited KB entry. The CloudEagle entry's evidence was filled
+    // The box lists placeholders in the cited KB entry. The integration-builder entry's evidence was filled
     // (content sheet D26, 2026-11-24), and no design answer cites the one KB entry that still has one.
-    const cited = KB.find((e) => e.id === "cloudeagle")!;
+    const cited = KB.find((e) => e.id === "integration-builder")!;
     test.skip(cited.todos.length === 0, "No KB entry cited by a design Ask answer still has a placeholder");
     await open(page, "/work/integration-builder");
-    await input(page).fill(ASK_QUESTIONS.isce);
+    await input(page).fill(ASK_QUESTIONS.whysafe);
     await input(page).press("Enter");
     const todoBox = status(page).getByText(cited.todos[0], { exact: true });
     await expect(todoBox).toBeVisible();
@@ -389,9 +389,9 @@ test.describe("topic mode on the CV page (update 6)", () => {
 
   test("'Ask about this role →' opens the role's questions, which go to the live endpoint", async ({ page }) => {
     await page.goto("/about");
-    const zelthy = page.getByRole("main").locator("ol > li").nth(5);
+    const zelthy = page.getByRole("main").locator("ol > li").nth(6);
     await zelthy.getByRole("button", { name: "Ask about this role →" }).click();
-    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy", { exact: true })).toBeVisible();
+    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy (Multi-Tenant SaaS Low-Code Platform)", { exact: true })).toBeVisible();
     await dialog(page).getByRole("button", { name: /^What did he ship with ML or AI\?/ }).click();
     await expect(status(page)).toContainText("› What did he ship with ML or AI?");
     // Not the prototype's canned answer: the fake model doesn't know this question, so the live path says so.

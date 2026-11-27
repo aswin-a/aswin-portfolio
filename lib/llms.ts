@@ -39,7 +39,7 @@ export async function llmsTxt(): Promise<string> {
     "",
     "## CV",
     "",
-    link("CV", "/about", "roles, side projects, education and skills"),
+    link("CV", "/about", "roles, agentic AI builds and side projects, education and skills"),
     link("CV as markdown", "/about.md"),
     "",
     "## How I work with AI",

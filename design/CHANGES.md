@@ -2,6 +2,76 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-27 (update 15): CV content rewritten from the master resume; deep links re-indexed; real domain and repo
+
+> **Sync note: the local name removals were kept.** Before this sync, the local design files (Ask, Hero, Main, Mobile, Work, WorkIndex, BuildLog, canvas.json and this CHANGES file) had the client's name removed from the integration-builder case study. The prototype still has it in Ask, Hero, Main, Mobile, Work, WorkIndex, BuildLog and canvas. For this sync, `Ask`, `Hero`, `Main` and `Mobile` are **the local versions with this update's prototype changes merged in**, so they do **not** byte-match the prototype. Work, WorkIndex, BuildLog and canvas were not touched. **Keep the name out of the build:** the case study is "AI integration builder" / "Integration builder" everywhere, and there is no "Is this … product?" question in Ask (the `work` topic uses `whysafe`).
+
+Changed: `About.dc.html` (big content update), `Ask.dc.html`, `Hero.dc.html`, `CVFromProof.dc.html`, `Footer.dc.html`, `Main.dc.html`, `Mobile.dc.html`. Canvas is unchanged.
+**All CV text lives in `CV_STATS`, `CV_GENERAL`, `CV_ITEMS` and `CV_SKILLS` in `About.dc.html`. Re-copy them into `content/cv.ts` word for word; they replace the update-6 content.**
+
+### 1. CV page (About.dc.html)
+**Header**
+- Role line: "Senior Product Manager · Platforms and Agentic AI · Enterprise SaaS".
+- Location line: "Chennai, Tamil Nadu, India · LinkedIn · GitHub · aswin-a.com", where GitHub is `https://github.com/aswin-a` and aswin-a.com is `https://aswin-a.com`.
+- The summary paragraph is updated.
+- **"Download PDF"** is now a real link: `/aswin-a-cv.pdf` with `download`. The build must ship that file, generated from `content/cv.ts` at build time.
+- The sync line now shows a real date: "Synced from my master resume · 27 Nov 2026". **Generate it from the content's last-updated date; don't hard-code it.**
+
+**Timeline**
+- Legend: "solid: roles · dashed, indented: agentic AI builds and side projects".
+- The project label is no longer always "SIDE PROJECT". It's **`AGENTIC AI BUILD`** for every project except Dhee's website, which stays **`SIDE PROJECT`**.
+- **New "Everything I did" expander on project cards:**
+  - When a project has a `full` list, a toggle appears: `See all N points ↓` / `Hide details ↑` (mono 13px accent, min-height 40px, `aria-expanded`).
+  - When open, it shows a top-ruled block: an `EVERYTHING I DID` label (mono 11px), then a `<ul>` (14px/1.55).
+- Items, newest first. All dashed lanes are projects; the rest are roles or education.
+
+| id | Title | Org line | Links |
+|---|---|---|---|
+| `site` | AI Fit-Check Product for Recruiters | Live on aswin-a.com | Try it on the home page → `/#fit-h` · `github.com/aswin-a/aswin-portfolio ↗` |
+| `builder` (**new**) | AI Connector Builder for SaaS APIs | Prototype | `github.com/aswin-a/ai-integration-builder ↗` |
+| `jsa` | Agentic Job-Search and Apply Assistant | Claude agent · Agent Skills · MCP connectors | `github.com/aswin-a/linkedin-job-search-agent ↗` |
+| `ig` | Instagram Content-Intelligence Agent for a Pet Food Brand | Built, not yet validated | `github.com/aswin-a/instagram-content-intelligence-agent ↗` |
+| `web` | Dhee’s website | Built for Dhee’s · Astro 6, Tailwind CSS 4, Cloudflare Pages | dhees.com ↗ · **`github.com/aswin-a/dpc-website ↗`** (the repo owner changed) |
+| `dhees` | Founder and Product Lead, Dhee’s Pet Company | — | (10 highlights, 3 Ask questions) |
+| `zelthy` | Senior Product Manager, Zelthy (Multi-Tenant SaaS Low-Code Platform) | — | **8 areas** (below) |
+| `solar` | Co-Founder, Product and Technology, The Solar Labs | — | (5 highlights, 2 Ask questions) |
+| `edu` | B.Tech CSE, IIT Mandi | — | — |
+
+- **The "View recorded run" links are gone.** Projects now link to their GitHub repos.
+- **Zelthy areas, re-cut from 7 to 8**, with 0-based indices that the deep links depend on:
+  - 0 Core Platform
+  - 1 Identity, Integrations and Data Sync
+  - 2 AI, ML and Data
+  - 3 Product Delivery and Roadmap
+  - 4 Releases, Reliability and Compliance
+  - 5 Commercial, Go-to-Market and Developer Adoption
+  - 6 Team Leadership
+  - 7 Client Engagement and Delivery Operations
+- **Skills:** 7 rows, renamed: Agentic AI and LLM Products · Platform Product Management · Product Management · Identity, Security and Compliance · Release, Reliability and Delivery · Leadership and Commercial · Tools and Tech.
+- **The Certificates section is removed.**
+- `CV_GENERAL` (the Ask box suggestions) has updated answers.
+
+### 2. Deep links re-indexed to the new areas
+Every `#cv=` link was updated for the new area order. Use the hashes in the files as they are. Examples:
+- Fit check "Own a public API and partner integrations" → `#cv=zelthy.1.1-2` (Identity, Integrations and Data Sync, points 1–2). `CVFromProof` now shows this target.
+- Bad fit "Lead cross-functional product teams" → `#cv=zelthy.6+zelthy.7.1`.
+- Ask: APIs → `zelthy.1.1-2`, win → `zelthy.3.0-1`, LLM conflict → `zelthy.2`. Healthcare is updated as well.
+- **This proves the risk flagged in update 14:** reordering the CV broke every index. The build should generate these links from KB locators, never hand-write them. A test that every locator resolves is mandatory.
+
+### 3. Home hood "agents" card (desktop and mobile)
+- Proof text: "My job-search agent runs **7 Agent Skills under one orchestrator** and stops for my approval before it applies." (It said 4 steps before.)
+- Mobile group summary: "A 7-skill agent, a custom Claude Skill, and tool calls you can watch live."
+
+### 4. Footer.dc.html
+- Domain: `[domain]` → **`aswin-a.com`**.
+- Site repo: `FOOT_REPO = 'https://github.com/aswin-a/aswin-portfolio'`. **"This site's code on GitHub →" is now real: show it.**
+
+### Spec impact
+- **Domain: `aswin-a.com`.** Use it for canonical URLs, OG tags, sitemap, robots, llms.txt and JSON-LD (`url`, `sameAs` adds GitHub and the site).
+- Ship `/aswin-a-cv.pdf`, built from `content/cv.ts` at build time.
+- Rebuild the KB from the new CV content, and regenerate the evals' expected sources for the new area structure.
+- Deep links come from locators, as above. **This settles the open question from update 14:** please confirm with Aswin whether to switch the hash to stable ids now, before launch, since the indices have already shifted once.
+
 ## 2026-11-27 (update 14): Proof links land on the exact CV lines; real LinkedIn and GitHub links; "This site's code on GitHub"
 
 Changed: `About.dc.html`, `Ask.dc.html`, `Hero.dc.html`, `Footer.dc.html`, `canvas.json`.
@@ -579,7 +649,7 @@ The `.dc.html` files win over this summary and over SPEC.md. Screenshots are sti
 
 ### 1. Naming: "Work" becomes "Case studies"
 - `Nav.dc.html`: the `work` nav link label `Work` → `Case studies`. The route and the `current="work"` key stay the same.
-- `Work.dc.html` breadcrumb: `WORK / 01 · CLOUDEAGLE.AI` → `CASE STUDIES / 01 · CLOUDEAGLE.AI`.
+- `Work.dc.html` breadcrumb: `WORK / 01 · AI INTEGRATION BUILDER` → `CASE STUDIES / 01 · AI INTEGRATION BUILDER`.
 
 ### 2. Footers show a deploy date (every page)
 - Desktop (Main, Work, About, BuildLog): right-hand span `© 2026 Aswin · [domain]` → `Updated [date, set on deploy] · © 2026 Aswin · [domain]`.
@@ -625,7 +695,7 @@ The `.dc.html` files win over this summary and over SPEC.md. Screenshots are sti
 - The products, in order:
   1. `01` **AI job search and apply agent**: "Finds roles that fit, tailors my resume to each one, and applies only after I say yes. Shown as a recorded run, since it signs in as me." Built: "The project instructions, step prompts A–F and the approval step." Steps: Search LinkedIn and save matches → Write the ideal resume for the JD → Tailor mine with a three-way map → **Wait for my approval** (person decides) → Apply. Tags: agents, tools, orchestration. Primary button "Watch the recorded run"; secondary "Read the case study →".
   2. `02` **Job-fit AI on this site**: "Paste a job description and get an honest verdict: what fits with proof, and what doesn’t, stated plainly." Built: "The pipeline, the knowledge base built from my master resume, the guardrails and the eval set." Steps: Paste a JD or a link → fetch_url, only for links → Parse requirements, search the record → Guardrails check every claim → Cited verdict, gaps included. Tags: tools, guardrails, evals. Primary "Try it above ↑" → `#fit-h`; secondary "Read the case study →".
-  3. `03` **AI integration builder for long-tail apps**: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission." Built: placeholder "[e.g. the spec, Figma flows and the clickable prototype]". Steps: Paste the app’s API docs → AI drafts the connector → Policy checks: scopes, secrets, allow-list → **A person approves the diff** (person decides) → Deploy. Tags: integrations, guardrails. Primary "Run it locally" (link TBD); secondary "Read the case study →".
+  3. `03` **AI integration builder for long-tail apps**: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed." Built: placeholder "[e.g. the spec, Figma flows and the clickable prototype]". Steps: Paste the app’s API docs → AI drafts the connector → Policy checks: scopes, secrets, allow-list → **A person approves the diff** (person decides) → Deploy. Tags: integrations, guardrails. Primary "Run it locally" (link TBD); secondary "Read the case study →".
   4. `04` **Instagram content intelligence agent**: "Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next." Built: "The agent’s prompts and analysis steps." Steps: Pick the competitors to watch → Pull their recent posts → Rank what performs → Spot trending formats → Suggest Dhee’s next posts. Tags: agents, tools. Primary "Watch the recorded run"; secondary "Read the case study →".
 - Each case-study link should go to that product's own case-study route (e.g. `/work/job-search-agent`, `/work/fit-check`, `/work/integration-builder`, `/work/instagram-agent`). The prototype points them all at `Work.dc.html` because it only has one case-study template.
 - `mainTokens` gains `amberBorder` and `amberBg` in both token sets (light `#C08A2E` / `#FBF2E2`; dark `#B8862F` / `#241C10`). They match the Hero tokens.

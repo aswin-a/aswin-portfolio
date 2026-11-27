@@ -82,7 +82,7 @@ function linesForCvHref(id: string, href: string): number[] {
 
 /** Fixture hrefs → KB ids (content/kb). */
 const SOURCE_IDS: Record<string, string> = {
-  "/work/integration-builder": "cloudeagle",
+  "/work/integration-builder": "integration-builder",
   "/work/job-search-agent": "job-search-agent",
   "/work/instagram-agent": "dhees-instagram-agent",
 };
@@ -121,9 +121,9 @@ function evidenceMap(user: string): { cards: EvidenceCard[] } {
 /** KB ids for the design's Ask source chips, by label then href (see content/kb/facts.ts). */
 const ASK_SOURCE_IDS: Record<string, string> = {
   "Case studies": "fact-ai-work",
-  "Case study · CloudEagle concept": "cloudeagle",
-  "Case study · Safeguards": "cloudeagle",
-  "Case study · v2 & lessons": "cloudeagle",
+  "Case study · Integration builder": "integration-builder",
+  "Case study · Safeguards": "integration-builder",
+  "Case study · v2 & lessons": "integration-builder",
   "Your fit check": "memory",
 };
 

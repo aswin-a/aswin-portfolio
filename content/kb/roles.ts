@@ -1,5 +1,5 @@
 import { cvItems, type CvItem } from "@/content/cv";
-import { orgName } from "@/lib/cv";
+import { orgShort } from "@/lib/cv";
 import type { CvLocator } from "@/lib/cv-link";
 
 /** A CV line the model can cite by number, with where it sits on the CV (SPEC §6.1). */
@@ -46,7 +46,7 @@ const toRole = (it: CvItem): Role => ({
   lines: it.groups ? [] : it.highlights.map((text, item) => ({ at: { roleId: it.id, item }, text })),
   cv: [{ roleId: it.id }],
   // "CV · {org}" (design update 14: "CV · Dhee's", "CV · The Solar Labs", "CV · Zelthy"; Aswin, 2026-11-27).
-  label: `CV · ${orgName(it)}`,
+  label: `CV · ${orgShort(it)}`,
   href: "/about",
   tags: ROLE_IDS[it.id]?.tags,
 });

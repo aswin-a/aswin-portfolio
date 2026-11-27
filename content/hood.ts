@@ -12,14 +12,14 @@ export type HoodItem = { name: string; group: HoodGroupName; status: HoodStatus;
 
 /** The 4 groups of the phone accordion, in order (Mobile.dc.html `MOB_GROUPS`, design update 8). */
 export const hoodGroups: { name: HoodGroupName; summary: string }[] = [
-  { name: "Agent building blocks", summary: "A 4-step agent, a Claude Skill, and tool calls you can watch live." },
+  { name: "Agent building blocks", summary: "A 7-skill agent, a custom Claude Skill, and tool calls you can watch live." },
   { name: "Running it reliably", summary: "A fixed pipeline with a retry, session-only memory, and limits with a fallback." },
   { name: "Trust and checking", summary: "Every claim cited, a public eval set, and a person reviewing low-confidence output." },
   { name: "Data and context", summary: "Patient data kept away from LLMs, a docs assistant, and an MCP server next." },
 ];
 
 export const hood: HoodItem[] = [
-  { name: "agents", group: "Agent building blocks", status: "case study", proof: "My job-search agent runs 4 steps and stops for my approval before it applies.", cta: "Read the job-search study →", href: "/work/job-search-agent" },
+  { name: "agents", group: "Agent building blocks", status: "case study", proof: "My job-search agent runs 7 Agent Skills under one orchestrator and stops for my approval before it applies.", cta: "Read the job-search study →", href: "/work/job-search-agent" },
   { name: "skills", group: "Agent building blocks", status: "GitHub", proof: "I wrote a Claude Skill that scores JD fit against my master resume.", cta: "View the skill →", href: "https://github.com/aswin-a/linkedin-job-search-agent/blob/main/skills/tailored-resume/SKILL.md" },
   { name: "tools", group: "Agent building blocks", status: "live here", proof: "The fit check calls three tools: fetch_url, jd.parse and kb.search.", cta: "See the calls in X-ray →", href: "#top", live: true },
   { name: "orchestration", group: "Running it reliably", status: "live here", proof: "A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.", cta: "Open X-ray →", href: "#top", live: true },
