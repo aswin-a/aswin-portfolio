@@ -12,6 +12,7 @@ import { ASK_BUDGET, ASK_ERROR, ASK_LIMITED } from "@/lib/ask/copy";
 import { sessionMemory } from "@/lib/ask/session-memory";
 import { ASK_TOOLS } from "@/lib/ask/types";
 import { breakAttempt, runFitCheck } from "@/lib/fit-check/client";
+import { heroCache } from "@/lib/fit-check/hero-cache";
 import {
   BREAK_LOG_MAX,
   HERO_DRILLS,
@@ -44,16 +45,18 @@ const statusLabel = "m-0 font-mono text-[12px] uppercase tracking-[0.06em] text-
 export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: BuildMeta }) {
   const { xray, setXray, openAsk } = useSite();
 
-  const [phase, setPhase] = useState<Phase>("empty");
-  const [jd, setJd] = useState("");
-  // "Show JD" (design update 13): the JD stays in this client state only. It is never logged or stored.
+  // A finished check survives leaving the page (a CV link, then Back) until "Try another role" (Aswin, 2026-11-27).
+  const [saved] = useState(() => heroCache.get<Phase, BreakEntry>());
+  const [phase, setPhase] = useState<Phase>(saved?.phase ?? "empty");
+  const [jd, setJd] = useState(saved?.jd ?? "");
+  // "Show JD" (design update 13): the JD stays in client memory only. It is never logged or stored.
   const [jdOpen, setJdOpen] = useState(false);
-  const [role, setRole] = useState("");
-  const [drill, setDrill] = useState<Drill | null>(null);
-  const [steps, setSteps] = useState<StepEvent[]>([]);
-  const [result, setResult] = useState<ResultEvent | null>(null);
-  const [fallback, setFallback] = useState<FallbackEvent | null>(null);
-  const [log, setLog] = useState<BreakEntry[]>([]);
+  const [role, setRole] = useState(saved?.role ?? "");
+  const [drill, setDrill] = useState<Drill | null>(saved?.drill ?? null);
+  const [steps, setSteps] = useState<StepEvent[]>(saved?.steps ?? []);
+  const [result, setResult] = useState<ResultEvent | null>(saved?.result ?? null);
+  const [fallback, setFallback] = useState<FallbackEvent | null>(saved?.fallback ?? null);
+  const [log, setLog] = useState<BreakEntry[]>(saved?.log ?? []);
   const [breakRunning, setBreakRunning] = useState(false);
   const breakBusy = useRef(false);
   const [breakError, setBreakError] = useState<string | null>(null);
@@ -62,8 +65,25 @@ export function Hero({ meta, buildMeta }: { meta: HowIBuiltMeta; buildMeta: Buil
   // The result nudge's "Turn on X-ray →" scrolls to "This run" once it renders (Aswin, 2026-11-19).
   const runXrayRef = useRef<HTMLDivElement>(null);
   const scrollToRun = useRef(false);
-  const entryId = useRef(0);
+  const entryId = useRef(saved?.entryId ?? 0);
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Keep the cache current. A run still streaming is aborted on unmount, so it is kept as the empty input;
+  // a Break my AI attempt still pending can't finish once the hero unmounts, so it is dropped.
+  useEffect(() => {
+    const finished = phase !== "running";
+    heroCache.set<Phase, BreakEntry>({
+      phase: finished ? phase : "empty",
+      jd: finished ? jd : "",
+      role: finished ? role : "",
+      drill: finished ? drill : null,
+      steps: finished ? steps : [],
+      result: finished ? result : null,
+      fallback: finished ? fallback : null,
+      log: log.filter((e) => e.kind !== "pending"),
+      entryId: entryId.current,
+    });
+  }, [phase, jd, role, drill, steps, result, fallback, log]);
 
   // Focus target of the current state. When the control that started a change unmounts
   // (a sample chip, "Try another role"), focus moves here instead of being lost.
