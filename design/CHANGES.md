@@ -2,6 +2,70 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-27 (update 14): Proof links land on the exact CV lines; real LinkedIn and GitHub links; "This site's code on GitHub"
+
+Changed: `About.dc.html`, `Ask.dc.html`, `Hero.dc.html`, `Footer.dc.html`, `canvas.json`.
+**New** board: `CVFromProof.dc.html` (1440×5500). It shows the CV opened from the fit-check proof "Own a public API and partner integrations".
+
+### 1. CV deep links with highlights (`About.dc.html`)
+**URL format:** `/about#cv=<targets>&req=<url-encoded requirement or question>`
+- A target is `roleId[.groupIndex][.itemList]`.
+  - `itemList` can be `3`, `3-5` or `3,7`.
+  - Join several targets with `+`.
+  - For roles without area tiles (Dhee's, The Solar Labs), use `roleId..itemList`, with an empty group, to point at highlight bullets.
+- Examples:
+  - `cv=zelthy.0.6-9`: Zelthy, area 0 ("Core platform and integrations"), points 6 to 9
+  - `cv=zelthy.6+zelthy.5.2`: the whole of area 6, plus point 2 of area 5
+  - `cv=dhees`: the whole Dhee's card
+- Role ids: `zelthy`, `dhees`, `solar` and the other `CV_ITEMS` ids. **Indices are 0-based and follow the order of `groups` / `items` / `highlights` in `CV_ITEMS`.**
+
+**On load and on `hashchange`, the page:**
+1. Opens every area named in the targets.
+2. Smooth-scrolls to the first target: `#cv-{id}-g{group}`, or `#cv-{id}` when there's no group. Both anchors have `scroll-margin-top: 96px`.
+3. Shows a **focus note at the top of that role's card** (`role="status"`, accentTint background, 1px accent border, radius 10, padding 10px 12px):
+   - `FROM YOUR FIT CHECK` (mono 11px accent)
+   - the `req` text (15px)
+   - "The points that back it up are highlighted below." (13px muted)
+   - a **`Clear ✕`** button (mono 12px, accent outline, min-height 36px, `aria-label="Clear highlight"`)
+4. Outlines each targeted **area card in 2px accent** (it's 1px otherwise).
+5. Highlights each targeted **point**: accentTint background, inset 3px accent left bar (`box-shadow: inset 3px 0 0 accent`), padding `4px 8px 4px 10px`, negative margin `0 -8px 0 -10px` so the text doesn't move, radius 6.
+   - A target with a group but no item list highlights every point in that area.
+
+**Clear** removes the highlights and the note, and strips the hash with `history.replaceState`. Areas that were opened stay open.
+`previewFocus` is a canvas-only prop used by `CVFromProof`; the build reads `location.hash`.
+
+### 2. Every fit-check proof and every Ask source now deep-links into the CV
+- `Role · About` / `About · career` labels become precise **`CV · {role} · {area}`** labels, each with a deep link that includes `req=`.
+- **Hero (fit check):**
+  - "Own a public API…" → `CV · Zelthy · integrations` → `#cv=zelthy.0.6-9`
+  - Bad-fit sample "Lead cross-functional product teams" → `CV · Zelthy · team leadership` → `#cv=zelthy.6+zelthy.5.2`
+  - The data for the removed fallback cards was updated the same way. They're still not rendered; the data is just left over.
+- **Ask:**
+  - "APIs" → `CV · Zelthy · APIs and integrations`
+  - "biggest platform win" → `CV · Zelthy · delivery`
+  - "conflict" → `CV · Zelthy · data and AI`
+  - "hardware" → `CV · Dhee's` (`#cv=dhees`)
+  - "healthcare" → `CV · Zelthy · healthcare…`
+  - "carry", "enterprise" → `#cv=zelthy`
+  - "founder" → `#cv=solar…`
+  - The default context source is now `CV`.
+  - Exact hashes are in the file. Copy them as they are.
+- **Two Ask answers are now real text, not placeholders:**
+  - **"What's his biggest platform win?"**: "At Zelthy he delivered 17 software packages in 8 months: 95% of new apps adopted them and time to deploy fell 80%. His roadmap work contributed to 125% growth in B2B product revenue over 3 years."
+  - **"What's his healthcare experience?"**: "Four years at Zelthy, a platform for healthcare and pharma clients: integrations with client EHR systems, an HL7 and FHIR evaluation, GDPR, HIPAA and SOC2 compliance, and ML-based OCR for prescriptions with a person reviewing low-confidence results."
+  - (These are still canned in the prototype. In the build, answers come from the live endpoint; this text shows what a good grounded answer looks like and can be used as eval expectations.)
+
+### 3. Footer.dc.html
+- **Real links:** LinkedIn → `https://linkedin.com/in/aswin-a-pm`, GitHub → `https://github.com/aswin-a`. The `[link]` placeholders are removed.
+- New link in the footer bar, after "This site is an AI product…": **"This site's code on GitHub →"** (accent, min-height 32px). It points to `FOOT_REPO = 'https://github.com/aswin-a/[portfolio-repo]'`, which is **still a placeholder: hide this link until the repo URL is set.**
+
+### Spec impact
+- **The KB must carry CV locators.** Every chunk the fit check or Ask can cite needs a stable `{ roleId, group?, item? }` locator into `content/cv.ts`. The proof or source link is built from it: `/about#cv=…&req=…`.
+  - Add a test that every locator resolves to an existing CV line, and that the highlighted text is the text the claim was grounded on.
+- **Ordering is part of the contract:** reordering CV items changes the indices. Prefer stable item ids in `content/cv.ts` and generate the indices at build time, or switch the hash to ids (`cv=zelthy.integrations.sso`). **Ask Aswin before changing the URL format;** the design uses indices.
+- Implement the CV focus mode (open, scroll, note, outline, highlight, Clear) on `/about`, listening for `hashchange`.
+- Config: `SITE_REPO_URL`, with the footer link hidden while it's unset. LinkedIn and GitHub URLs go in content config.
+
 ## 2026-11-26 (update 13): One H1 size across pages; the stack strip links only from its button; "Show JD" on the fit-check result
 
 Changed: `About`, `BuildLog`, `LogPost`, `Stack`, `StackMobile`, `Work`, `WorkIndex` (H1 only), plus `HomeStrip`, `Main`, `Mobile` and `Hero`. Nothing else changed (canvas sizes too).
