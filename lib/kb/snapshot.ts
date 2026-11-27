@@ -51,7 +51,10 @@ function build(): KbEntry[] {
       scope: "roles" as const,
       label: r.label,
       href: r.href,
-      ...withLines([`${r.title}, ${r.company} (${r.years}).`, r.summary, ...r.details].filter(Boolean).join(" "), r.lines),
+      ...withLines(
+        [`${r.title}, ${r.company} (${r.years}).`, r.summary, ...r.details, r.evidence.length ? `Evidence:${r.evidence.map((x) => ` ${x}`).join("")}` : ""].filter(Boolean).join(" "),
+        r.lines,
+      ),
       cv: r.cv,
       tags: r.tags ?? [],
       todos: todosIn(r),
