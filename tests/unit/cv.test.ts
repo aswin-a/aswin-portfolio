@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { cvGeneral, cvItems, cvSkills, cvStats } from "@/content/cv";
 import { products } from "@/content/products";
+import { resumeStrings } from "@/content/resume";
 import { cvMarkdown, cvPlainText, cvStrings, topicFor, cvItem } from "@/lib/cv";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
 
@@ -90,6 +91,9 @@ describe("the knowledge base is generated from the CV", () => {
   const known = [
     ...cvStrings(),
     ...cvStrings().flatMap((s) => s.split(/(?<=\.) /)),
+    // The master resume text the CV page doesn't show (content/resume.ts, Aswin 2026-11-27).
+    ...resumeStrings(),
+    ...resumeStrings().flatMap((s) => s.split(/(?<=\.) /)),
     ...cvItems.map((it) => it.org.split(" · ")[0]),
     ...cvItems.map((it) => it.org.split(" · ")[0].replace(/\s*\([^)]*\)$/, "")),
     ...products.map((p) => p.status),
@@ -106,6 +110,8 @@ describe("the knowledge base is generated from the CV", () => {
     const text = KB.map((e) => e.text).join("\n");
     for (const it of cvItems) expect(text).toContain(it.title);
     for (const g of cvItem("zelthy").groups ?? []) for (const x of g.items) expect(text).toContain(x);
+    // And the master resume text the CV page doesn't show.
+    for (const x of resumeStrings()) expect(text).toContain(x);
   });
 
   it("keeps the stable ids that fixtures, case studies and tests cite", () => {

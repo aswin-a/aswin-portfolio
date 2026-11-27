@@ -64,6 +64,7 @@ export const notDone: NotDone[] = [
   {
     id: "accessibility-wcag",
     topic: "Accessibility (WCAG) programs",
+    closest: "Lighthouse accessibility 100 on every route and WCAG AA contrast verified by a unit test on this site.",
     note: "Not something Aswin has done.",
   },
   {

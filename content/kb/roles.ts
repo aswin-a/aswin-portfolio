@@ -1,4 +1,5 @@
 import { cvItems, type CvItem } from "@/content/cv";
+import { resumeBullets } from "@/content/resume";
 import { orgShort } from "@/lib/cv";
 import type { CvLocator } from "@/lib/cv-link";
 
@@ -13,6 +14,8 @@ export type Role = {
   summary: string;
   /** The ladder line, word for word (not addressable on the CV, so not a numbered line). */
   details: string[];
+  /** The master resume's full bullets for this role (content/resume.ts). The model reads them; it cites the numbered `lines`. */
+  evidence: string[];
   /** The role's highlights, word for word, each with its CV locator. */
   lines: KbLine[];
   /** Where the role sits on the CV. */
@@ -43,6 +46,7 @@ const toRole = (it: CvItem): Role => ({
   years: it.dates,
   summary: it.scope,
   details: it.ladder ? [it.ladder] : [],
+  evidence: resumeBullets[it.id] ?? [],
   lines: it.groups ? [] : it.highlights.map((text, item) => ({ at: { roleId: it.id, item }, text })),
   cv: [{ roleId: it.id }],
   // "CV · {org}" (design update 14: "CV · Dhee's", "CV · The Solar Labs", "CV · Zelthy"; Aswin, 2026-11-27).
