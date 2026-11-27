@@ -56,7 +56,7 @@ describe("kb.search", () => {
 
 // ---------- Milestone 7: kb.search gaps ----------
 
-const entry = (id: string, scope: KbEntry["scope"], text: string): KbEntry => ({ id, scope, label: id, href: `/${id}`, text, tags: [], todos: [] });
+const entry = (id: string, scope: KbEntry["scope"], text: string): KbEntry => ({ id, scope, label: id, href: `/${id}`, text, head: text, lines: [], cv: [], tags: [], todos: [] });
 
 describe("kb.search · ranking and caps (M7)", () => {
   const kb = [

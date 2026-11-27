@@ -2,7 +2,7 @@ import type { AskOutput, EvidenceCard } from "@/lib/ai/schemas";
 import { CONTACT_SOURCE } from "@/lib/ask/copy";
 import type { AskAnswer, AskSource } from "@/lib/ask/types";
 import type { FitGap, FitMatch } from "@/lib/fit-check/types";
-import { kbEntry, type KbEntry } from "@/lib/kb/snapshot";
+import { entryHref, kbEntry, validLines, type KbEntry } from "@/lib/kb/snapshot";
 import { tokens } from "@/lib/kb/search";
 
 /**
@@ -24,24 +24,37 @@ type Fired = { fired: string[] };
 
 /**
  * `guard.citations`: one card per requirement, in order. A match stands only if it cites a source
- * kb.search returned for this run, from roles or projects. Anything else becomes a gap.
+ * kb.search returned for this run, from roles or projects. Anything else becomes a gap. Line
+ * numbers the cited source doesn't have are dropped (`droppedLines`), so every highlighted CV line
+ * is one the source really holds (SPEC §6.1).
  */
-export function guardCitations(requirements: readonly string[], cards: readonly EvidenceCard[], sources: readonly KbEntry[]): EvidenceCard[] & Fired {
+export function guardCitations(
+  requirements: readonly string[],
+  cards: readonly EvidenceCard[],
+  sources: readonly KbEntry[],
+): EvidenceCard[] & Fired & { droppedLines: number } {
   const allowed = new Map(sources.filter((s) => s.scope === "roles" || s.scope === "projects").map((s) => [s.id, s]));
   const fired: string[] = [];
+  let droppedLines = 0;
   const out = requirements.map((req, i): EvidenceCard => {
     const card = cards.find((c) => c.req === req) ?? cards[i];
     if (!card) {
       fired.push("guard.citations");
       return { type: "gap", req, closest: NO_SOURCE_CLOSEST, close: "", notDoneId: null };
     }
-    if (card.type === "match" && !allowed.has(card.sourceId)) {
-      fired.push("guard.citations");
-      return { type: "gap", req, closest: NO_SOURCE_CLOSEST, close: "", notDoneId: null };
+    if (card.type === "match") {
+      const src = allowed.get(card.sourceId);
+      if (!src) {
+        fired.push("guard.citations");
+        return { type: "gap", req, closest: NO_SOURCE_CLOSEST, close: "", notDoneId: null };
+      }
+      const lines = validLines(src, card.lines);
+      droppedLines += card.lines.length - lines.length;
+      return { ...card, req, lines };
     }
     return { ...card, req };
   });
-  return Object.assign(out, { fired });
+  return Object.assign(out, { fired, droppedLines });
 }
 
 /** A requirement is about a not-done topic when it shares most of the topic's words. */
@@ -76,7 +89,7 @@ export function guardHonesty(cards: readonly EvidenceCard[], notDone: readonly K
       if (!src || hasScore(c.evidence)) {
         fired.push("guard.honesty");
         gaps.push({ req: c.req, closest: NO_SOURCE_CLOSEST, close: "" });
-      } else matches.push({ req: c.req, evidence: c.evidence, source: src.label, href: src.href });
+      } else matches.push({ req: c.req, evidence: c.evidence, source: src.label, href: entryHref(src, c.lines, c.req) });
       continue;
     }
     if (hasScore(c.closest) || hasScore(c.close)) {
@@ -110,9 +123,10 @@ const FACTUAL = new Set<AskOutput["kind"]>(["fit", "gap", "none", "conflict"]);
 /**
  * Every factual answer cites ≥ 1 real KB source (or the visitor's own fit check, when sent);
  * otherwise, or if it carries a score, it becomes `unknown`. `todo` lists the placeholders still
- * in the cited entries (dev and preview only: production has none).
+ * in the cited entries (dev and preview only: production has none). A CV source links to the lines
+ * the answer cited from it, with the question as `req` (SPEC §6.1); unknown line numbers are dropped.
  */
-export function guardAsk(out: AskOutput, hasMemory: boolean): Omit<AskAnswer, "trace"> & { fired: string | null } {
+export function guardAsk(out: AskOutput, hasMemory: boolean, question = ""): Omit<AskAnswer, "trace"> & { fired: string | null } {
   const cited: KbEntry[] = [];
   let usedMemory = false;
   for (const id of out.sourceIds) {
@@ -126,7 +140,11 @@ export function guardAsk(out: AskOutput, hasMemory: boolean): Omit<AskAnswer, "t
   }
   const sources: AskSource[] = [];
   if (usedMemory) sources.push(MEMORY_SOURCE);
-  for (const e of cited) if (!sources.some((s) => s.label === e.label && s.href === e.href)) sources.push({ label: e.label, href: e.href });
+  for (const e of cited) {
+    const lines = out.sourceLines.filter((l) => l.id === e.id).flatMap((l) => l.lines);
+    const href = entryHref(e, lines, question);
+    if (!sources.some((s) => s.label === e.label && s.href === href)) sources.push({ label: e.label, href });
+  }
   const guard = GUARD_BY_KIND[out.kind] ?? (usedMemory ? MEMORY_GUARD : DEFAULT_GUARD);
   const todo = [...new Set(cited.flatMap((e) => e.todos))].join(" ");
   return { kind: out.kind, text: out.text, sources, guard, todo, fired: GUARD_BY_KIND[out.kind] ?? null };

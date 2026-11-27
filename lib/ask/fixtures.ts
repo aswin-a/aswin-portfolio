@@ -5,12 +5,12 @@ import type { AskKind, AskSource } from "./types";
  * ASK_ANSWERS from Ask.dc.html, word for word. Replayed only by the AI_FAKE test model
  * (lib/ai/fake.ts), which production refuses; real answers come from `/api/run` (SPEC §8).
  *
- * Prototype links are mapped to routes: About.dc.html → /about, Work.dc.html → the matching
+ * Prototype links are mapped to routes: About.dc.html → /about (its `#cv=` deep links kept as they
+ * are, design update 14), Work.dc.html → the matching
  * case study or /work, BuildLog.dc.html → /log, Main.dc.html → the fit check (/#top) or /#contact.
  */
 export type AskFixture = { kind: AskKind; text: string; todo: string; guard?: string; sources: AskSource[] };
 
-const ABOUT = { label: "About · career", href: "/about" };
 const STUDIES = { label: "Case studies", href: "/work" };
 const LOG = { label: "Build log", href: "/log" };
 
@@ -19,13 +19,14 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     kind: "fit",
     text: "Yes. His platform PM work is APIs and integrations, including healthcare integrations. Agents run on the same plumbing: a tool call is an API call with judgment attached.",
     todo: "",
-    sources: [ABOUT], // The Platform & API work case study was removed (Aswin, 2026-11-20).
+    // The Platform & API work case study was removed (Aswin, 2026-11-20).
+    sources: [{ label: "CV · Zelthy · APIs and integrations", href: "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F" }],
   },
   win: {
     kind: "fit",
-    text: "From the master resume:",
-    todo: "[Biggest measured platform win, one line, with the number]",
-    sources: [ABOUT],
+    text: "At Zelthy he delivered 17 software packages in 8 months: 95% of new apps adopted them and time to deploy fell 80%. His roadmap work contributed to 125% growth in B2B product revenue over 3 years.",
+    todo: "",
+    sources: [{ label: "CV · Zelthy · delivery", href: "/about#cv=zelthy.1.0-1&req=What%27s%20his%20biggest%20platform%20win%3F" }],
   },
   llm: {
     kind: "gap",
@@ -45,7 +46,7 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     guard: "guard.conflicting_info",
     text: "That doesn't match the record. It shows no professional LLM role; his AI work is agents he built and shipped on his own projects. Going with the record.",
     todo: "",
-    sources: [ABOUT, STUDIES],
+    sources: [{ label: "CV · Zelthy · data and AI", href: "/about#cv=zelthy.3&req=Does%20he%20have%20professional%20LLM%20experience%3F" }, STUDIES],
   },
   ambig: {
     kind: "clarify",
@@ -59,7 +60,7 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     guard: "guard.not_done",
     text: "Closest: running Dhee's, a direct-to-consumer fresh dog-food brand. A physical product, but not hardware.",
     todo: "",
-    sources: [ABOUT],
+    sources: [{ label: "CV · Dhee's", href: "/about#cv=dhees" }],
   },
   whysafe: {
     kind: "fit",
@@ -81,9 +82,9 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
   },
   health: {
     kind: "fit",
-    text: "Platform PM work on integrations in healthcare.",
-    todo: "[Systems, standards and the measured outcome]",
-    sources: [ABOUT],
+    text: "Four years at Zelthy, a platform for healthcare and pharma clients: integrations with client EHR systems, an HL7 and FHIR evaluation, GDPR, HIPAA and SOC2 compliance, and ML-based OCR for prescriptions with a person reviewing low-confidence results.",
+    todo: "",
+    sources: [{ label: "CV · Zelthy · healthcare", href: "/about#cv=zelthy.0.7,10+zelthy.2.3+zelthy.3.0&req=What%27s%20his%20healthcare%20experience%3F" }],
   },
   now: {
     kind: "fit",

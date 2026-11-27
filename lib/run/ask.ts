@@ -112,7 +112,7 @@ export async function* runAsk(req: AskRun, ctx: RunContext, rec: RunRecord, mode
 
     yield step("guardrails", "running");
     t0 = ctx.now();
-    const { fired, ...answer } = guardAsk(out, memory !== null);
+    const { fired, ...answer } = guardAsk(out, memory !== null, req.question);
     if (fired) rec.guardFired.push(fired);
     yield step("guardrails", "done", since(t0));
 

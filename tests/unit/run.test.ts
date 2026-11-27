@@ -192,6 +192,17 @@ describe("/api/run · fit", () => {
     expect(hw).toEqual({ req: "Hardware roadmaps from prototype to mass production", closest: "Not something Aswin has done.", close: "" });
   });
 
+  it("proof links point at the exact CV lines the evidence cites (design update 14)", async () => {
+    const r = terminal(await fit({ jd: HERO_SAMPLES[0].jd }));
+    if (r.type !== "result") throw new Error("expected a result");
+    const api = r.matches.find((m) => m.req === "Own a public API and partner integrations");
+    // The same link as Hero.dc.html's HERO_FIT; the label is the CV's own area name (Aswin, 2026-11-27).
+    expect(api).toMatchObject({
+      source: "CV · Zelthy · Core platform and integrations",
+      href: "/about#cv=zelthy.0.6-9&req=Own%20a%20public%20API%20and%20partner%20integrations",
+    });
+  });
+
   it("uses its one retry and reports it", async () => {
     const r = terminal(await fit({ jd: `${HERO_SAMPLES[0].jd} [[fake:fail-once]]` }));
     expect(r).toMatchObject({ type: "result", retries: 1 });
@@ -326,6 +337,16 @@ describe("/api/run · ask", () => {
     expect(r.answer.guard).toBe("none · answered from the knowledge base");
     expect(r.answer.trace.runId).toMatch(/^run_/);
     expect(rows).toHaveLength(1);
+  });
+
+  it("CV sources link to the lines the answer cites, with the question as req (design update 14)", async () => {
+    expect((await ask(ASK_QUESTIONS.apis)).answer.sources).toEqual([
+      { label: "CV · Zelthy · Core platform and integrations", href: "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F" },
+    ]);
+    expect((await ask(ASK_QUESTIONS.health)).answer.sources).toEqual([
+      { label: "CV · Zelthy · healthcare", href: "/about#cv=zelthy.0.7,10+zelthy.2.3+zelthy.3.0&req=What's%20his%20healthcare%20experience%3F" },
+    ]);
+    expect((await ask(ASK_QUESTIONS.hardware)).answer.sources).toEqual([{ label: "CV · Dhee’s Pet Company", href: "/about#cv=dhees&req=Has%20he%20led%20a%20hardware%20launch%3F" }]);
   });
 
   it("the Break my AI attacks get the design's kinds and guards", async () => {
