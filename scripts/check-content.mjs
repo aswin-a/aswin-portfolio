@@ -139,7 +139,7 @@ function main() {
       const found = new Set(bodyText(readFileSync(file, "utf8")).match(PLACEHOLDER) ?? []);
       for (const f of found) hits.push(`${file}: ${f}`);
     }
-    if (!existsSync("public/resume.pdf")) hits.push("public/resume.pdf: missing (linked from About)");
+    if (!existsSync("public/aswin-a-cv.pdf")) hits.push("public/aswin-a-cv.pdf: missing (the CV page's Download PDF)");
   } else {
     // /content, plus the eval set's real-JD slots (SPEC §10: ≥ 6 real JDs).
     for (const file of [...walk("content", (n) => /\.(ts|tsx|mdx|md|json)$/.test(n)), ...walk("evals/real-jds", (n) => n.endsWith(".txt"))]) {

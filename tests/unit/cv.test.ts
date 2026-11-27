@@ -5,11 +5,6 @@ import { products } from "@/content/products";
 import { cvMarkdown, cvPlainText, cvStrings, topicFor, cvItem } from "@/lib/cv";
 import { KB, kbEntry } from "@/lib/kb/snapshot";
 
-/** Fields Aswin filled in or changed after the design (2026-11-24); everything else is word for word. */
-const ASWIN_FILLED: Record<string, Record<string, string>> = {
-  jsa: { link: "Add to Claude/ChatGPT →", href: "https://github.com/aswin-a/linkedin-job-search-agent" },
-  web: { dates: "Feb 2026" },
-};
 
 /** The CV arrays as the design has them, evaluated from design/About.dc.html. */
 function designCv() {
@@ -44,14 +39,17 @@ describe("content/cv.ts", () => {
     expect(cvGeneral).toEqual({ label: d.CV_GENERAL.label, qa: d.CV_GENERAL.qa.map(({ q }) => ({ q })) });
     expect(cvItems.length).toBe(d.CV_ITEMS.length);
     cvItems.forEach((it, i) => {
-      const di = d.CV_ITEMS[i] as Record<string, unknown> & { qa?: { q: string }[]; href?: string };
+      const di = d.CV_ITEMS[i] as Record<string, unknown> & { qa?: { q: string }[]; href?: string; groups?: Record<string, unknown>[] };
       const expected = {
         ...di,
-        ...(ASWIN_FILLED[it.id] ?? {}),
         ...(di.qa ? { qa: di.qa.map(({ q }) => ({ q })) } : {}),
-        ...(di.href === "Main.dc.html" ? { href: "/" } : {}),
+        ...(di.href?.startsWith("Main.dc.html") ? { href: di.href.replace("Main.dc.html", "/") } : {}),
       };
-      expect(it).toEqual(expected);
+      // Area ids are ours (stable `#cv=` names, SPEC §6.1); everything else is the design's.
+      const { groups, ...rest } = it;
+      const { groups: designGroups, ...designRest } = expected;
+      expect(rest).toEqual(designRest);
+      expect(groups?.map((g) => ({ name: g.name, summary: g.summary, items: g.items }))).toEqual(designGroups);
     });
   });
 
@@ -59,15 +57,20 @@ describe("content/cv.ts", () => {
     const text = cvPlainText();
     expect(text.split("\n").slice(0, 5)).toEqual([
       "Aswin A",
-      "Senior Product Manager · Platforms, integrations and agentic AI products",
-      "Chennai, India · linkedin.com/in/aswin-a-pm",
+      "Senior Product Manager · Platforms and Agentic AI · Enterprise SaaS",
+      "Chennai, Tamil Nadu, India · linkedin.com/in/aswin-a-pm · github.com/aswin-a · aswin-a.com",
       "",
-      "EXPERIENCE",
+      "AGENTIC AI PRODUCT BUILDS",
     ]);
-    expect(text).toContain("\nSenior Product Manager — Zelthy · Bangalore (remote) (Sep 2020 – Sep 2024)\n");
-    // Zelthy prints its group items, not its (empty) highlights.
-    for (const g of cvItem("zelthy").groups ?? []) for (const x of g.items) expect(text).toContain(`- ${x}`);
-    expect(text.endsWith(`Tools: ${cvSkills[6][1]}`)).toBe(true);
+    // The design's sections, in order.
+    expect(text.indexOf("\nEXPERIENCE\n")).toBeGreaterThan(text.indexOf("\nAGENTIC AI PRODUCT BUILDS\n"));
+    expect(text.indexOf("\nEDUCATION\n")).toBeGreaterThan(text.indexOf("\nEXPERIENCE\n"));
+    expect(text).toContain("\nSenior Product Manager — Zelthy (Multi-Tenant SaaS Low-Code Platform) · Bangalore (remote) (Sep 2020 – Sep 2024)\n");
+    // Zelthy prints each area's name, then its items; a project with a full list prints that list.
+    for (const g of cvItem("zelthy").groups ?? []) expect(text).toContain(`\n${g.name}\n${g.items.map((x) => `- ${x}`).join("\n")}\n`);
+    for (const x of cvItem("site").full ?? []) expect(text).toContain(`- ${x}`);
+    expect(text).not.toContain(`- ${cvItem("site").highlights[0]}\n`);
+    expect(text.endsWith(`Tools and Tech: ${cvSkills[6][1]}`)).toBe(true);
   });
 
   it("has a markdown twin with every item", () => {
@@ -76,7 +79,8 @@ describe("content/cv.ts", () => {
   });
 
   it("labels a role's Ask topic as title · company", () => {
-    expect(topicFor(cvItem("zelthy")).label).toBe("Senior Product Manager · Zelthy");
+    // The design's label: `it.org.split(' · ')[0]`, the org's full first part.
+    expect(topicFor(cvItem("zelthy")).label).toBe("Senior Product Manager · Zelthy (Multi-Tenant SaaS Low-Code Platform)");
     expect(topicFor(cvItem("dhees")).label).toBe("Founder and Product Lead · Dhee’s Pet Company");
   });
 });
@@ -87,12 +91,13 @@ describe("the knowledge base is generated from the CV", () => {
     ...cvStrings(),
     ...cvStrings().flatMap((s) => s.split(/(?<=\.) /)),
     ...cvItems.map((it) => it.org.split(" · ")[0]),
+    ...cvItems.map((it) => it.org.split(" · ")[0].replace(/\s*\([^)]*\)$/, "")),
     ...products.map((p) => p.status),
   ];
 
   it("traces every role, project and fact back to a CV line", () => {
-    // `integration-builder` is the one non-CV entry (a concept project from content/products.ts); not-done is hand-written.
-    for (const e of KB.filter((x) => x.scope !== "not_done" && x.id !== "integration-builder")) {
+    // Every entry but the hand-written not-done list comes from the CV (design update 15 put the integration builder on it).
+    for (const e of KB.filter((x) => x.scope !== "not_done")) {
       expect({ id: e.id, untraced: untraced(e.text, known) }).toEqual({ id: e.id, untraced: [] });
     }
   });

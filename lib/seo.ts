@@ -37,7 +37,8 @@ type Json = Record<string, unknown>;
 /** A CV role is current when its dates are open-ended ("Oct 2024 –") or run to "Present". None is today, so no worksFor. */
 export const isCurrent = (it: CvItem) => /–\s*$|present/i.test(it.dates);
 
-const sameAs = () => [cvHeader.linkedin.href, siteMeta.github].filter((u) => u && !isTodo(u));
+/** LinkedIn, GitHub and the site itself, as the CV header links them (design update 15). */
+const sameAs = () => cvHeader.links.map((l) => l.href).filter((u) => u && !isTodo(u));
 
 /** schema.org Person from content/cv.ts (SPEC §11). `full` adds alumniOf, hasOccupation and worksFor (CV page). */
 export function personJsonLd(full = false): Json {
@@ -48,7 +49,9 @@ export function personJsonLd(full = false): Json {
     url: SITE_URL,
     jobTitle: cvHeader.role.split(" · ")[0],
     description: cvHeader.summary,
-    address: { "@type": "PostalAddress", addressLocality: cvHeader.location.split(", ")[0], addressCountry: cvHeader.location.split(", ")[1] },
+    address: (([locality, region, country]) => ({ "@type": "PostalAddress", addressLocality: locality, addressRegion: region, addressCountry: country }))(
+      cvHeader.location.split(", "),
+    ),
     sameAs: sameAs(),
   };
   if (!full) return person;

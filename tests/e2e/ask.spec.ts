@@ -233,9 +233,9 @@ test.describe("answers", () => {
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
     await expect(input(page)).toBeFocused();
     // Design update 14: the source deep-links to the CV lines the answer cites.
-    await expect(status(page).getByRole("link", { name: "CV · Zelthy · Core platform and integrations →" })).toHaveAttribute(
+    await expect(status(page).getByRole("link", { name: "CV · Zelthy · Identity, Integrations and Data Sync →" })).toHaveAttribute(
       "href",
-      "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F",
+      "/about#cv=zelthy.integrations.1-2&req=Has%20he%20worked%20on%20APIs%3F",
     );
     await expect(status(page).getByRole("link", { name: /Platform & API work/ })).toHaveCount(0);
     await status(page).getByRole("button", { name: "← Ask another" }).click();
@@ -389,9 +389,9 @@ test.describe("topic mode on the CV page (update 6)", () => {
 
   test("'Ask about this role →' opens the role's questions, which go to the live endpoint", async ({ page }) => {
     await page.goto("/about");
-    const zelthy = page.getByRole("main").locator("ol > li").nth(5);
+    const zelthy = page.getByRole("main").locator("ol > li").nth(6);
     await zelthy.getByRole("button", { name: "Ask about this role →" }).click();
-    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy", { exact: true })).toBeVisible();
+    await expect(dialog(page).getByText("ASKING ABOUT · Senior Product Manager · Zelthy (Multi-Tenant SaaS Low-Code Platform)", { exact: true })).toBeVisible();
     await dialog(page).getByRole("button", { name: /^What did he ship with ML or AI\?/ }).click();
     await expect(status(page)).toContainText("› What did he ship with ML or AI?");
     // Not the prototype's canned answer: the fake model doesn't know this question, so the live path says so.

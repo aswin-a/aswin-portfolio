@@ -1,6 +1,6 @@
 # Code → design sync-back list
 
-Places where the built site differs from the Claude Design prototype, as of 2026-11-26. Each one was checked against the current `/design` files. Sources: SPEC.md, the `(Aswin, date)` notes in the code and the commit history. Apply these in Claude Design so the next export matches the code.
+Places where the built site differs from the Claude Design prototype, as of 2026-11-27. Each one was checked against the current `/design` files. Sources: SPEC.md, the `(Aswin, date)` notes in the code and the commit history. Apply these in Claude Design so the next export matches the code.
 
 ## Global / Nav (`Nav.dc.html`, `Mobile.dc.html`, `MobileNavStates.dc.html`)
 
@@ -79,6 +79,9 @@ Places where the built site differs from the Claude Design prototype, as of 2026
 ## Everywhere
 
 31. **The integration builder is shown as Aswin's own concept** (Aswin, 2026-11-27): no company name, no take-home or permission wording. The breadcrumb is `03 · AI INTEGRATION BUILDER`, CONTEXT is "Concept and working prototype", the disclaimer pill is gone, the pitches end at "…nothing reaches production unreviewed.", the source chip is "Case study · Integration builder", the work page's third Ask question is "Why are safeguards the centrepiece?", and the repo is `github.com/aswin-a/ai-integration-builder`. The local `/design` files already have this; apply it in Claude Design so the next export doesn't bring the old wording back.
+
+32. **The CV PDF is Aswin's own export** (Aswin, 2026-11-27): `/aswin-a-cv.pdf` is the file he supplied, not generated from `content/cv.ts` at build time as update 15 suggests.
+33. **`#cv=` links use stable area ids, not positions** (Aswin, 2026-11-27): `zelthy.integrations.1-2`, not `zelthy.1.1-2`. Points are still numbered within an area, and roles without areas stay `dhees..1,4`. Update the hrefs in `Main.dc.html`, `Ask.dc.html` and `CVFromProof.dc.html` to match.
 
 ## Not needed in the prototype
 

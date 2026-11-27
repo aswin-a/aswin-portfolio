@@ -1,16 +1,19 @@
 import { cvItems } from "@/content/cv";
 
 /**
- * CV locators and `#cv=` deep links (design update 14, SPEC §6.1).
+ * CV locators and `#cv=` deep links (design updates 14 and 15, SPEC §6.1).
  *
  * A locator points into content/cv.ts: `{ roleId }` is a whole CV item, `{ roleId, group }` one of
  * its areas, and `item` one line (a group's point, or a highlight when there is no group). Indices
- * are 0-based in content/cv.ts order, which matches CV_ITEMS in About.dc.html.
+ * are 0-based in content/cv.ts order, which matches CV_ITEMS in About.dc.html. Every link is
+ * generated from a locator; nothing hand-writes a `#cv=` hash.
  *
- * The link format is the design's (About.dc.html `cvParseHash`); ask Aswin before changing it:
+ * Link format (the design's, with stable area ids in place of area positions; Aswin, 2026-11-27):
  *   /about#cv=<targets>&req=<url-encoded text>
- *   target = roleId[.groupIndex][.itemList] · itemList = 3 | 3-5 | 3,7 · targets joined by "+"
+ *   target = roleId[.areaId][.itemList] · itemList = 3 | 3-5 | 3,7 · targets joined by "+"
  *   roles without areas: roleId..itemList
+ * e.g. `zelthy.integrations.1-2`: an area keeps its id when areas are reordered, so a shared link
+ * still opens the right area. Points stay numbered within their area.
  */
 
 export type CvLocator = { roleId: string; group?: number; item?: number };
@@ -19,6 +22,21 @@ export type CvTarget = { id: string; group: number | null; items: number[] };
 export type CvFocus = { targets: CvTarget[]; req: string };
 
 const ITEM = new Map(cvItems.map((it) => [it.id, it]));
+
+/**
+ * Locators by area id, for links written in code (fixtures): `cvAt("zelthy", "integrations", [1, 2])`
+ * is points 1–2 of that area; no area is the whole item; no points is the whole area (or, without an
+ * area, the item's highlights by number). Throws on an unknown item, area or point.
+ */
+export function cvAt(roleId: string, area?: string, items: number[] = []): CvLocator[] {
+  const it = ITEM.get(roleId);
+  if (!it) throw new Error(`content/cv.ts: no CV item ${roleId}`);
+  const group = area === undefined ? undefined : (it.groups ?? []).findIndex((g) => g.id === area);
+  if (group === -1) throw new Error(`content/cv.ts: ${roleId} has no area ${area}`);
+  const locs: CvLocator[] = items.length ? items.map((item) => ({ roleId, group, item })) : [{ roleId, group }];
+  for (const l of locs) if (!resolves(l)) throw new Error(`content/cv.ts: ${JSON.stringify(l)} doesn't resolve`);
+  return locs.map((l) => (l.group === undefined ? { roleId: l.roleId, ...(l.item === undefined ? {} : { item: l.item }) } : l));
+}
 
 /** The CV text a line locator points at, or undefined when it doesn't resolve to a line. */
 export function cvLineText(at: CvLocator): string | undefined {
@@ -69,10 +87,18 @@ function itemList(items: readonly number[]): string {
   return parts.join(",");
 }
 
+/** An area's stable id ("integrations"), from its position in content/cv.ts. */
+function areaId(roleId: string, group: number): string {
+  const id = ITEM.get(roleId)?.groups?.[group]?.id;
+  if (!id) throw new Error(`content/cv.ts: ${roleId} has no area ${group}`);
+  return id;
+}
+
 export function formatTarget(t: CvTarget): string {
   const list = itemList(t.items);
   if (t.group === null) return list ? `${t.id}..${list}` : t.id;
-  return list ? `${t.id}.${t.group}.${list}` : `${t.id}.${t.group}`;
+  const area = areaId(t.id, t.group);
+  return list ? `${t.id}.${area}.${list}` : `${t.id}.${area}`;
 }
 
 /** The deep link into the CV for these locators, with the requirement or question as `req`. */
@@ -83,7 +109,10 @@ export function cvHref(locs: readonly CvLocator[], req = ""): string {
   return `/about#cv=${cv}${req ? `&req=${encodeURIComponent(req)}` : ""}`;
 }
 
-/** `cvParseHash` from About.dc.html: unknown role ids are dropped; none left → null. */
+/**
+ * `cvParseHash` from About.dc.html, reading area ids instead of positions: unknown role ids are
+ * dropped (none left → null); an unknown area id falls back to the whole role, with no points.
+ */
 export function parseCvHash(hash: string): CvFocus | null {
   const m = /cv=([^&]+)/.exec(hash);
   if (!m) return null;
@@ -109,8 +138,9 @@ export function parseCvHash(hash: string): CvFocus | null {
         if (!Number.isFinite(ab[0]) || !Number.isFinite(end) || end - ab[0] > 100) continue;
         for (let k = ab[0]; k <= end; k++) items.push(k);
       }
-      const g = bits[1] === undefined || bits[1] === "" ? null : parseInt(bits[1], 10);
-      return { id: bits[0], group: g !== null && Number.isFinite(g) ? g : null, items };
+      if (bits[1] === undefined || bits[1] === "") return { id: bits[0], group: null, items };
+      const g = ITEM.get(bits[0])?.groups?.findIndex((x) => x.id === bits[1]) ?? -1;
+      return g >= 0 ? { id: bits[0], group: g, items } : { id: bits[0], group: null, items: [] };
     })
     .filter((t) => ITEM.has(t.id));
   return targets.length ? { targets, req } : null;

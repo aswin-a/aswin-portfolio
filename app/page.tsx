@@ -10,6 +10,7 @@ import { IntroBanner } from "@/components/intro-banner";
 import { Nav } from "@/components/nav";
 import { siteMeta } from "@/content/site-meta";
 import { PROMPT_VERSION } from "@/lib/ai/prompts";
+import { cvUpdatedLabel } from "@/lib/cv";
 import { hrefOf, isTodo } from "@/lib/content";
 import { posts } from "@/lib/posts";
 import { DESCRIPTIONS, pageMetadata, profilePageJsonLd } from "@/lib/seo";
@@ -35,7 +36,7 @@ export default async function Home() {
           buildMeta={{
             build: `${process.env.BUILD_SHA} · ${process.env.BUILD_DATE}`,
             prompt: PROMPT_VERSION,
-            kbSynced: `Synced from master resume ${siteMeta.resumeUpdated}`,
+            kbSynced: `Synced from master resume ${cvUpdatedLabel()}`,
             offlineEval: `${siteMeta.evalPassed}/${siteMeta.evalTotal} cases · ${siteMeta.evalLastRun}`,
             redTeam: `${siteMeta.evalRedTeamPassed}/${siteMeta.evalRedTeamTotal} held`,
             // Placeholder links render as "#" with the design's " [link]" after the label.

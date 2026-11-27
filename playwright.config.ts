@@ -35,8 +35,6 @@ export default defineConfig({
       CONTACT_PHONE_DISPLAY: "",
       CONTACT_HOURS: "",
       CONTACT_RESPONSE_TIME: "",
-      // The footer's site-repo link stays hidden while this is unset (design update 14).
-      SITE_REPO_URL: "",
     },
     url: "http://localhost:3100",
     reuseExistingServer: false,

@@ -140,7 +140,7 @@ describe("rss.xml", () => {
 });
 
 describe("JSON-LD", () => {
-  it("CV page Person: alumniOf IIT Mandi, occupations from the CV, sameAs LinkedIn and GitHub", () => {
+  it("CV page Person: alumniOf IIT Mandi, occupations from the CV, sameAs LinkedIn, GitHub and the site", () => {
     const p = personJsonLd(true) as Record<string, unknown>;
     expect(p["@type"]).toBe("Person");
     expect(p.name).toBe("Aswin A");
@@ -149,7 +149,10 @@ describe("JSON-LD", () => {
     expect(occ).toEqual(["Founder and Product Lead", "Senior Product Manager", "Co-Founder, Product and Technology"]);
     // No CV role is current, so no worksFor.
     expect(p.worksFor).toBeUndefined();
-    expect(p.sameAs).toEqual([cvHeader.linkedin.href, siteMeta.github]);
+    expect(p.sameAs).toEqual(["https://linkedin.com/in/aswin-a-pm", siteMeta.github, "https://aswin-a.com"]);
+    expect(p.sameAs).toEqual(cvHeader.links.map((l) => l.href));
+    expect(p.address).toEqual({ "@type": "PostalAddress", addressLocality: "Chennai", addressRegion: "Tamil Nadu", addressCountry: "India" });
+    expect(p.url).toBe("https://aswin-a.com");
   });
   it("home Person is the short form inside a ProfilePage", () => {
     const pp = profilePageJsonLd("/") as { "@type": string; mainEntity: Record<string, unknown> };

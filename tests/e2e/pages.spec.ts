@@ -219,51 +219,52 @@ test("CV: header, stats, timeline lanes and links (update 6)", async ({ page }) 
   await expect(page.getByText("CURRICULUM VITAE", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: "Aswin A" })).toBeVisible();
   await expect(page.getByRole("link", { name: "LinkedIn", exact: true }).first()).toHaveAttribute("href", "https://linkedin.com/in/aswin-a-pm");
-  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "/resume.pdf");
-  await expect(page.getByText("Synced from my master resume · 13 Nov 2026")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Download PDF" })).toHaveAttribute("href", "/aswin-a-cv.pdf");
+  await expect(page.getByText("Synced from my master resume · 27 Nov 2026")).toBeVisible();
   await expect(page.getByText("125% growth", { exact: true })).toHaveCSS("font-size", "26px");
   const items = page.getByRole("main").locator("ol > li");
-  await expect(items).toHaveCount(8);
-  await expect(items.nth(0).getByRole("heading", { level: 3 })).toHaveText("Job-fit AI on this site");
-  await expect(items.nth(0).getByRole("link", { name: "Try it on the home page →" })).toHaveAttribute("href", "/");
+  await expect(items).toHaveCount(9);
+  await expect(items.nth(0).getByRole("heading", { level: 3 })).toHaveText("AI Fit-Check Product for Recruiters");
+  await expect(items.nth(0).getByRole("link", { name: "Try it on the home page →" })).toHaveAttribute("href", "/#fit-h");
   await expect(items.nth(0).locator("article")).toHaveClass(/border-dashed/);
-  await expect(items.nth(0).getByText("Side project", { exact: true })).toBeVisible();
-  await expect(items.nth(3).getByRole("link", { name: "Visit dhees.com ↗" })).toHaveAttribute("href", "https://dhees.com");
-  await expect(items.nth(3).getByRole("link", { name: "View the code on GitHub ↗" })).toHaveAttribute("href", "https://github.com/aswin-dhees/dpc-website");
-  await expect(items.nth(5).getByRole("heading", { level: 3 })).toHaveCSS("font-size", "20px");
-  await expect(items.nth(5).locator("article")).toHaveCSS("background-color", "rgb(255, 253, 248)");
-  await expect(items.nth(5).getByText("Senior PM, Oct 2022 – Sep 2024 · PM, Dec 2020 – Sep 2022 · Associate PM, Sep – Nov 2020")).toBeVisible();
-  await expect(items.nth(7).getByRole("heading", { level: 3 })).toHaveCSS("font-size", "17px");
+  await expect(items.nth(0).getByText("Agentic AI build", { exact: true })).toBeVisible();
+  await expect(items.nth(4).getByText("Side project", { exact: true })).toBeVisible();
+  await expect(items.nth(4).getByRole("link", { name: "Visit dhees.com ↗" })).toHaveAttribute("href", "https://dhees.com");
+  await expect(items.nth(4).getByRole("link", { name: "github.com/aswin-a/dpc-website ↗" })).toHaveAttribute("href", "https://github.com/aswin-a/dpc-website");
+  await expect(items.nth(6).getByRole("heading", { level: 3 })).toHaveCSS("font-size", "20px");
+  await expect(items.nth(6).locator("article")).toHaveCSS("background-color", "rgb(255, 253, 248)");
+  await expect(items.nth(6).getByText("Senior Product Manager, Oct 2022 – Sep 2024 · Product Manager, Dec 2020 – Sep 2022 · Associate Product Manager, Sep 2020 – Nov 2020")).toBeVisible();
+  await expect(items.nth(8).getByRole("heading", { level: 3 })).toHaveCSS("font-size", "17px");
   // Desktop shows the dates column; the in-card dates are phone only.
-  await expect(items.nth(5).getByText("Sep 2020 – Sep 2024")).toHaveCount(2);
-  await expect(items.nth(5).locator("article").getByText("Sep 2020 – Sep 2024")).toBeHidden();
+  await expect(items.nth(6).getByText("Sep 2020 – Sep 2024")).toHaveCount(2);
+  await expect(items.nth(6).locator("article").getByText("Sep 2020 – Sep 2024")).toBeHidden();
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(items.nth(5).locator("article").getByText("Sep 2020 – Sep 2024")).toBeVisible();
-  await expect(items.nth(5).locator("> div").first()).toBeHidden();
-  await expect(page.getByText("[Professional AI certificate · once earned]")).toBeVisible();
+  await expect(items.nth(6).locator("article").getByText("Sep 2020 – Sep 2024")).toBeVisible();
+  await expect(items.nth(6).locator("> div").first()).toBeHidden();
+  await expect(page.getByText(/certificate/i)).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 2, name: "Skills" })).toBeVisible();
 });
 
 test("CV: Zelthy's area cards open on their own and span the row (update 6)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/about");
-  const cards = page.getByRole("button", { name: /points ↓|points ↑/ });
-  await expect(cards).toHaveCount(7);
-  const core = page.getByRole("button", { name: /^Core platform and integrations/ });
+  const cards = page.locator("#cv-zelthy").getByRole("button", { name: /points ↓|points ↑/ });
+  await expect(cards).toHaveCount(8);
+  const core = page.getByRole("button", { name: /^Identity, Integrations and Data Sync/ });
   await expect(core).toHaveAttribute("aria-expanded", "false");
-  await expect(core).toContainText("See all 12 points ↓");
+  await expect(core).toContainText("See all 4 points ↓");
   await core.click();
   await expect(core).toHaveAttribute("aria-expanded", "true");
-  await expect(core).toContainText("Hide 12 points ↑");
+  await expect(core).toContainText("Hide 4 points ↑");
   await expect(core.locator("xpath=..")).toHaveCSS("grid-column-start", "1");
   await expect(core.locator("xpath=..")).toHaveCSS("border-top-color", "rgb(31, 76, 134)");
-  await expect(page.getByText("Evaluated HL7 and FHIR for interoperability and chose a FHIR converter per package (design stage).")).toBeVisible();
-  const team = page.getByRole("button", { name: /^Team leadership/ });
+  await expect(page.getByText(/^Led a daily two-way batch sync over client SOAP APIs/)).toBeVisible();
+  const team = page.getByRole("button", { name: /^Team Leadership/ });
   await team.click();
   await expect(core).toHaveAttribute("aria-expanded", "true");
   await expect(team).toContainText("Hide 2 points ↑");
   await core.click();
-  await expect(page.getByText("Evaluated HL7 and FHIR for interoperability and chose a FHIR converter per package (design stage).")).toHaveCount(0);
+  await expect(page.getByText(/^Led a daily two-way batch sync over client SOAP APIs/)).toHaveCount(0);
 });
 
 test("CV: Copy as plain text shows Copied ✓ for 2 s (update 6)", async ({ page, context }) => {
@@ -272,7 +273,7 @@ test("CV: Copy as plain text shows Copied ✓ for 2 s (update 6)", async ({ page
   await page.getByRole("button", { name: "Copy as plain text" }).click();
   await expect(page.getByRole("button", { name: "Copied ✓" })).toBeVisible();
   const text = await page.evaluate(() => navigator.clipboard.readText());
-  expect(text.startsWith("Aswin A\nSenior Product Manager · Platforms, integrations and agentic AI products\nChennai, India · linkedin.com/in/aswin-a-pm\n\nEXPERIENCE\n")).toBe(true);
+  expect(text.startsWith("Aswin A\nSenior Product Manager · Platforms and Agentic AI · Enterprise SaaS\nChennai, Tamil Nadu, India · linkedin.com/in/aswin-a-pm · github.com/aswin-a · aswin-a.com\n\n")).toBe(true);
   await expect(page.getByRole("button", { name: "Copy as plain text" })).toBeVisible({ timeout: 4000 });
 });
 

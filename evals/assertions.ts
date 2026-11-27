@@ -3,7 +3,8 @@
  * the design's expected outcomes, never against the system's own claims about itself.
  */
 import type { AssertionValueFunctionContext, GradingResult } from "promptfoo";
-import { KB } from "@/lib/kb/snapshot";
+import { KB, type KbEntry } from "@/lib/kb/snapshot";
+import { parseCvHash } from "@/lib/cv-link";
 import { hasScore, notDoneTopicFor } from "@/lib/run/guards";
 import { isStrongFit } from "@/lib/fit-check/copy";
 import type { EvalOutput } from "./provider";
@@ -34,11 +35,29 @@ export function validSchema(output: string): GradingResult {
   return ok(`${o.events} event(s), all valid`);
 }
 
-/** no uncited match: each match names a role or project in the knowledge base, by its label and href. */
+/**
+ * Does `href` point into `e`? Its own href, or (CV-based entries, SPEC §6.1) a `/about#cv=` deep link
+ * whose every target is the entry's own CV item or area, and whose every point is one of its lines.
+ */
+function linksInto(e: KbEntry, href: string): boolean {
+  if (href === e.href) return true;
+  if (!href.startsWith("/about#") || e.cv.length === 0) return false;
+  const targets = parseCvHash(href.slice(href.indexOf("#") + 1))?.targets ?? [];
+  return (
+    targets.length > 0 &&
+    targets.every((t) => {
+      const inEntry = e.cv.some((c) => c.roleId === t.id && (c.group === undefined || (c.group ?? null) === t.group));
+      const lines = e.lines.filter((l) => l.at.roleId === t.id && (l.at.group ?? null) === t.group);
+      return inEntry && t.items.every((i) => lines.some((l) => l.at.item === i));
+    })
+  );
+}
+
+/** no uncited match: each match names a role or project in the knowledge base, by its label, and links into it. */
 export function noUncitedMatch(output: string): GradingResult {
   const r = fitResult(parse(output));
   if (r.type !== "result") return fail("no result");
-  const bad = r.matches.filter((m) => !evidence.some((e) => e.label === m.source && e.href === m.href));
+  const bad = r.matches.filter((m) => !evidence.some((e) => e.label === m.source && linksInto(e, m.href)));
   return bad.length ? fail(`uncited: ${bad.map((m) => `${m.req} → ${m.source}`).join("; ")}`) : ok(`${r.matches.length} match(es), each cites the KB`);
 }
 

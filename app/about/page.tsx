@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AskAboutRole, CopyCv, CvAskBox } from "@/components/about/cv-actions";
+import { AskAboutRole, CopyCv, CvActions, CvAskBox } from "@/components/about/cv-actions";
 import { CvCard, CvFocusProvider, CvGroups, CvHighlights } from "@/components/about/cv-focus";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
-import { certificates } from "@/content/certificates";
-import { cvHeader, cvItems, cvLinkHidden, cvSkills, cvStats, type CvItem } from "@/content/cv";
-import { siteMeta } from "@/content/site-meta";
-import { hrefOf } from "@/lib/content";
-import { cvPlainText, topicFor } from "@/lib/cv";
+import { cvHeader, cvItems, cvSkills, cvStats, type CvItem } from "@/content/cv";
+import { cvPlainText, cvUpdatedLabel, projectKind, topicFor } from "@/lib/cv";
 import { DESCRIPTIONS, pageMetadata, profilePageJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -33,7 +30,7 @@ function CvLink({ href, children }: { href: string; children: string }) {
   );
 }
 
-/** Lane styles from About.dc.html: roles solid, side projects dashed and indented, education a paper dot. */
+/** Lane styles from About.dc.html: roles solid, projects dashed and indented, education a paper dot. */
 function lane(it: CvItem) {
   const project = it.lane === "project";
   const edu = it.lane === "edu";
@@ -61,23 +58,29 @@ export default function About() {
                 <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">{cvHeader.name}</h1>
                 <p className="m-0 text-[18px] font-medium">{cvHeader.role}</p>
                 <p className="m-0 text-[15px] text-muted">
-                  {cvHeader.location} ·{" "}
-                  <a href={cvHeader.linkedin.href} className="text-accent">
-                    {cvHeader.linkedin.label}
-                  </a>
+                  {cvHeader.location}
+                  {cvHeader.links.map((l) => (
+                    <span key={l.href}>
+                      {" · "}
+                      <a href={l.href} className="text-accent">
+                        {l.label}
+                      </a>
+                    </span>
+                  ))}
                 </p>
                 <p className="mt-2 mb-0 max-w-[760px] font-serif text-[21px] leading-[1.5]">{cvHeader.summary}</p>
               </div>
               <div className="flex w-[260px] max-w-full flex-col items-stretch gap-[10px]">
                 <a
                   href={cvHeader.downloadPdf.href}
+                  download
                   className="flex min-h-12 items-center justify-center rounded-[10px] bg-btn-bg px-[18px] py-[10px] text-[15px] font-semibold text-btn-ink no-underline"
                 >
                   {cvHeader.downloadPdf.label}
                 </a>
                 <CopyCv text={cvPlainText()} />
                 <span className="text-center font-mono text-[12px] text-muted">
-                  {cvHeader.synced.label} · {siteMeta.resumeUpdated}
+                  {cvHeader.synced.label} · {cvUpdatedLabel()}
                 </span>
               </div>
             </div>
@@ -104,7 +107,7 @@ export default function About() {
             <h2 id="exp-h" className="m-0 font-serif text-[36px] font-normal">
               Experience
             </h2>
-            <span className="font-mono text-[12px] text-muted">solid: roles · dashed, indented: side projects</span>
+            <span className="font-mono text-[12px] text-muted">solid: roles · dashed, indented: agentic AI builds and side projects</span>
           </div>
           <CvFocusProvider>
             <ol className="m-0 flex list-none flex-col p-0">
@@ -123,7 +126,7 @@ export default function About() {
                       <CvCard id={it.id} bg={l.bg} border={l.border}>
                         <div className="flex flex-col gap-1">
                           <span className="hidden font-mono text-[12px] text-muted max-[640px]:inline">{it.dates}</span>
-                          {l.project && <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">Side project</span>}
+                          {l.project && <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">{projectKind(it)}</span>}
                           <h3 className={`m-0 font-semibold leading-[1.3] ${l.title}`}>{it.title}</h3>
                           <p className="m-0 text-[15px] text-muted">{it.org}</p>
                           {it.ladder && <p className="mt-1 mb-0 font-mono text-[12px] leading-[1.6] text-muted">{it.ladder}</p>}
@@ -131,11 +134,11 @@ export default function About() {
                         {it.scope && <p className="m-0 text-[15px] leading-[1.55]">{it.scope}</p>}
                         {it.highlights.length > 0 && <CvHighlights id={it.id} items={it.highlights} />}
                         {it.groups && <CvGroups id={it.id} groups={it.groups} />}
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-[6px]">
+                        <CvActions full={it.full}>
                           {it.qa && <AskAboutRole topic={topicFor(it)} />}
-                          {it.href && it.link && !cvLinkHidden.has(it.id) && <CvLink href={it.href}>{it.link}</CvLink>}
+                          {it.href && it.link && <CvLink href={it.href}>{it.link}</CvLink>}
                           {it.href2 && it.link2 && <CvLink href={it.href2}>{it.link2}</CvLink>}
-                        </div>
+                        </CvActions>
                       </CvCard>
                     </div>
                   </li>
@@ -162,22 +165,6 @@ export default function About() {
           </div>
         </section>
 
-        <section aria-labelledby="cert-h" className="flex flex-col gap-3">
-          <h2 id="cert-h" className="m-0 font-mono text-[11px] font-medium tracking-[0.06em] text-muted uppercase">
-            Certificates
-          </h2>
-          <div className="flex flex-wrap gap-[10px]">
-            {certificates.map((c) => (
-              <a
-                key={c.label}
-                href={hrefOf(c.href)}
-                className="inline-flex min-h-11 items-center gap-[10px] rounded-lg border border-rule bg-paper px-3 py-[6px] text-[14px] no-underline"
-              >
-                {c.label} <span className="font-mono text-[12px] text-accent">verify ↗</span>
-              </a>
-            ))}
-          </div>
-        </section>
       </main>
       <Footer />
     </div>
