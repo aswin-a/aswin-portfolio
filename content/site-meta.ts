@@ -4,7 +4,7 @@ import { evalMeta } from "@/lib/eval-results";
 export const siteMeta = {
   evalSetLink: "https://github.com/aswin-a/aswin-portfolio/tree/main/evals", // Public eval set (Aswin, 2026-11-23)
   github: "https://github.com/aswin-a", // GitHub profile (Aswin, 2026-11-23)
-  linkedin: "https://www.linkedin.com/in/aswin-a-pm", // From the public CV
+  linkedin: "https://linkedin.com/in/aswin-a-pm", // Footer.dc.html, design update 14
   domain: "aswin-a.com", // Production domain (Aswin, 2026-11-20)
   postingCadence: "2–3", // build log cadence, in weeks; the page adds "weeks"
   whatBreaksFirstAtScale: "monthly model budget cap",

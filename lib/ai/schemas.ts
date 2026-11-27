@@ -40,13 +40,18 @@ export const JdParseSchema = z.object({
 });
 export type JdParse = z.infer<typeof JdParseSchema>;
 
-/** SPEC §7 `evidence.map`: one card per requirement, a match citing a KB id or a gap. */
+/** The most CV lines one citation may name (Zelthy's largest area has 12). */
+export const MAX_LINES = 12;
+
+/** SPEC §7 `evidence.map`: one card per requirement, a match citing a KB id (and its lines) or a gap. */
 export const EvidenceCardSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("match"),
     req: z.string(),
     evidence: z.string(),
     sourceId: z.string(),
+    /** The source's `L` numbers the evidence comes from (SPEC §6.1, §7); [] when it rests on the summary. */
+    lines: z.array(z.int()).max(MAX_LINES),
   }),
   z.object({
     type: z.literal("gap"),
@@ -76,6 +81,8 @@ export const AskOutputSchema = z.object({
   kind: z.enum(ASK_KINDS),
   text: z.string().min(1).max(1200),
   sourceIds: z.array(z.string()).max(4),
+  /** Per cited entry, the `L` numbers the answer relies on (SPEC §6.1, §8). */
+  sourceLines: z.array(z.object({ id: z.string(), lines: z.array(z.int()).max(MAX_LINES) })).max(4),
   guard: z.enum(ASK_GUARDS),
 });
 export type AskOutput = z.infer<typeof AskOutputSchema>;

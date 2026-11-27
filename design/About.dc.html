@@ -76,7 +76,13 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <div style="display: {{wideDisplay}}; flex-direction: column; align-items: flex-end; padding-top: 22px; font-family: {{t.mono}}; font-size: 12px; line-height: 1.5; text-align: right; color: {{t.muted}}">{{it.dates}}</div>
 <div style="position: relative; padding: 10px 0 10px {{it.indent}}; border-left: 2px solid {{t.rule}}">
 <span aria-hidden="true" style="position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; border-radius: 999px; background: {{it.dotBg}}; border: 2px solid {{it.dotBorder}}"></span>
-<article style="display: flex; flex-direction: column; gap: 10px; margin-left: 22px; padding: 20px 22px; background: {{it.cardBg}}; border: {{it.cardBorder}}; border-radius: 14px">
+<article id="{{it.anchor}}" style="scroll-margin-top: 96px; display: flex; flex-direction: column; gap: 10px; margin-left: 22px; padding: 20px 22px; background: {{it.cardBg}}; border: {{it.cardBorder}}; border-radius: 14px">
+<sc-if value="{{it.focused}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 10px; background: {{t.accentTint}}; border: 1px solid {{t.accent}}">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.accent}}">FROM YOUR FIT CHECK</span><span style="font-size: 15px; line-height: 1.45">{{focusReq}}</span><span style="font-size: 13px; color: {{t.muted}}">The points that back it up are highlighted below.</span></span>
+<button type="button" onClick="{{clearFocus}}" aria-label="Clear highlight" style="flex: none; min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid {{t.accent}}; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 12px; cursor: pointer">Clear ✕</button>
+</div>
+</sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px">
 <sc-if value="{{narrow}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{it.dates}}</span></sc-if>
 <sc-if value="{{it.isProject}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Side project</span></sc-if>
@@ -87,7 +93,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <sc-if value="{{it.hasScope}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 15px; line-height: 1.55">{{it.scope}}</p></sc-if>
 <sc-if value="{{it.hasHighlights}}" hint-placeholder-val="{{ true }}">
 <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5">
-<sc-for list="{{it.highlights}}" as="h" hint-placeholder-count="3"><li>{{h}}</li></sc-for>
+<sc-for list="{{it.highlights}}" as="h" hint-placeholder-count="3"><li style="padding: {{h.pad}}; margin: {{h.mar}}; border-radius: 6px; background: {{h.bg}}; box-shadow: {{h.bar}}">{{h.text}}</li></sc-for>
 </ul>
 </sc-if>
 <sc-if value="{{it.hasGroups}}" hint-placeholder-val="{{ false }}">
@@ -95,7 +101,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Pick an area to see everything I did</span>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px">
 <sc-for list="{{it.groups}}" as="g" hint-placeholder-count="7">
-<div style="grid-column: {{g.span}}; display: flex; flex-direction: column; border: 1px solid {{g.border}}; border-radius: 10px; background: {{t.bg}}">
+<div id="{{g.anchor}}" style="scroll-margin-top: 96px; grid-column: {{g.span}}; display: flex; flex-direction: column; border: {{g.borderW}} solid {{g.border}}; border-radius: 10px; background: {{t.bg}}">
 <button type="button" onClick="{{g.toggle}}" aria-expanded="{{g.open}}" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border: 0; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; text-align: left; cursor: pointer">
 <span style="display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 15px; font-weight: 600">{{g.name}}</span>
@@ -106,7 +112,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </button>
 <sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
 <ul style="margin: 0; padding: 0 16px 16px 36px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.55">
-<sc-for list="{{g.items}}" as="gi" hint-placeholder-count="4"><li>{{gi}}</li></sc-for>
+<sc-for list="{{g.items}}" as="gi" hint-placeholder-count="4"><li style="padding: {{gi.pad}}; margin: {{gi.mar}}; border-radius: 6px; background: {{gi.bg}}; box-shadow: {{gi.bar}}">{{gi.text}}</li></sc-for>
 </ul>
 </sc-if>
 </div>
@@ -152,7 +158,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="about" topic="{{askTopic}}" auto-ask="{{autoAsk}}" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":4600}}'>
+<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"previewFocus":{"editor":"text","default":""},"$preview":{"width":1440,"height":4600}}'>
 var ABOUT_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function aboutTokens(x) {
   var c = { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
@@ -294,6 +300,27 @@ var CV_SKILLS = [
   ['Tools', 'Jira, Confluence, Postman, Figma, Claude, Claude Code, Cursor, v0, ChatGPT, Python, JavaScript, SQL, Django, Vue.js, React, ERPNext']
 ];
 
+// Deep links from the fit check and Ask my work:
+//   About.dc.html#cv=zelthy.0.6-9+zelthy.6&req=Own%20a%20public%20API
+//   target = roleId[.groupIndex][.itemList]; itemList = 3 | 3-5 | 3,7 ; several targets joined by '+'
+//   For roles without area tiles (Dhee's, Solar Labs), use roleId..itemList (empty group).
+function cvParseHash(h) {
+  var m = /cv=([^&]+)/.exec(h);
+  if (!m) return null;
+  var r = /req=([^&]+)/.exec(h);
+  var targets = decodeURIComponent(m[1]).split('+').map((part) => {
+    var bits = part.split('.');
+    var items = [];
+    (bits[2] || '').split(',').forEach((seg) => {
+      if (!seg) return;
+      var ab = seg.split('-').map((n) => parseInt(n, 10));
+      for (var k = ab[0]; k <= (ab.length > 1 ? ab[1] : ab[0]); k++) items.push(k);
+    });
+    return { id: bits[0], group: bits[1] === undefined || bits[1] === '' ? null : parseInt(bits[1], 10), items: items };
+  }).filter((tg) => CV_ITEMS.some((it) => it.id === tg.id));
+  if (!targets.length) return null;
+  return { targets: targets, req: r ? decodeURIComponent(r[1]) : '' };
+}
 function cvPlainText() {
   var out = ['Aswin A', 'Senior Product Manager · Platforms, integrations and agentic AI products', 'Chennai, India · linkedin.com/in/aswin-a-pm', '', 'EXPERIENCE'];
   CV_ITEMS.forEach((it) => {
@@ -311,10 +338,25 @@ class Component extends DCLogic {
   componentDidMount() {
     this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
     if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize);
+    this.onHash = () => this.readHash();
+    if (typeof window !== 'undefined') { window.addEventListener('hashchange', this.onHash); this.readHash(); }
   }
-  componentWillUnmount() { if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  componentWillUnmount() { if (typeof window !== 'undefined') { window.removeEventListener('resize', this.onResize); window.removeEventListener('hashchange', this.onHash); } }
   componentDidUpdate(prev) {
     if (prev.startInXray !== this.props.startInXray) this.setState({ xray: !!this.props.startInXray });
+  }
+  readHash() {
+    if (typeof window === 'undefined' || !window.location) return;
+    var preview = this.props.previewFocus || '';
+    var f = cvParseHash(preview || window.location.hash || '');
+    if (!f) return;
+    var o = Object.assign({}, this.state.open);
+    f.targets.forEach((tg) => { if (tg.group !== null) o[tg.id + ':' + tg.group] = true; });
+    this.setState({ focus: f, open: o });
+    var first = f.targets[0];
+    var anchor = first.group !== null ? 'cv-' + first.id + '-g' + first.group : 'cv-' + first.id;
+    if (preview) return;
+    setTimeout(() => { var el = document.getElementById(anchor); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
   }
   openTopic(topic, q) { this.setState({ askOpen: true, askTopic: topic, autoAsk: q || '' }); }
   renderVals() {
@@ -328,17 +370,24 @@ class Component extends DCLogic {
       ownQ: s.ownQ,
       onOwnQ: (e) => this.setState({ ownQ: e.target.value }),
       askOwn: (e) => { if (e && e.preventDefault) e.preventDefault(); var q = this.state.ownQ.trim(); this.setState({ ownQ: '' }); this.openTopic(CV_GENERAL, q); },
+      focusReq: s.focus && s.focus.req ? s.focus.req : 'Evidence for this requirement',
+      clearFocus: () => { this.setState({ focus: null }); try { if (window.history && window.history.replaceState) window.history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {} },
       items: CV_ITEMS.map((it) => {
         var project = it.lane === 'project', edu = it.lane === 'edu';
+        var fts = s.focus ? s.focus.targets.filter((tg) => tg.id === it.id) : [];
+        var isHl = (gIdx, iIdx) => fts.some((tg) => tg.group === gIdx && (tg.items.length === 0 ? gIdx !== null : tg.items.indexOf(iIdx) >= 0));
+        var pt = (text, on) => ({ text: text, bg: on ? t.accentTint : 'transparent', bar: on ? 'inset 3px 0 0 ' + t.accent : 'none', pad: on ? '4px 8px 4px 10px' : '0', mar: on ? '0 -8px 0 -10px' : '0' });
         return {
+          anchor: 'cv-' + it.id, focused: fts.length > 0,
           dates: it.dates, title: it.title, org: it.org, scope: it.scope, hasScope: !!it.scope,
           ladder: it.ladder || '', hasLadder: !!it.ladder,
-          highlights: it.highlights || [], hasHighlights: !!(it.highlights && it.highlights.length),
+          highlights: (it.highlights || []).map((h, hi) => pt(h, fts.some((tg) => tg.group === null && tg.items.indexOf(hi) >= 0))), hasHighlights: !!(it.highlights && it.highlights.length),
           hasGroups: !!it.groups,
           groups: (it.groups || []).map((g, gi) => {
             var key = it.id + ':' + gi, gOpen = !!s.open[key];
-            return { name: g.name, summary: g.summary || '', items: g.items, open: gOpen,
-              sign: gOpen ? '−' : '+', span: gOpen ? '1 / -1' : 'auto', border: gOpen ? t.accent : t.rule,
+            var gFocus = fts.some((tg) => tg.group === gi);
+            return { anchor: 'cv-' + it.id + '-g' + gi, name: g.name, summary: g.summary || '', items: g.items.map((x, xi) => pt(x, gFocus && isHl(gi, xi))), open: gOpen,
+              sign: gOpen ? '−' : '+', span: gOpen ? '1 / -1' : 'auto', border: gOpen || gFocus ? t.accent : t.rule, borderW: gFocus ? '2px' : '1px',
               countLabel: gOpen ? 'Hide ' + g.items.length + ' points ↑' : 'See all ' + g.items.length + ' points ↓',
               toggle: () => { var o = Object.assign({}, this.state.open); o[key] = !o[key]; this.setState({ open: o }); } };
           }),
@@ -348,7 +397,7 @@ class Component extends DCLogic {
           indent: project ? (narrow ? '16px' : '40px') : '0px',
           titleSize: project || edu ? '17px' : '20px',
           cardBg: project ? 'transparent' : t.paper,
-          cardBorder: project ? '1.5px dashed ' + t.rule : '1px solid ' + t.rule,
+          cardBorder: fts.length ? '2px solid ' + t.accent : (project ? '1.5px dashed ' + t.rule : '1px solid ' + t.rule),
           dotBg: project ? t.bg : (edu ? t.paper : t.ink),
           dotBorder: project ? t.muted : t.ink
         };

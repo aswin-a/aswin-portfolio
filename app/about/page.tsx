@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AskAboutRole, CopyCv, CvAskBox, CvGroups } from "@/components/about/cv-actions";
+import { AskAboutRole, CopyCv, CvAskBox } from "@/components/about/cv-actions";
+import { CvCard, CvFocusProvider, CvGroups, CvHighlights } from "@/components/about/cv-focus";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
 import { Nav } from "@/components/nav";
@@ -11,7 +12,12 @@ import { hrefOf } from "@/lib/content";
 import { cvPlainText, topicFor } from "@/lib/cv";
 import { DESCRIPTIONS, pageMetadata, profilePageJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({ title: "CV — Aswin A", description: DESCRIPTIONS.about, path: "/about", type: "profile" });
+export const metadata: Metadata = pageMetadata({
+  title: "CV — Aswin A",
+  description: DESCRIPTIONS.about,
+  path: "/about",
+  type: "profile",
+});
 
 /** Site routes go through next/link; "#" placeholders and other sites stay plain anchors. */
 function CvLink({ href, children }: { href: string; children: string }) {
@@ -35,7 +41,8 @@ function lane(it: CvItem) {
     project,
     indent: project ? "pl-10 max-[640px]:pl-4" : "pl-0",
     title: project || edu ? "text-[17px]" : "text-[20px]",
-    card: project ? "border-[1.5px] border-dashed border-rule bg-transparent" : "border border-solid border-rule bg-paper",
+    bg: project ? "bg-transparent" : "bg-paper",
+    border: project ? "border-[1.5px] border-dashed border-rule" : "border border-solid border-rule",
     dot: project ? "bg-bg border-muted" : edu ? "bg-paper border-ink" : "bg-ink border-ink",
   };
 }
@@ -51,9 +58,7 @@ export default function About() {
             <p className="m-0 font-mono text-[12px] tracking-[0.08em] text-muted">{cvHeader.eyebrow}</p>
             <div className="flex flex-wrap items-start justify-between gap-x-12 gap-y-5">
               <div className="flex max-w-[760px] flex-[1_1_480px] flex-col gap-2">
-                <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">
-                  {cvHeader.name}
-                </h1>
+                <h1 className="m-0 font-serif text-h1 font-normal leading-[1.1] tracking-[-0.015em]">{cvHeader.name}</h1>
                 <p className="m-0 text-[18px] font-medium">{cvHeader.role}</p>
                 <p className="m-0 text-[15px] text-muted">
                   {cvHeader.location} ·{" "}
@@ -101,49 +106,43 @@ export default function About() {
             </h2>
             <span className="font-mono text-[12px] text-muted">solid: roles · dashed, indented: side projects</span>
           </div>
-          <ol className="m-0 flex list-none flex-col p-0">
-            {cvItems.map((it) => {
-              const l = lane(it);
-              return (
-                <li key={it.id} className="grid grid-cols-[132px_minmax(0,1fr)] gap-x-5 max-[640px]:grid-cols-[minmax(0,1fr)]">
-                  <div className="flex flex-col items-end pt-[22px] text-right font-mono text-[12px] leading-[1.5] text-muted max-[640px]:hidden">
-                    {it.dates}
-                  </div>
-                  <div className={`relative border-l-2 border-rule py-[10px] pr-0 ${l.indent}`}>
-                    <span
-                      aria-hidden="true"
-                      className={`absolute top-[26px] -left-[7px] h-3 w-3 rounded-full border-2 border-solid ${l.dot}`}
-                    />
-                    <article className={`ml-[22px] flex flex-col gap-[10px] rounded-[14px] px-[22px] py-5 ${l.card}`}>
-                      <div className="flex flex-col gap-1">
-                        <span className="hidden font-mono text-[12px] text-muted max-[640px]:inline">{it.dates}</span>
-                        {l.project && (
-                          <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">Side project</span>
-                        )}
-                        <h3 className={`m-0 font-semibold leading-[1.3] ${l.title}`}>{it.title}</h3>
-                        <p className="m-0 text-[15px] text-muted">{it.org}</p>
-                        {it.ladder && <p className="mt-1 mb-0 font-mono text-[12px] leading-[1.6] text-muted">{it.ladder}</p>}
-                      </div>
-                      {it.scope && <p className="m-0 text-[15px] leading-[1.55]">{it.scope}</p>}
-                      {it.highlights.length > 0 && (
-                        <ul className="m-0 flex list-disc flex-col gap-[6px] pl-5 text-[15px] leading-[1.5]">
-                          {it.highlights.map((h) => (
-                            <li key={h}>{h}</li>
-                          ))}
-                        </ul>
-                      )}
-                      {it.groups && <CvGroups groups={it.groups} />}
-                      <div className="flex flex-wrap items-center gap-x-5 gap-y-[6px]">
-                        {it.qa && <AskAboutRole topic={topicFor(it)} />}
-                        {it.href && it.link && !cvLinkHidden.has(it.id) && <CvLink href={it.href}>{it.link}</CvLink>}
-                        {it.href2 && it.link2 && <CvLink href={it.href2}>{it.link2}</CvLink>}
-                      </div>
-                    </article>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
+          <CvFocusProvider>
+            <ol className="m-0 flex list-none flex-col p-0">
+              {cvItems.map((it) => {
+                const l = lane(it);
+                return (
+                  <li key={it.id} className="grid grid-cols-[132px_minmax(0,1fr)] gap-x-5 max-[640px]:grid-cols-[minmax(0,1fr)]">
+                    <div className="flex flex-col items-end pt-[22px] text-right font-mono text-[12px] leading-[1.5] text-muted max-[640px]:hidden">
+                      {it.dates}
+                    </div>
+                    <div className={`relative border-l-2 border-rule py-[10px] pr-0 ${l.indent}`}>
+                      <span
+                        aria-hidden="true"
+                        className={`absolute top-[26px] -left-[7px] h-3 w-3 rounded-full border-2 border-solid ${l.dot}`}
+                      />
+                      <CvCard id={it.id} bg={l.bg} border={l.border}>
+                        <div className="flex flex-col gap-1">
+                          <span className="hidden font-mono text-[12px] text-muted max-[640px]:inline">{it.dates}</span>
+                          {l.project && <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">Side project</span>}
+                          <h3 className={`m-0 font-semibold leading-[1.3] ${l.title}`}>{it.title}</h3>
+                          <p className="m-0 text-[15px] text-muted">{it.org}</p>
+                          {it.ladder && <p className="mt-1 mb-0 font-mono text-[12px] leading-[1.6] text-muted">{it.ladder}</p>}
+                        </div>
+                        {it.scope && <p className="m-0 text-[15px] leading-[1.55]">{it.scope}</p>}
+                        {it.highlights.length > 0 && <CvHighlights id={it.id} items={it.highlights} />}
+                        {it.groups && <CvGroups id={it.id} groups={it.groups} />}
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-[6px]">
+                          {it.qa && <AskAboutRole topic={topicFor(it)} />}
+                          {it.href && it.link && !cvLinkHidden.has(it.id) && <CvLink href={it.href}>{it.link}</CvLink>}
+                          {it.href2 && it.link2 && <CvLink href={it.href2}>{it.link2}</CvLink>}
+                        </div>
+                      </CvCard>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </CvFocusProvider>
         </section>
 
         <section aria-labelledby="skills-h" className="flex flex-col gap-[14px]">

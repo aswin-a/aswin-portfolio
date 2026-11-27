@@ -1,14 +1,20 @@
 import type { CvItem } from "@/content/cv";
 import { products } from "@/content/products";
-import { cvItem, orgName, topicFor } from "@/lib/cv";
+import { cvItem, orgName } from "@/lib/cv";
+import type { CvLocator } from "@/lib/cv-link";
+import type { KbLine } from "./roles";
 
 export type Project = {
   id: string;
   title: string;
   status: string;
   summary: string;
-  /** Proof the fit check may cite: CV lines, word for word. */
+  /** Proof that is not on the CV (the CloudEagle concept only), word for word. */
   evidence: string[];
+  /** Proof the fit check may cite by number: CV lines, word for word, each with its CV locator. */
+  lines: KbLine[];
+  /** Where the entry sits on the CV; empty when it isn't on the CV (SPEC §6.1). */
+  cv: CvLocator[];
   label: string;
   href: string;
   /** Search tags for kb.search (SPEC §6), not claims. Taken from how the design maps requirements to this entry. */
@@ -41,7 +47,9 @@ const side = (it: CvItem, id: string, slug: string | null, label: string | null,
   title: it.title,
   status: (slug && statusOf(slug)) || it.dates,
   summary: `${it.org}. ${it.scope}`,
-  evidence: it.highlights,
+  evidence: [],
+  lines: it.highlights.map((text, item) => ({ at: { roleId: it.id, item }, text })),
+  cv: [{ roleId: it.id }],
   label: label ?? `CV · ${it.title}`,
   href: slug ? `/work/${slug}` : "/about",
   tags,
@@ -59,8 +67,8 @@ const ZELTHY_GROUPS: [string, string[]][] = [
 ];
 
 const zelthy = cvItem("zelthy");
-/** Source chip for Zelthy's lines: "CV · Senior Product Manager · Zelthy" (Aswin, 2026-11-23). */
-const zelthyLabel = `CV · ${topicFor(zelthy).label}`;
+/** Source chips for Zelthy's lines: "CV · Zelthy · {area name as on the CV}" (design update 14; Aswin, 2026-11-27). */
+const zelthyLabel = (area: string) => `CV · ${orgName(zelthy)} · ${area}`;
 const zelthyGroups = zelthy.groups ?? [];
 if (zelthyGroups.length !== ZELTHY_GROUPS.length) throw new Error("content/cv.ts: Zelthy's groups changed; update ZELTHY_GROUPS");
 
@@ -69,22 +77,30 @@ const zelthyProjects: Project[] = zelthyGroups.map((g, i) => ({
   title: `${orgName(zelthy)}: ${g.name}`,
   status: zelthy.dates,
   summary: g.summary,
-  evidence: g.items,
-  label: zelthyLabel,
+  evidence: [],
+  lines: g.items.map((text, item) => ({ at: { roleId: zelthy.id, group: i, item }, text })),
+  cv: [{ roleId: zelthy.id, group: i }],
+  label: zelthyLabel(g.name),
   href: "/about",
   tags: ZELTHY_GROUPS[i][1],
 }));
 
 /** Healthcare lines across Zelthy's groups (the Ask answer on healthcare cites this entry). */
 const HEALTHCARE = /healthcare|EHR|HL7|FHIR|HCPs|HIPAA|patient|prescriptions/i;
+const healthcareLines: KbLine[] = zelthyGroups.flatMap((g, group) =>
+  g.items.flatMap((text, item) => (HEALTHCARE.test(text) ? [{ at: { roleId: zelthy.id, group, item }, text }] : [])),
+);
 const healthcare: Project = {
   id: "healthcare-integrations",
   // "Healthcare and pharma clients in Singapore, …", the last sentence of Zelthy's scope.
   title: `${orgName(zelthy)}: ${zelthy.scope.split(/(?<=\.) /).at(-1)}`,
   status: zelthy.dates,
   summary: zelthy.scope,
-  evidence: zelthyGroups.flatMap((g) => g.items).filter((x) => HEALTHCARE.test(x)),
-  label: zelthyLabel,
+  evidence: [],
+  lines: healthcareLines,
+  cv: healthcareLines.map((l) => l.at),
+  // The design's label for this cross-cut (Ask.dc.html, design update 14).
+  label: zelthyLabel("healthcare"),
   href: "/about",
   tags: ["healthcare", "hospital", "integrations", "platform reliability", "pharma", "hipaa", "gdpr", "soc2", "compliance", "security", "privacy", "validated systems", "data residency", "data migration", "regulated"],
 };
@@ -101,6 +117,8 @@ export const projects: Project[] = [
       "The take-home brief asked for AI that generates integration code from an app's API docs (API client, auth, user and usage retrieval, error handling, pagination and logging), plus screens, safeguards and a prototype.",
       "I delivered design notes, a six-step flow with two human gates, a working prototype repo and a Loom walkthrough, and reframed the brief: \"Don't make customers developers. Make them reviewers.\" The AI fills a declarative, read-only connector form that one hardened engine runs, instead of writing code per app.",
     ],
+    lines: [],
+    cv: [], // Not on the CV: a take-home concept (content/products.ts)
     label: "Case study · CloudEagle concept",
     href: "/work/integration-builder",
     tags: ["ai agent", "guardrails", "safeguards", "integrations", "evals"],

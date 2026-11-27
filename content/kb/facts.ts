@@ -1,7 +1,10 @@
 import { cvGeneral, cvHeader, cvItems, cvSkills, cvStats } from "@/content/cv";
-import { cvItem } from "@/lib/cv";
+import { cvItem, orgName } from "@/lib/cv";
+import type { CvLocator } from "@/lib/cv-link";
+import type { KbLine } from "./roles";
 
-export type Fact = { id: string; text: string; label: string; href: string };
+/** `lines` and `cv` are set when the fact is one CV line or one CV item (SPEC §6.1); header, stats and skills facts have none. */
+export type Fact = { id: string; text: string; label: string; href: string; lines?: KbLine[]; cv?: CvLocator[] };
 
 /**
  * Canonical bio facts used in Ask answers (SPEC §6), generated from content/cv.ts (design update 6):
@@ -11,10 +14,14 @@ export type Fact = { id: string; text: string; label: string; href: string };
  */
 const career = { label: `CV · ${cvGeneral.label}`, href: "/about" };
 const zelthy = cvItem("zelthy");
-const line = (group: string, starts: string) => {
-  const hit = zelthy.groups?.find((g) => g.name === group)?.items.find((x) => x.startsWith(starts));
-  if (!hit) throw new Error(`content/cv.ts: no Zelthy line "${starts}…" in ${group}`);
-  return hit;
+/** One Zelthy line as a fact: its text, its locator, and the area's label ("CV · Zelthy · {area}"). */
+const line = (id: string, group: string, starts: string): Fact => {
+  const gi = zelthy.groups?.findIndex((g) => g.name === group) ?? -1;
+  const items = zelthy.groups?.[gi]?.items ?? [];
+  const item = items.findIndex((x) => x.startsWith(starts));
+  if (item < 0) throw new Error(`content/cv.ts: no Zelthy line "${starts}…" in ${group}`);
+  const at = { roleId: zelthy.id, group: gi, item };
+  return { id, text: items[item], label: `CV · ${orgName(zelthy)} · ${group}`, href: "/about", lines: [{ at, text: items[item] }], cv: [at] };
 };
 const sideProjects = cvItems.filter((it) => it.lane === "project");
 const edu = cvItem("edu");
@@ -30,8 +37,8 @@ export const facts: Fact[] = [
     label: "Case studies",
     href: "/work",
   },
-  { id: "fact-llm-experience", text: line("Data, ML and AI", "Prototyped LLM features"), ...career },
-  { id: "fact-platform-win", text: line("Product delivery, roadmap and metrics", "Delivered 17 software packages"), ...career },
+  line("fact-llm-experience", "Data, ML and AI", "Prototyped LLM features"),
+  line("fact-platform-win", "Product delivery, roadmap and metrics", "Delivered 17 software packages"),
   {
     id: "fact-career-total",
     text: cvItems
@@ -40,9 +47,9 @@ export const facts: Fact[] = [
       .join(" "),
     ...career,
   },
-  { id: "fact-ladder", text: `${zelthy.ladder}.`, ...career },
-  { id: "fact-education", text: `${edu.title}, ${edu.org} (${edu.dates}).`, ...career },
+  { id: "fact-ladder", text: `${zelthy.ladder}.`, label: `CV · ${orgName(zelthy)}`, href: "/about", cv: [{ roleId: zelthy.id }] },
+  { id: "fact-education", text: `${edu.title}, ${edu.org} (${edu.dates}).`, label: `CV · ${orgName(edu)}`, href: "/about", cv: [{ roleId: edu.id }] },
   { id: "fact-location", text: `Location: ${cvHeader.location}.`, ...career },
-  { id: "fact-leadership", text: line("Team leadership", "Led and mentored"), ...career },
+  line("fact-leadership", "Team leadership", "Led and mentored"),
   ...cvSkills.map(([name, list], i) => ({ id: `fact-skills-${i + 1}`, text: `Skills · ${name}: ${list}.`, ...career })),
 ];
