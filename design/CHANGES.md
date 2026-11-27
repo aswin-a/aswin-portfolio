@@ -2,6 +2,76 @@
 
 The files in this folder are always the latest approved design. This log says what changed in each update, so code can be brought in line without re-reading every artboard.
 
+## 2026-11-27 (update 15): CV content rewritten from the master resume; deep links re-indexed; real domain and repo
+
+> **Sync note: the local name removals were kept.** Before this sync, the local design files (Ask, Hero, Main, Mobile, Work, WorkIndex, BuildLog, canvas.json and this CHANGES file) had the client's name removed from the integration-builder case study. The prototype still has it in Ask, Hero, Main, Mobile, Work, WorkIndex, BuildLog and canvas. For this sync, `Ask`, `Hero`, `Main` and `Mobile` are **the local versions with this update's prototype changes merged in**, so they do **not** byte-match the prototype. Work, WorkIndex, BuildLog and canvas were not touched. **Keep the name out of the build:** the case study is "AI integration builder" / "Integration builder" everywhere, and there is no "Is this … product?" question in Ask (the `work` topic uses `whysafe`).
+
+Changed: `About.dc.html` (big content update), `Ask.dc.html`, `Hero.dc.html`, `CVFromProof.dc.html`, `Footer.dc.html`, `Main.dc.html`, `Mobile.dc.html`. Canvas is unchanged.
+**All CV text lives in `CV_STATS`, `CV_GENERAL`, `CV_ITEMS` and `CV_SKILLS` in `About.dc.html`. Re-copy them into `content/cv.ts` word for word; they replace the update-6 content.**
+
+### 1. CV page (About.dc.html)
+**Header**
+- Role line: "Senior Product Manager · Platforms and Agentic AI · Enterprise SaaS".
+- Location line: "Chennai, Tamil Nadu, India · LinkedIn · GitHub · aswin-a.com", where GitHub is `https://github.com/aswin-a` and aswin-a.com is `https://aswin-a.com`.
+- The summary paragraph is updated.
+- **"Download PDF"** is now a real link: `/aswin-a-cv.pdf` with `download`. The build must ship that file, generated from `content/cv.ts` at build time.
+- The sync line now shows a real date: "Synced from my master resume · 27 Nov 2026". **Generate it from the content's last-updated date; don't hard-code it.**
+
+**Timeline**
+- Legend: "solid: roles · dashed, indented: agentic AI builds and side projects".
+- The project label is no longer always "SIDE PROJECT". It's **`AGENTIC AI BUILD`** for every project except Dhee's website, which stays **`SIDE PROJECT`**.
+- **New "Everything I did" expander on project cards:**
+  - When a project has a `full` list, a toggle appears: `See all N points ↓` / `Hide details ↑` (mono 13px accent, min-height 40px, `aria-expanded`).
+  - When open, it shows a top-ruled block: an `EVERYTHING I DID` label (mono 11px), then a `<ul>` (14px/1.55).
+- Items, newest first. All dashed lanes are projects; the rest are roles or education.
+
+| id | Title | Org line | Links |
+|---|---|---|---|
+| `site` | AI Fit-Check Product for Recruiters | Live on aswin-a.com | Try it on the home page → `/#fit-h` · `github.com/aswin-a/aswin-portfolio ↗` |
+| `builder` (**new**) | AI Connector Builder for SaaS APIs | Prototype | `github.com/aswin-a/ai-integration-builder ↗` |
+| `jsa` | Agentic Job-Search and Apply Assistant | Claude agent · Agent Skills · MCP connectors | `github.com/aswin-a/linkedin-job-search-agent ↗` |
+| `ig` | Instagram Content-Intelligence Agent for a Pet Food Brand | Built, not yet validated | `github.com/aswin-a/instagram-content-intelligence-agent ↗` |
+| `web` | Dhee’s website | Built for Dhee’s · Astro 6, Tailwind CSS 4, Cloudflare Pages | dhees.com ↗ · **`github.com/aswin-a/dpc-website ↗`** (the repo owner changed) |
+| `dhees` | Founder and Product Lead, Dhee’s Pet Company | — | (10 highlights, 3 Ask questions) |
+| `zelthy` | Senior Product Manager, Zelthy (Multi-Tenant SaaS Low-Code Platform) | — | **8 areas** (below) |
+| `solar` | Co-Founder, Product and Technology, The Solar Labs | — | (5 highlights, 2 Ask questions) |
+| `edu` | B.Tech CSE, IIT Mandi | — | — |
+
+- **The "View recorded run" links are gone.** Projects now link to their GitHub repos.
+- **Zelthy areas, re-cut from 7 to 8**, with 0-based indices that the deep links depend on:
+  - 0 Core Platform
+  - 1 Identity, Integrations and Data Sync
+  - 2 AI, ML and Data
+  - 3 Product Delivery and Roadmap
+  - 4 Releases, Reliability and Compliance
+  - 5 Commercial, Go-to-Market and Developer Adoption
+  - 6 Team Leadership
+  - 7 Client Engagement and Delivery Operations
+- **Skills:** 7 rows, renamed: Agentic AI and LLM Products · Platform Product Management · Product Management · Identity, Security and Compliance · Release, Reliability and Delivery · Leadership and Commercial · Tools and Tech.
+- **The Certificates section is removed.**
+- `CV_GENERAL` (the Ask box suggestions) has updated answers.
+
+### 2. Deep links re-indexed to the new areas
+Every `#cv=` link was updated for the new area order. Use the hashes in the files as they are. Examples:
+- Fit check "Own a public API and partner integrations" → `#cv=zelthy.1.1-2` (Identity, Integrations and Data Sync, points 1–2). `CVFromProof` now shows this target.
+- Bad fit "Lead cross-functional product teams" → `#cv=zelthy.6+zelthy.7.1`.
+- Ask: APIs → `zelthy.1.1-2`, win → `zelthy.3.0-1`, LLM conflict → `zelthy.2`. Healthcare is updated as well.
+- **This proves the risk flagged in update 14:** reordering the CV broke every index. The build should generate these links from KB locators, never hand-write them. A test that every locator resolves is mandatory.
+
+### 3. Home hood "agents" card (desktop and mobile)
+- Proof text: "My job-search agent runs **7 Agent Skills under one orchestrator** and stops for my approval before it applies." (It said 4 steps before.)
+- Mobile group summary: "A 7-skill agent, a custom Claude Skill, and tool calls you can watch live."
+
+### 4. Footer.dc.html
+- Domain: `[domain]` → **`aswin-a.com`**.
+- Site repo: `FOOT_REPO = 'https://github.com/aswin-a/aswin-portfolio'`. **"This site's code on GitHub →" is now real: show it.**
+
+### Spec impact
+- **Domain: `aswin-a.com`.** Use it for canonical URLs, OG tags, sitemap, robots, llms.txt and JSON-LD (`url`, `sameAs` adds GitHub and the site).
+- Ship `/aswin-a-cv.pdf`, built from `content/cv.ts` at build time.
+- Rebuild the KB from the new CV content, and regenerate the evals' expected sources for the new area structure.
+- Deep links come from locators, as above. **This settles the open question from update 14:** please confirm with Aswin whether to switch the hash to stable ids now, before launch, since the indices have already shifted once.
+
 ## 2026-11-27 (update 14): Proof links land on the exact CV lines; real LinkedIn and GitHub links; "This site's code on GitHub"
 
 Changed: `About.dc.html`, `Ask.dc.html`, `Hero.dc.html`, `Footer.dc.html`, `canvas.json`.
