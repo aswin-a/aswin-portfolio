@@ -59,7 +59,8 @@ export function toTargets(locs: readonly CvLocator[]): CvTarget[] {
 /** [6,7,8,9] → "6-9"; [7,10] → "7,10"; [0,1] → "0-1". */
 function itemList(items: readonly number[]): string {
   const parts: string[] = [];
-  for (let i = 0; i < items.length; ) {
+  let i = 0;
+  while (i < items.length) {
     let j = i;
     while (j + 1 < items.length && items[j + 1] === items[j] + 1) j++;
     parts.push(j > i ? `${items[i]}-${items[j]}` : `${items[i]}`);

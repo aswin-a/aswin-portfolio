@@ -232,7 +232,11 @@ test.describe("answers", () => {
     await expect(status(page)).not.toContainText("compose · writing the answer");
     await expect(dialog(page).getByRole("button", { name: "Ask", exact: true })).toBeEnabled();
     await expect(input(page)).toBeFocused();
-    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toHaveAttribute("href", "/about");
+    // Design update 14: the source deep-links to the CV lines the answer cites.
+    await expect(status(page).getByRole("link", { name: "CV · Zelthy · Core platform and integrations →" })).toHaveAttribute(
+      "href",
+      "/about#cv=zelthy.0.6-9&req=Has%20he%20worked%20on%20APIs%3F",
+    );
     await expect(status(page).getByRole("link", { name: /Platform & API work/ })).toHaveCount(0);
     await status(page).getByRole("button", { name: "← Ask another" }).click();
     await expect(dialog(page).getByText("Suggested for this page")).toBeVisible();
@@ -254,8 +258,10 @@ test.describe("answers", () => {
 
   test("no todo box once the cited content is supplied", async ({ page }) => {
     await open(page);
-    await dialog(page).getByRole("button", { name: /What's his biggest platform win\?/ }).click();
-    await expect(status(page).getByRole("link", { name: "CV · My experience →" })).toBeVisible();
+    // The healthcare answer is real text since design update 14 (its old todo is gone).
+    await input(page).fill(ASK_QUESTIONS.health); // not a suggestion on home
+    await input(page).press("Enter");
+    await expect(status(page).getByRole("link", { name: "CV · Zelthy · healthcare →" })).toBeVisible();
     await expect(status(page).getByText(/^\[.*\]$/)).toHaveCount(0);
   });
 

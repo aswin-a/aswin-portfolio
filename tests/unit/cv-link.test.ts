@@ -5,6 +5,7 @@ import { cvHref, cvLineText, formatTarget, isHighlighted, parseCvHash, resolves,
 import { KB, entryHref, formatEntries, kbEntry } from "@/lib/kb/snapshot";
 import { guardCitations, guardHonesty } from "@/lib/run/guards";
 import type { EvidenceCard } from "@/lib/ai/schemas";
+import { siteRepoUrl } from "@/components/footer";
 
 /** CV_ITEMS from About.dc.html: the `#cv=` indices are the design's, so the order must match. */
 function designItems(): { id: string; highlights?: string[]; groups?: { name: string; items: string[] }[] }[] {
@@ -65,7 +66,7 @@ describe("KB CV locators", () => {
   });
 
   it("shows the model numbered lines it can cite", () => {
-    const text = formatEntries([kbEntry("zelthy-core-platform")!]); // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    const text = formatEntries([kbEntry("zelthy-core-platform")!]);
     expect(text).toMatch(/^\[zelthy-core-platform\] \(projects\) Zelthy: Core platform and integrations/);
     expect(text).toContain("\n  L7 Ran API design reviews");
     expect(text).toContain("\n  L12 Migrated client master data");
@@ -115,27 +116,27 @@ describe("#cv= links (the design's format)", () => {
   });
 
   it("rebuilds the design's proof and source links from cited lines", () => {
-    const core = kbEntry("zelthy-core-platform")!; // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    const core = kbEntry("zelthy-core-platform")!;
     expect(entryHref(core, [7, 8, 9, 10], "Own a public API and partner integrations")).toBe(
       "/about#cv=zelthy.0.6-9&req=Own%20a%20public%20API%20and%20partner%20integrations",
     );
-    const health = kbEntry("healthcare-integrations")!; // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    const health = kbEntry("healthcare-integrations")!;
     const nums = health.lines.flatMap((l, i) => (["0.7", "0.10", "2.3", "3.0"].includes(`${l.at.group}.${l.at.item}`) ? [i + 1] : []));
     expect(entryHref(health, nums, "What's his healthcare experience?")).toBe("/about#cv=zelthy.0.7,10+zelthy.2.3+zelthy.3.0&req=What's%20his%20healthcare%20experience%3F");
   });
 
   it("falls back to the whole entry when no cited line is valid, and leaves case studies alone", () => {
-    const core = kbEntry("zelthy-core-platform")!; // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    const core = kbEntry("zelthy-core-platform")!;
     expect(entryHref(core, [99, 0])).toBe("/about#cv=zelthy.0");
-    expect(entryHref(kbEntry("dhees")!, [])).toBe("/about#cv=dhees"); // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
-    expect(entryHref(kbEntry("job-search-agent")!, [1])).toBe("/work/job-search-agent"); // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    expect(entryHref(kbEntry("dhees")!, [])).toBe("/about#cv=dhees");
+    expect(entryHref(kbEntry("job-search-agent")!, [1])).toBe("/work/job-search-agent");
     expect(cvHref([])).toBe("/about");
   });
 });
 
 describe("guard.citations · cited lines", () => {
   it("drops line numbers the source doesn't have and links the rest", () => {
-    const src = kbEntry("zelthy-core-platform")!; // eslint-disable-line @typescript-eslint/no-non-null-assertion -- a fixed KB id
+    const src = kbEntry("zelthy-core-platform")!;
     const req = "Own a public API and partner integrations";
     const cards: EvidenceCard[] = [{ type: "match", req, evidence: "Ran API design reviews.", sourceId: src.id, lines: [7, 7, 42] }];
     const g1 = guardCitations([req], cards, [src]);
@@ -144,5 +145,15 @@ describe("guard.citations · cited lines", () => {
     const g2 = guardHonesty(g1, []);
     expect(g2.matches[0].href).toBe("/about#cv=zelthy.0.6&req=Own%20a%20public%20API%20and%20partner%20integrations");
     expect(g2.matches[0].source).toBe("CV · Zelthy · Core platform and integrations");
+  });
+});
+
+describe("footer · site-repo link (design update 14)", () => {
+  it("is hidden while SITE_REPO_URL is unset or not an https URL", () => {
+    expect(siteRepoUrl({})).toBeNull();
+    expect(siteRepoUrl({ SITE_REPO_URL: "" })).toBeNull();
+    expect(siteRepoUrl({ SITE_REPO_URL: "https://github.com/aswin-a/[portfolio-repo] " })).toBeNull();
+    expect(siteRepoUrl({ SITE_REPO_URL: "javascript:alert(1)" })).toBeNull();
+    expect(siteRepoUrl({ SITE_REPO_URL: "https://github.com/aswin-a/aswin-portfolio" })).toBe("https://github.com/aswin-a/aswin-portfolio");
   });
 });
