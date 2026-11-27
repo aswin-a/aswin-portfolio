@@ -1,5 +1,6 @@
 import type { CvItem } from "@/content/cv";
 import { products } from "@/content/products";
+import { resumeBullets } from "@/content/resume";
 import { cvItem, orgShort } from "@/lib/cv";
 import type { CvLocator } from "@/lib/cv-link";
 import type { KbLine } from "./roles";
@@ -44,7 +45,8 @@ const side = (it: CvItem, id: string, slug: string | null, label: string | null,
   title: it.title,
   status: (slug && statusOf(slug)) || it.dates,
   summary: `${it.org}. ${it.scope}`,
-  evidence: it.full ?? [],
+  // The CV's "Everything I did" list, or the master resume's bullets when the CV card has none (content/resume.ts).
+  evidence: it.full ?? resumeBullets[it.id] ?? [],
   lines: it.highlights.map((text, item) => ({ at: { roleId: it.id, item }, text })),
   cv: [{ roleId: it.id }],
   label: label ?? `CV · ${it.title}`,

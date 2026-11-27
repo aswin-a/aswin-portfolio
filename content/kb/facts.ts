@@ -1,4 +1,5 @@
 import { cvGeneral, cvHeader, cvItems, cvSkills, cvStats } from "@/content/cv";
+import { resumeSummary } from "@/content/resume";
 import { cvItem, orgShort } from "@/lib/cv";
 import type { CvLocator } from "@/lib/cv-link";
 import type { KbLine } from "./roles";
@@ -29,6 +30,8 @@ const edu = cvItem("edu");
 export const facts: Fact[] = [
   { id: "fact-title", text: `${cvHeader.name}: ${cvHeader.role}.`, ...career },
   { id: "fact-focus", text: cvHeader.summary, ...career },
+  // The master resume's Summary (content/resume.ts): the CV page shows the shorter design summary above.
+  { id: "fact-resume-summary", text: resumeSummary, ...career },
   { id: "fact-years", text: `${cvStats[0][0]} ${cvStats[0][1]}.`, ...career },
   { id: "fact-stats", text: cvStats.map(([big, small]) => `${big} ${small}.`).join(" "), ...career },
   {

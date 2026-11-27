@@ -32,6 +32,7 @@ describe("CV order (locators follow CV_ITEMS)", () => {
 const NOT_ON_CV = new Set([
   "fact-title", // the CV header
   "fact-focus",
+  "fact-resume-summary", // the master resume's Summary (content/resume.ts), not on the CV page
   "fact-location",
   "fact-years", // the stats
   "fact-stats",
