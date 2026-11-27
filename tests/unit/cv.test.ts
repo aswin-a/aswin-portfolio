@@ -91,8 +91,8 @@ describe("the knowledge base is generated from the CV", () => {
   ];
 
   it("traces every role, project and fact back to a CV line", () => {
-    // `cloudeagle` is the one non-CV entry (the CloudEagle.ai concept from content/products.ts); not-done is hand-written.
-    for (const e of KB.filter((x) => x.scope !== "not_done" && x.id !== "cloudeagle")) {
+    // `integration-builder` is the one non-CV entry (the take-home concept from content/products.ts); not-done is hand-written.
+    for (const e of KB.filter((x) => x.scope !== "not_done" && x.id !== "integration-builder")) {
       expect({ id: e.id, untraced: untraced(e.text, known) }).toEqual({ id: e.id, untraced: [] });
     }
   });
@@ -104,7 +104,7 @@ describe("the knowledge base is generated from the CV", () => {
   });
 
   it("keeps the stable ids that fixtures, case studies and tests cite", () => {
-    for (const id of ["platform-api", "dhees", "cloudeagle", "job-search-agent", "dhees-instagram-agent", "healthcare-integrations", "fact-focus", "fact-ai-work", "fact-platform-win", "fact-llm-experience"]) {
+    for (const id of ["platform-api", "dhees", "integration-builder", "job-search-agent", "dhees-instagram-agent", "healthcare-integrations", "fact-focus", "fact-ai-work", "fact-platform-win", "fact-llm-experience"]) {
       expect(kbEntry(id), id).toBeDefined();
     }
     expect(kbEntry("job-search-agent")?.href).toBe("/work/job-search-agent");

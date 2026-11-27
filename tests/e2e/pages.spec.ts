@@ -334,12 +334,12 @@ test("case study: no 'Try to break it' anywhere (removed, Aswin 2026-11-25)", as
 
 test("case study: CASE STUDIES breadcrumb and LAST UPDATED (update 4)", async ({ page }) => {
   await page.goto("/work/integration-builder");
-  await expect(page.getByText("CASE STUDIES / 03 · CLOUDEAGLE.AI")).toBeVisible();
+  await expect(page.getByText("CASE STUDIES / 03 · AI INTEGRATION BUILDER")).toBeVisible();
   // Numbering and order follow the home products 01–04 (Aswin, 2026-11-20).
   await expect(page.getByRole("link", { name: /^NEXT · 04 · IN PROGRESS/ })).toHaveAttribute("href", "/work/instagram-agent");
   await expect(page.getByRole("link", { name: "CASE STUDIES", exact: true })).toHaveAttribute("href", "/work");
   await expect(page.getByText("LAST UPDATED", { exact: true })).toBeVisible();
-  for (const gone of ["/work/cloudeagle", "/work/dhees-instagram-agent", "/work/platform-api-work"]) {
+  for (const gone of ["/work/dhees-instagram-agent", "/work/platform-api-work"]) {
     expect((await page.goto(gone))?.status()).toBe(404);
   }
   await page.goto("/work/instagram-agent");
@@ -364,7 +364,7 @@ test("hidden case studies: build log shows COMING SOON, the page stays reachable
   await page.goto("/log");
   const main = page.getByRole("main");
   await expect(main.locator('a[href^="/work/"]')).toHaveCount(0);
-  await expect(main.getByText("Case study · CloudEagle concept", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+  await expect(main.getByText("Case study · Integration builder", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
   await expect(main.getByText("COMING SOON", { exact: true }).first()).toBeVisible();
 
   await page.goto("/log/designing-safeguards-for-an-ai-that-writes-integrations");

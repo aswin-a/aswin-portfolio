@@ -119,7 +119,7 @@ var ASK_ANSWERS = {
   hardware: { q: 'Has he led a hardware launch?', kind: 'none', guard: 'guard.not_done', text: "Closest: running Dhee's, a direct-to-consumer fresh dog-food brand. A physical product, but not hardware.", todo: '', sources: [{ label: "CV · Dhee's", href: 'About.dc.html#cv=dhees' }] },
   whysafe: { q: 'Why are safeguards the centrepiece?', kind: 'fit', text: 'An AI that writes integrations can touch production systems. The study treats what the model may do on its own, and what needs a person, as the core product decision.', todo: '', sources: [{ label: 'Case study · Safeguards', href: 'Work.dc.html' }] },
   failed: { q: 'What failed first?', kind: 'fit', text: 'From the eval log:', todo: '[What the first eval run got wrong, and the fix]', sources: [{ label: 'Case study · v2 & lessons', href: 'Work.dc.html' }] },
-  isce: { q: "Is the integration builder CloudEagle's product?", kind: 'fit', text: "No. It's a take-home concept from his interview with CloudEagle.ai, shared with their permission. It isn't their product and shows no internal details.", todo: '', sources: [{ label: 'Case study · CloudEagle concept', href: 'Work.dc.html' }] },
+  isprod: { q: "Is the integration builder another company's product?", kind: 'fit', text: "No. It's a take-home concept from a Senior PM interview, shared with the company's permission. It isn't their product and shows no internal details.", todo: '', sources: [{ label: 'Case study · Integration builder', href: 'Work.dc.html' }] },
   health: { q: "What's his healthcare experience?", kind: 'fit', text: 'Four years at Zelthy, a platform for healthcare and pharma clients: integrations with client EHR systems, an HL7 and FHIR evaluation, GDPR, HIPAA and SOC2 compliance, and ML-based OCR for prescriptions with a person reviewing low-confidence results.', todo: '', sources: [{ label: 'CV · Zelthy · healthcare', href: 'About.dc.html#cv=zelthy.0.7,10+zelthy.2.3+zelthy.3.0&req=What%27s%20his%20healthcare%20experience%3F' }] },
   now: { q: "What's he building now?", kind: 'fit', text: "This site's fit check and its eval set, and the job-search agent as an open-source template on GitHub.", todo: '', sources: [{ label: 'Build log', href: 'BuildLog.dc.html' }, { label: 'GitHub · [repo link]', href: '#' }] },
   nomakeup: { q: 'How does the fit check avoid making things up?', kind: 'fit', text: 'It answers only from a knowledge base built from his master resume. Every claim must cite a source, or the citation guard turns it into a gap, and the honesty guard stops the verdict being inflated. If the knowledge base is down, it stops and says so.', todo: '', sources: [{ label: 'Fit check · turn on X-ray', href: 'Main.dc.html' }] },
@@ -133,7 +133,7 @@ var ASK_ANSWERS = {
 };
 var ASK_BY_PAGE = {
   home: ['apis', 'nomakeup', 'llm', 'win'],
-  work: ['agents', 'keepout', 'isce', 'llm'],
+  work: ['agents', 'keepout', 'isprod', 'llm'],
   log: ['approval', 'carry', 'now'],
   about: ['health', 'win', 'founder', 'enterprise']
 };
@@ -149,7 +149,7 @@ function askRoute(text) {
   if (/any good|is he good|good\?$/.test(s)) return 'ambig';
   if (/hardware|manufactur/.test(s)) return 'hardware';
   if (/health/.test(s)) return 'health';
-  if (/cloudeagle/.test(s)) return 'isce';
+  if (/another company|whose product|take-home/.test(s)) return 'isprod';
   if (/safeguard|guardrail|safe/.test(s)) return 'whysafe';
   if (/fail|eval/.test(s)) return 'failed';
   if (/llm|ai |agent|gpt|claude|model/.test(s + ' ')) return 'llm';

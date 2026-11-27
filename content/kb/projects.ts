@@ -9,7 +9,7 @@ export type Project = {
   title: string;
   status: string;
   summary: string;
-  /** Proof that is not on the CV (the CloudEagle concept only), word for word. */
+  /** Proof that is not on the CV (the integration-builder concept only), word for word. */
   evidence: string[];
   /** Proof the fit check may cite by number: CV lines, word for word, each with its CV locator. */
   lines: KbLine[];
@@ -26,18 +26,18 @@ export type Project = {
  * the CV's side projects, each of Zelthy's area groups, and a healthcare cross-cut of Zelthy's lines.
  * Ids are stable: case-study links, fixtures and tests cite them.
  *
- * The one entry not on the CV is `cloudeagle` (the CloudEagle.ai take-home concept, product 03 on
+ * The one entry not on the CV is `integration-builder` (the Senior PM take-home concept, product 03 on
  * home); it comes from content/products.ts and stays hidden in production until its evidence is filled.
  */
 
 const statusOf = (slug: string) => products.find((p) => p.slug === slug)?.status;
-const cloudeagle = products.find((p) => p.slug === "integration-builder");
+const integrationBuilder = products.find((p) => p.slug === "integration-builder");
 const siteProduct = products.find((p) => p.slug === "fit-check");
 
 /** Side projects with a case study: [CV id, KB id, case-study slug, source label, tags]. */
 const SIDE: [string, string, string | null, string | null, string[]][] = [
   ["site", "fit-check", "fit-check", `Case study · ${siteProduct?.name ?? "Job-fit AI on this site"}`, ["ai", "fit check", "guardrails", "citations", "evals", "knowledge base"]],
-  ["jsa", "job-search-agent", "job-search-agent", "Case study · Job-search agent", ["ai agent", "human-in-the-loop", "approval", "workflows", "mcp", "design"]], // "design": the hero sample maps "Design human-in-the-loop workflows" here; without it the CloudEagle evidence ties and wins the id tie-break
+  ["jsa", "job-search-agent", "job-search-agent", "Case study · Job-search agent", ["ai agent", "human-in-the-loop", "approval", "workflows", "mcp", "design"]], // "design": the hero sample maps "Design human-in-the-loop workflows" here; without it the integration-builder evidence ties and wins the id tie-break
   ["ig", "dhees-instagram-agent", "instagram-agent", "Case study · Dhee's agent", ["ai agent", "business stakeholders", "adoption"]],
   ["web", "dhees-website", null, null, ["website", "seo", "frontend", "astro", "typescript", "cloudflare"]],
 ];
@@ -108,9 +108,9 @@ const healthcare: Project = {
 
 export const projects: Project[] = [
   {
-    id: "cloudeagle",
-    title: "CloudEagle.ai — AI integration builder",
-    status: cloudeagle?.status ?? "CONCEPT",
+    id: "integration-builder",
+    title: "AI integration builder — Senior PM take-home",
+    status: integrationBuilder?.status ?? "CONCEPT",
     summary: "Safeguards as the centrepiece.",
     // D26 (Aswin, 2026-11-24)
     evidence: [
@@ -119,7 +119,7 @@ export const projects: Project[] = [
     ],
     lines: [],
     cv: [], // Not on the CV: a take-home concept (content/products.ts)
-    label: "Case study · CloudEagle concept",
+    label: "Case study · Integration builder",
     href: "/work/integration-builder",
     tags: ["ai agent", "guardrails", "safeguards", "integrations", "evals"],
   },

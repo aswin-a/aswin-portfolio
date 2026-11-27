@@ -36,7 +36,7 @@ Places where the built site differs from the Claude Design prototype, as of 2026
 17. **No "Break my AI" chips in Ask.** Attack questions still get their guarded answers when someone types them.
 18. **New `ASK_BY_PAGE` questions:**
     - **home:** Has he worked on APIs? · How does the fit check avoid making things up? · Has he shipped LLM features at a company? · What's his biggest platform win?
-    - **work:** Which AI agents has he built? · How does the integration builder keep AI out of production? · Is the integration builder CloudEagle's product? · Has he shipped LLM features at a company?
+    - **work:** Which AI agents has he built? · How does the integration builder keep AI out of production? · Is the integration builder another company's product? · Has he shipped LLM features at a company?
     - **log:** Why does the job-search agent wait for approval? · How do his platform skills carry over to AI agents? · What's he building now?
     - **about:** What's his healthcare experience? · What's his biggest platform win? · What did he build as a founder? · Has he worked with enterprise clients?
 19. **Swipe down to close the phone sheet.** You drag from the grab handle or the input row. Past 25% of the sheet's height, or with a quick flick, it closes; otherwise it springs back.
@@ -75,6 +75,10 @@ Places where the built site differs from the Claude Design prototype, as of 2026
 
 29. **`/work` (the index page):** built as the home "Products I've built" section on its own page, with its own h1.
 30. **`/log/[slug]` (a single post):** a serif title, a mono meta line and an 880 px column.
+
+## Everywhere
+
+31. **No company name on the integration builder** (Aswin, 2026-11-27). It's "a Senior PM take-home" now: the breadcrumb is `03 · AI INTEGRATION BUILDER`, the source chip is "Case study · Integration builder", the Ask question is "Is the integration builder another company's product?", and the repo is `github.com/aswin-a/ai-integration-builder`. The local `/design` files already have this; apply it in Claude Design so the next export doesn't bring the name back.
 
 ## Not needed in the prototype
 

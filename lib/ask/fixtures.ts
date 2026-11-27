@@ -74,11 +74,11 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     todo: "[What the first eval run got wrong, and the fix]",
     sources: [{ label: "Case study · v2 & lessons", href: "/work/integration-builder" }],
   },
-  isce: {
+  isprod: {
     kind: "fit",
-    text: "No. It's a take-home concept from his interview with CloudEagle.ai, shared with their permission. It isn't their product and shows no internal details.",
+    text: "No. It's a take-home concept from a Senior PM interview, shared with the company's permission. It isn't their product and shows no internal details.",
     todo: "",
-    sources: [{ label: "Case study · CloudEagle concept", href: "/work/integration-builder" }],
+    sources: [{ label: "Case study · Integration builder", href: "/work/integration-builder" }],
   },
   health: {
     kind: "fit",

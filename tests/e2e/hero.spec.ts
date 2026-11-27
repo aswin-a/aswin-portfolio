@@ -185,8 +185,8 @@ test.describe("fit check", () => {
     await expect(fits.getByRole("columnheader").first()).toHaveCSS("padding-left", "20px");
     await expect(fits.getByRole("cell").first()).toHaveCSS("padding-top", "18px");
     // The source is a hidden case study, so its label shows as muted text, not a link.
-    await expect(hero(page).getByRole("link", { name: /Case study · CloudEagle concept/ })).toHaveCount(0);
-    await expect(hero(page).getByText("Case study · CloudEagle concept", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
+    await expect(hero(page).getByRole("link", { name: /Case study · Integration builder/ })).toHaveCount(0);
+    await expect(hero(page).getByText("Case study · Integration builder", { exact: true })).toHaveCSS("color", "rgb(92, 87, 78)");
     await expect(gaps.getByRole("button", { name: "Ask about this gap →" }).first()).toHaveCSS("min-height", "36px");
     await expect(hero(page).getByText("CLOSEST", { exact: true })).toHaveCount(0);
 
@@ -212,7 +212,7 @@ test.describe("fit check", () => {
     await expect(page.getByRole("heading", { name: "Strong on 4 of 6 requirements." })).toBeVisible();
     await expect(hero(page).getByRole("table")).toHaveCount(0);
     await expect(hero(page).getByText("✓ My relevant experience", { exact: true })).toHaveCount(4);
-    await expect(hero(page).getByText("Proof: Case study · CloudEagle concept", { exact: true })).toBeVisible();
+    await expect(hero(page).getByText("Proof: Case study · Integration builder", { exact: true })).toBeVisible();
     await expect(hero(page).getByText("Where I stand", { exact: true })).toHaveCount(2);
     await expect(hero(page).getByRole("button", { name: "Ask about this gap →" }).first()).toHaveCSS("min-height", "40px");
   });

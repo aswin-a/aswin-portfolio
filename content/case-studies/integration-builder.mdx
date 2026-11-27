@@ -8,12 +8,12 @@ export const meta = {
   status: "CONCEPT",
   cardTitle: "AI integration builder",
   built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // P1 (Aswin, 2026-11-24); also on the home card
-  breadcrumb: "03 · CLOUDEAGLE.AI",
-  disclaimer: "Take-home concept · shared with written permission · not CloudEagle's product",
+  breadcrumb: "03 · AI INTEGRATION BUILDER",
+  disclaimer: "Take-home concept · shared with written permission · not the company's product",
   title: "AI integration builder",
   lede: "Letting AI write integrations is easy. Letting it do that safely is the product.",
   facts: [
-    { label: "CONTEXT", value: "Senior PM take-home, CloudEagle.ai" },
+    { label: "CONTEXT", value: "Senior PM take-home" },
     { label: "BUILT WITH", value: "Figma · clickable prototype" },
     { label: "FOCUS", value: "Safeguards" },
     { label: "TIME SPENT", value: todo("[hours]") },
@@ -21,8 +21,8 @@ export const meta = {
   ],
   demo: "https://www.loom.com/share/6f2d467faf8a4565b70f43777cbb12dc",
   problem: {
-    who: "A customer's IT admin, usually not a developer, who sees an untracked app in CloudEagle and wants its users covered today.",
-    problem: "CloudEagle already discovers long-tail apps through SSO, finance and browser data, but without a connector it can't see who has an account or who is idle, so those apps depend on CSV uploads or CSM effort. Asking customers to write integration code for each app turns IT admins into developers.",
+    who: "A customer's IT admin, usually not a developer, who sees an untracked app in their SaaS management platform and wants its users covered today.",
+    problem: "The platform already discovers long-tail apps through SSO, finance and browser data, but without a connector it can't see who has an account or who is idle, so those apps depend on CSV uploads or CSM effort. Asking customers to write integration code for each app turns IT admins into developers.",
     whyAi: "AI is good at reading messy API docs and filling in the app-specific details: the auth header, the endpoint that lists users, the pagination cursor, the field that shows last activity. It must not be trusted with the customer's token, with write calls, with choosing its own live requests, or with deciding that a weak activity signal is good enough to reclaim a seat.",
   },
   // D7–D9 (Aswin, 2026-11-24). The sheet gave chose / over / because only, so the topics are the design's labels.
@@ -131,12 +131,12 @@ export const meta = {
     agentTotal: todo("[measured]"),
   },
   v2: "Write actions such as deprovisioning, so the connector can close the loop on a leaver. It waited because writes need plan-only dry runs that list every call, plus per-action approval, before they're safe to put in an admin's hands.", // D23 (Aswin, 2026-11-24)
-  learned: "\"Sandbox first, then production\" was my first answer, and it didn't survive real vendors: long-tail apps rarely have a data sandbox, and Calendly's \"Sandbox\" turned out to be only an environment setting for OAuth apps. The real risk sat in CloudEagle's own production, where automations act on the data, so that's where the gate went: shadow mode.", // D24
+  learned: "\"Sandbox first, then production\" was my first answer, and it didn't survive real vendors: long-tail apps rarely have a data sandbox, and Calendly's \"Sandbox\" turned out to be only an environment setting for OAuth apps. The real risk sat in the platform's own production, where automations act on the data, so that's where the gate went: shadow mode.", // D24
   questions: [
     "Which safeguard would you loosen first, and what would it cost?",
     "What did the first eval run get wrong?",
     "How does this change with ten times as many apps to connect?",
   ],
-  repo: "https://github.com/aswin-a/cloudeagle-ai-integration-builder", // D25 (Aswin, 2026-11-24)
+  repo: "https://github.com/aswin-a/ai-integration-builder", // D25 (Aswin, 2026-11-24)
   relatedPost: "designing-safeguards-for-an-ai-that-writes-integrations",
 };

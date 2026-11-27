@@ -90,7 +90,7 @@ describe("/api/run · fit", () => {
     expect(r.verdict).toBe("Strong on 4 of 6 requirements.");
     expect(r.retries).toBe(0);
     expect(r.trace).toMatchObject({ runId: (evs[0] as { runId: string }).runId, costUsd: 0, model: "Fake · test model (AI_FAKE)" });
-    expect(r.matches.map((m) => m.source)).toContain("Case study · CloudEagle concept");
+    expect(r.matches.map((m) => m.source)).toContain("Case study · Integration builder");
   });
 
   it("the result trace carries every X-ray 'This run' field, the same as the logged row (SPEC §10)", async () => {
