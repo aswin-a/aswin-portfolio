@@ -26,7 +26,7 @@ export type Project = {
  * the CV's side projects, each of Zelthy's area groups, and a healthcare cross-cut of Zelthy's lines.
  * Ids are stable: case-study links, fixtures and tests cite them.
  *
- * The one entry not on the CV is `integration-builder` (the Senior PM take-home concept, product 03 on
+ * The one entry not on the CV is `integration-builder` (the AI integration builder concept, product 03 on
  * home); it comes from content/products.ts and stays hidden in production until its evidence is filled.
  */
 
@@ -109,16 +109,16 @@ const healthcare: Project = {
 export const projects: Project[] = [
   {
     id: "integration-builder",
-    title: "AI integration builder — Senior PM take-home",
+    title: "AI integration builder",
     status: integrationBuilder?.status ?? "CONCEPT",
     summary: "Safeguards as the centrepiece.",
     // D26 (Aswin, 2026-11-24)
     evidence: [
-      "The take-home brief asked for AI that generates integration code from an app's API docs (API client, auth, user and usage retrieval, error handling, pagination and logging), plus screens, safeguards and a prototype.",
-      "I delivered design notes, a six-step flow with two human gates, a working prototype repo and a Loom walkthrough, and reframed the brief: \"Don't make customers developers. Make them reviewers.\" The AI fills a declarative, read-only connector form that one hardened engine runs, instead of writing code per app.",
+      "The goal: AI that generates integration code from an app's API docs (API client, auth, user and usage retrieval, error handling, pagination and logging), plus screens, safeguards and a prototype.",
+      "I delivered design notes, a six-step flow with two human gates, a working prototype repo and a Loom walkthrough, and reframed the problem: \"Don't make customers developers. Make them reviewers.\" The AI fills a declarative, read-only connector form that one hardened engine runs, instead of writing code per app.",
     ],
     lines: [],
-    cv: [], // Not on the CV: a take-home concept (content/products.ts)
+    cv: [], // Not on the CV: a concept project (content/products.ts)
     label: "Case study · Integration builder",
     href: "/work/integration-builder",
     tags: ["ai agent", "guardrails", "safeguards", "integrations", "evals"],

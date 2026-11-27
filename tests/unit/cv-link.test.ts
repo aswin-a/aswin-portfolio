@@ -29,7 +29,7 @@ describe("CV order (design update 14: link indices follow CV_ITEMS)", () => {
 
 /** Entries with nothing on the CV to point at (SPEC §6.1). Every other entry must have a locator. */
 const NOT_ON_CV = new Set([
-  "integration-builder", // a take-home concept, from content/products.ts
+  "integration-builder", // a concept project, from content/products.ts
   "fact-title", // the CV header
   "fact-focus",
   "fact-location",

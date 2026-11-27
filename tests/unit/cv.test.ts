@@ -91,7 +91,7 @@ describe("the knowledge base is generated from the CV", () => {
   ];
 
   it("traces every role, project and fact back to a CV line", () => {
-    // `integration-builder` is the one non-CV entry (the take-home concept from content/products.ts); not-done is hand-written.
+    // `integration-builder` is the one non-CV entry (a concept project from content/products.ts); not-done is hand-written.
     for (const e of KB.filter((x) => x.scope !== "not_done" && x.id !== "integration-builder")) {
       expect({ id: e.id, untraced: untraced(e.text, known) }).toEqual({ id: e.id, untraced: [] });
     }

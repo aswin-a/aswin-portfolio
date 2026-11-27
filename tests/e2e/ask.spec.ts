@@ -104,7 +104,7 @@ test.describe("open, close and focus", () => {
 
 test.describe("before a question", () => {
   const HOME = ["Has he worked on APIs?", "How does the fit check avoid making things up?", "Has he shipped LLM features at a company?", "What's his biggest platform win?"];
-  const WORK = ["Which AI agents has he built?", "How does the integration builder keep AI out of production?", "Is the integration builder another company's product?", "Has he shipped LLM features at a company?"];
+  const WORK = ["Which AI agents has he built?", "How does the integration builder keep AI out of production?", "Why are safeguards the centrepiece?", "Has he shipped LLM features at a company?"];
   const SUGGESTIONS: [string, string[]][] = [
     ["/", HOME],
     ["/work/integration-builder", WORK],
@@ -249,7 +249,7 @@ test.describe("answers", () => {
     const cited = KB.find((e) => e.id === "integration-builder")!;
     test.skip(cited.todos.length === 0, "No KB entry cited by a design Ask answer still has a placeholder");
     await open(page, "/work/integration-builder");
-    await input(page).fill(ASK_QUESTIONS.isprod);
+    await input(page).fill(ASK_QUESTIONS.whysafe);
     await input(page).press("Enter");
     const todoBox = status(page).getByText(cited.todos[0], { exact: true });
     await expect(todoBox).toBeVisible();

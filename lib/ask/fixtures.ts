@@ -74,12 +74,6 @@ export const ASK_ANSWERS: Record<AskQuestionId | "unknown", AskFixture> = {
     todo: "[What the first eval run got wrong, and the fix]",
     sources: [{ label: "Case study · v2 & lessons", href: "/work/integration-builder" }],
   },
-  isprod: {
-    kind: "fit",
-    text: "No. It's a take-home concept from a Senior PM interview, shared with the company's permission. It isn't their product and shows no internal details.",
-    todo: "",
-    sources: [{ label: "Case study · Integration builder", href: "/work/integration-builder" }],
-  },
   health: {
     kind: "fit",
     text: "Four years at Zelthy, a platform for healthcare and pharma clients: integrations with client EHR systems, an HL7 and FHIR evaluation, GDPR, HIPAA and SOC2 compliance, and ML-based OCR for prescriptions with a person reviewing low-confidence results.",

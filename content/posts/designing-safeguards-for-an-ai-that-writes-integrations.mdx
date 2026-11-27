@@ -13,7 +13,7 @@ export const meta = {
   related: [{ label: "GitHub · integration builder", href: "https://github.com/aswin-a/ai-integration-builder" }], // Aswin, 2026-11-26
 };
 
-The take-home for a Senior PM role asked for AI that generates integration code from an app's API docs: an API client, auth, user and usage retrieval, error handling, pagination and logging. Taken literally, that gives you a new codebase for every app, written by a model and reviewed by an IT admin who can't read it. So before designing safeguards, I changed what the AI is allowed to produce.
+The obvious version of this product is AI that generates integration code from an app's API docs: an API client, auth, user and usage retrieval, error handling, pagination and logging. Taken literally, that gives you a new codebase for every app, written by a model and reviewed by an IT admin who can't read it. So before designing safeguards, I changed what the AI is allowed to produce.
 
 ## The AI fills a form, not a file
 Auth, pagination, retries and logging work the same way for every REST app. Only the specifics change: which header, which cursor field, which endpoint lists users. So the AI fills in a declarative connector form, and one hardened engine runs every form. That move is itself the biggest safeguard: the form can only express GET or HEAD calls to one host. Whatever the model gets wrong, it can't express a write.

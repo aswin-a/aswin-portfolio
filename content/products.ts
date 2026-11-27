@@ -69,8 +69,8 @@ export const products: Product[] = [
     slug: "integration-builder",
     status: "CONCEPT",
     name: "AI integration builder",
-    pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A Senior PM take-home, shared with permission.",
-    phonePitch: "AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A Senior PM take-home.",
+    pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed.",
+    phonePitch: "AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed.",
     built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // Aswin, 2026-11-24
     flow: [
       { text: "Paste the app’s API docs" },

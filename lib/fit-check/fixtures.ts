@@ -17,7 +17,7 @@ export const HERO_FIT: ResultBody = {
   note: "Each match links to the role or project behind it. Gaps are listed, not hidden.",
   matches: [
     { req: "Own a public API and partner integrations", evidence: "Platform PM for APIs and integrations, including healthcare integrations.", source: "CV · Zelthy · integrations", href: "/about#cv=zelthy.0.6-9&req=Own%20a%20public%20API%20and%20partner%20integrations" },
-    { req: "Ship AI agent features with clear guardrails", evidence: "Designed an AI integration builder with safeguards as the centrepiece (Senior PM take-home concept).", source: "Case study · Integration builder", href: "/work/integration-builder" },
+    { req: "Ship AI agent features with clear guardrails", evidence: "Designed an AI integration builder with safeguards as the centrepiece.", source: "Case study · Integration builder", href: "/work/integration-builder" },
     { req: "Design human-in-the-loop workflows", evidence: "Built a job-search agent that never applies to a role without explicit approval.", source: "Case study · Job-search agent", href: "/work/job-search-agent" },
     { req: "Work with business stakeholders on adoption", evidence: "Ran Dhee's, a fresh dog-food brand, and built an Instagram competitor agent for it.", source: "Case study · Dhee's agent", href: "/work/instagram-agent" },
   ],
