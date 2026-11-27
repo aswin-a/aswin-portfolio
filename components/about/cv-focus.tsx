@@ -9,6 +9,7 @@ import { isHighlighted, parseCvHash, type CvFocus, type CvTarget } from "@/lib/c
  * source link opens `/about#cv=…&req=…`; on load and on `hashchange` the page opens the named areas,
  * scrolls to the first target, shows the note on each targeted card, outlines the cards and areas,
  * and highlights the points. Clear removes all of that and strips the hash; opened areas stay open.
+ * Reloading the page drops the highlight and strips the hash, like the fit check.
  */
 
 type FocusCtx = {
@@ -27,6 +28,25 @@ const Ctx = createContext<FocusCtx>({
 
 const groupKey = (id: string, group: number) => `${id}:${group}`;
 const anchorOf = (t: CvTarget) => (t.group !== null ? `cv-${t.id}-g${t.group}` : `cv-${t.id}`);
+
+// Like the fit check (held in memory only), a highlight doesn't survive a reload (Aswin, 2026-11-27).
+// Only the first mount in a document can be the reloaded page: a later one came from in-app navigation.
+let firstMount = true;
+function isReloadedHere(): boolean {
+  const first = firstMount;
+  firstMount = false;
+  if (!first) return false;
+  const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+  return nav?.type === "reload" && nav.name === window.location.href;
+}
+
+const stripHash = () => {
+  try {
+    window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+  } catch {
+    // History can be locked down (sandboxed frames); the highlight is cleared either way.
+  }
+};
 
 export function CvFocusProvider({ children }: { children: ReactNode }) {
   const [focus, setFocus] = useState<CvFocus | null>(null);
@@ -47,7 +67,8 @@ export function CvFocusProvider({ children }: { children: ReactNode }) {
       clearTimeout(timer);
       timer = setTimeout(() => document.getElementById(anchorOf(f.targets[0]))?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
     };
-    read();
+    if (isReloadedHere() && parseCvHash(window.location.hash)) stripHash();
+    else read();
     window.addEventListener("hashchange", read);
     return () => {
       clearTimeout(timer);
@@ -58,11 +79,7 @@ export function CvFocusProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback((key: string) => setOpen((o) => ({ ...o, [key]: !o[key] })), []);
   const clear = useCallback(() => {
     setFocus(null);
-    try {
-      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
-    } catch {
-      // History can be locked down (sandboxed frames); the highlight is cleared either way.
-    }
+    stripHash();
   }, []);
 
   const value = useMemo(() => ({ focus, open, toggle, clear }), [focus, open, toggle, clear]);
