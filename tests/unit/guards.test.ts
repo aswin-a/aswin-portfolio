@@ -7,7 +7,7 @@ import { ASK_UNKNOWN_TEXT, NO_SOURCE_CLOSEST, guardAsk, guardCitations, guardHon
 import { composeVerdict } from "@/lib/run/verdict";
 
 const notDone = KB.filter((e) => e.scope === "not_done");
-const cloudeagle = kbEntry("cloudeagle")!;
+const integrationBuilder = kbEntry("integration-builder")!;
 
 describe("verdict.compose", () => {
   it("is strong at m/n ≥ 0.5 and not strong below", () => {
@@ -20,29 +20,29 @@ describe("verdict.compose", () => {
 describe("guard.citations", () => {
   const reqs = ["Ship AI agent features", "Own a public API"];
   it("keeps a match citing a source kb.search returned", () => {
-    const cards: EvidenceCard[] = [{ type: "match", req: reqs[0], evidence: "Designed it.", sourceId: "cloudeagle" }];
-    const out = guardCitations(reqs.slice(0, 1), cards, [cloudeagle]);
+    const cards: EvidenceCard[] = [{ type: "match", req: reqs[0], evidence: "Designed it.", sourceId: "integration-builder" , lines: []}];
+    const out = guardCitations(reqs.slice(0, 1), cards, [integrationBuilder]);
     expect(out[0].type).toBe("match");
     expect(out.fired).toEqual([]);
   });
   it("turns a match with an unknown or unsearched source into a gap", () => {
     const cards: EvidenceCard[] = [
-      { type: "match", req: reqs[0], evidence: "Made up.", sourceId: "nope" },
-      { type: "match", req: reqs[1], evidence: "Not searched.", sourceId: "job-search-agent" },
+      { type: "match", req: reqs[0], evidence: "Made up.", sourceId: "nope" , lines: []},
+      { type: "match", req: reqs[1], evidence: "Not searched.", sourceId: "job-search-agent" , lines: []},
     ];
-    const out = guardCitations(reqs, cards, [cloudeagle]);
+    const out = guardCitations(reqs, cards, [integrationBuilder]);
     expect(out.map((c) => c.type)).toEqual(["gap", "gap"]);
     expect(out[0]).toMatchObject({ closest: NO_SOURCE_CLOSEST });
     expect(out.fired).toHaveLength(2);
   });
   it("adds a gap for a requirement the model skipped", () => {
-    expect(guardCitations(reqs, [], [cloudeagle]).map((c) => c.req)).toEqual(reqs);
+    expect(guardCitations(reqs, [], [integrationBuilder]).map((c) => c.req)).toEqual(reqs);
   });
 });
 
 describe("guard.honesty", () => {
   it("never lets a not-done topic be a match", () => {
-    const cards: EvidenceCard[] = [{ type: "match", req: "Consumer hardware launches at scale", evidence: "Ran Dhee's.", sourceId: "dhees" }];
+    const cards: EvidenceCard[] = [{ type: "match", req: "Consumer hardware launches at scale", evidence: "Ran Dhee's.", sourceId: "dhees" , lines: []}];
     const out = guardHonesty(cards, notDone);
     expect(out.matches).toEqual([]);
     expect(out.gaps[0]).toEqual({ req: "Consumer hardware launches at scale", closest: "Not something Aswin has done.", close: "" });
@@ -55,12 +55,12 @@ describe("guard.honesty", () => {
     expect(hasScore("a 92% match")).toBe(true);
     expect(hasScore("scored 8/10")).toBe(true);
     expect(hasScore("Built an integration builder")).toBe(false);
-    const out = guardHonesty([{ type: "match", req: "Agents", evidence: "A 90% fit.", sourceId: "cloudeagle" }], notDone);
+    const out = guardHonesty([{ type: "match", req: "Agents", evidence: "A 90% fit.", sourceId: "integration-builder" , lines: []}], notDone);
     expect(out.matches).toEqual([]);
   });
   it("maps a match to the KB label and href", () => {
-    const out = guardHonesty([{ type: "match", req: "Agents", evidence: "Designed it.", sourceId: "cloudeagle" }], notDone);
-    expect(out.matches[0]).toEqual({ req: "Agents", evidence: "Designed it.", source: "Case study · CloudEagle concept", href: "/work/integration-builder" });
+    const out = guardHonesty([{ type: "match", req: "Agents", evidence: "Designed it.", sourceId: "integration-builder" , lines: []}], notDone);
+    expect(out.matches[0]).toEqual({ req: "Agents", evidence: "Designed it.", source: "Case study · Integration builder", href: "/work/integration-builder" });
   });
 });
 
@@ -94,16 +94,16 @@ describe("fetch_url failures (Aswin, 2026-11-26)", () => {
 
 describe("Ask guard", () => {
   it("drops an uncited factual answer to unknown", () => {
-    const a = guardAsk({ kind: "fit", text: "Yes.", sourceIds: ["made-up"], guard: "none" }, false);
+    const a = guardAsk({ kind: "fit", text: "Yes.", sourceIds: ["made-up"], sourceLines: [], guard: "none" }, false);
     expect(a).toMatchObject({ kind: "unknown", text: ASK_UNKNOWN_TEXT, sources: [{ label: "Contact", href: "/#contact" }] });
   });
   it("derives the guard from the kind", () => {
-    expect(guardAsk({ kind: "none", text: "Not something Aswin has done.", sourceIds: ["hardware-roadmaps"], guard: "none" }, false).guard).toBe("guard.not_done");
-    expect(guardAsk({ kind: "refuse", text: "I only answer from the record.", sourceIds: [], guard: "none" }, false).guard).toBe("guard.prompt_injection");
+    expect(guardAsk({ kind: "none", text: "Not something Aswin has done.", sourceIds: ["hardware-roadmaps"], sourceLines: [], guard: "none" }, false).guard).toBe("guard.not_done");
+    expect(guardAsk({ kind: "refuse", text: "I only answer from the record.", sourceIds: [], sourceLines: [], guard: "none" }, false).guard).toBe("guard.prompt_injection");
   });
   it("cites the visitor's fit check only when memory was sent", () => {
-    expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], guard: "none" }, true).sources).toEqual([{ label: "Your fit check", href: "/#top" }]);
-    expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], guard: "none" }, false).kind).toBe("unknown");
+    expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], sourceLines: [], guard: "none" }, true).sources).toEqual([{ label: "Your fit check", href: "/#top" }]);
+    expect(guardAsk({ kind: "fit", text: "Ask about X.", sourceIds: ["memory"], sourceLines: [], guard: "none" }, false).kind).toBe("unknown");
   });
 });
 
@@ -177,7 +177,7 @@ describe("hasScore · every form guard.honesty rejects (M7)", () => {
 describe("guard.citations · edge cases (M7)", () => {
   const notDoneEntry = notDone[0];
   it("a match citing a not-done or fact entry is a gap, even if kb.search returned it", () => {
-    const cards: EvidenceCard[] = [{ type: "match", req: "Anything", evidence: "x", sourceId: notDoneEntry.id }];
+    const cards: EvidenceCard[] = [{ type: "match", req: "Anything", evidence: "x", sourceId: notDoneEntry.id , lines: []}];
     const out = guardCitations(["Anything"], cards, [notDoneEntry]);
     expect(out[0]).toMatchObject({ type: "gap", closest: NO_SOURCE_CLOSEST });
     expect(out.fired).toEqual(["guard.citations"]);
@@ -185,9 +185,9 @@ describe("guard.citations · edge cases (M7)", () => {
   it("keeps the requirement order and text, matching cards by req first, then by position", () => {
     const cards: EvidenceCard[] = [
       { type: "gap", req: "B", closest: "c", close: "", notDoneId: null },
-      { type: "match", req: "A", evidence: "e", sourceId: "cloudeagle" },
+      { type: "match", req: "A", evidence: "e", sourceId: "integration-builder" , lines: []},
     ];
-    const out = guardCitations(["A", "B"], cards, [cloudeagle]);
+    const out = guardCitations(["A", "B"], cards, [integrationBuilder]);
     expect(out.map((c) => [c.req, c.type])).toEqual([["A", "match"], ["B", "gap"]]);
   });
   it("leaves gaps alone and fires nothing for clean output", () => {
@@ -202,7 +202,7 @@ describe("guard.honesty · edge cases (M7)", () => {
     for (const n of notDone) {
       const topic = n.text.replace(/^NOT DONE: /, "").split(". Closest:")[0];
       expect(notDoneTopicFor(topic, notDone)?.id, topic).toBe(n.id);
-      const out = guardHonesty([{ type: "match", req: topic, evidence: "Did it.", sourceId: "cloudeagle" }], notDone);
+      const out = guardHonesty([{ type: "match", req: topic, evidence: "Did it.", sourceId: "integration-builder" , lines: []}], notDone);
       expect(out.matches, topic).toEqual([]);
       expect(out.gaps[0].close).toBe("");
       expect(out.fired).toEqual(["guard.honesty"]);
@@ -213,7 +213,7 @@ describe("guard.honesty · edge cases (M7)", () => {
     expect(notDoneTopicFor("", notDone)).toBeUndefined();
   });
   it("a match whose source isn't in the KB becomes a gap", () => {
-    const out = guardHonesty([{ type: "match", req: "APIs", evidence: "Built it.", sourceId: "ghost" }], notDone);
+    const out = guardHonesty([{ type: "match", req: "APIs", evidence: "Built it.", sourceId: "ghost" , lines: []}], notDone);
     expect(out).toMatchObject({ matches: [], gaps: [{ req: "APIs", closest: NO_SOURCE_CLOSEST, close: "" }], fired: ["guard.honesty"] });
   });
   it("a gap with a score in its closest or close line is replaced", () => {
@@ -222,9 +222,9 @@ describe("guard.honesty · edge cases (M7)", () => {
   });
   it("counts come from the cards, mixed in order", () => {
     const cards: EvidenceCard[] = [
-      { type: "match", req: "Agents", evidence: "Designed it.", sourceId: "cloudeagle" },
+      { type: "match", req: "Agents", evidence: "Designed it.", sourceId: "integration-builder" , lines: []},
       { type: "gap", req: "Evals at scale", closest: "Keeps an eval set.", close: "Would adopt the team's tooling.", notDoneId: null },
-      { type: "match", req: "Consumer hardware launches at scale", evidence: "x", sourceId: "dhees" },
+      { type: "match", req: "Consumer hardware launches at scale", evidence: "x", sourceId: "dhees" , lines: []},
     ];
     const out = guardHonesty(cards, notDone);
     expect([out.matches.length, out.gaps.length]).toEqual([1, 2]);
@@ -232,7 +232,7 @@ describe("guard.honesty · edge cases (M7)", () => {
 });
 
 describe("Ask guard · every kind (M7)", () => {
-  const src = ["cloudeagle"];
+  const src = ["integration-builder"];
   it.each([
     ["refuse", "guard.prompt_injection"],
     ["none", "guard.not_done"],
@@ -241,21 +241,21 @@ describe("Ask guard · every kind (M7)", () => {
     ["gap", "guard.gap_stated"],
     ["fit", "none · answered from the knowledge base"],
   ] as const)("%s → %s", (kind, guard) => {
-    expect(guardAsk({ kind, text: "From the record.", sourceIds: src, guard: "none" }, false).guard).toBe(guard);
+    expect(guardAsk({ kind, text: "From the record.", sourceIds: src, sourceLines: [], guard: "none" }, false).guard).toBe(guard);
   });
   it("memory answers use the session-memory guard line", () => {
-    expect(guardAsk({ kind: "fit", text: "From your fit check.", sourceIds: ["memory", "cloudeagle"], guard: "none" }, true)).toMatchObject({
+    expect(guardAsk({ kind: "fit", text: "From your fit check.", sourceIds: ["memory", "integration-builder"], sourceLines: [], guard: "none" }, true)).toMatchObject({
       guard: "none · answered from session memory + knowledge base",
-      sources: [{ label: "Your fit check", href: "/#top" }, { label: "Case study · CloudEagle concept", href: "/work/integration-builder" }],
+      sources: [{ label: "Your fit check", href: "/#top" }, { label: "Case study · Integration builder", href: "/work/integration-builder" }],
     });
   });
   it("refuse and clarify may cite nothing; a score anywhere is unknown", () => {
-    expect(guardAsk({ kind: "clarify", text: "Good at what?", sourceIds: [], guard: "none" }, false).kind).toBe("clarify");
-    expect(guardAsk({ kind: "fit", text: "He's a 95% match.", sourceIds: src, guard: "none" }, false).kind).toBe("unknown");
-    expect(guardAsk({ kind: "unknown", text: "anything", sourceIds: src, guard: "none" }, false).text).toBe(ASK_UNKNOWN_TEXT);
+    expect(guardAsk({ kind: "clarify", text: "Good at what?", sourceIds: [], sourceLines: [], guard: "none" }, false).kind).toBe("clarify");
+    expect(guardAsk({ kind: "fit", text: "He's a 95% match.", sourceIds: src, sourceLines: [], guard: "none" }, false).kind).toBe("unknown");
+    expect(guardAsk({ kind: "unknown", text: "anything", sourceIds: src, sourceLines: [], guard: "none" }, false).text).toBe(ASK_UNKNOWN_TEXT);
   });
   it("dedupes sources", () => {
-    expect(guardAsk({ kind: "fit", text: "Yes.", sourceIds: ["cloudeagle", "cloudeagle"], guard: "none" }, false).sources).toHaveLength(1);
+    expect(guardAsk({ kind: "fit", text: "Yes.", sourceIds: ["integration-builder", "integration-builder"], sourceLines: [], guard: "none" }, false).sources).toHaveLength(1);
   });
 });
 

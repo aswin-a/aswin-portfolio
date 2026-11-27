@@ -1,5 +1,9 @@
 import { cvItems, type CvItem } from "@/content/cv";
-import { topicFor } from "@/lib/cv";
+import { orgShort } from "@/lib/cv";
+import type { CvLocator } from "@/lib/cv-link";
+
+/** A CV line the model can cite by number, with where it sits on the CV (SPEC §6.1). */
+export type KbLine = { at: CvLocator; text: string };
 
 export type Role = {
   id: string;
@@ -7,8 +11,12 @@ export type Role = {
   company: string;
   years: string;
   summary: string;
-  /** The CV lines behind the role (ladder and highlights), word for word. */
+  /** The ladder line, word for word (not addressable on the CV, so not a numbered line). */
   details: string[];
+  /** The role's highlights, word for word, each with its CV locator. */
+  lines: KbLine[];
+  /** Where the role sits on the CV. */
+  cv: CvLocator[];
   label: string;
   href: string;
   /** Search tags for kb.search (SPEC §6), not claims. Taken from how the design maps requirements to this entry. */
@@ -34,9 +42,11 @@ const toRole = (it: CvItem): Role => ({
   company: it.org,
   years: it.dates,
   summary: it.scope,
-  details: [...(it.ladder ? [it.ladder] : []), ...it.highlights],
-  // "CV · {title} · {company}", like the CV page's Ask topic answers (Aswin, 2026-11-23).
-  label: `CV · ${topicFor(it).label}`,
+  details: it.ladder ? [it.ladder] : [],
+  lines: it.groups ? [] : it.highlights.map((text, item) => ({ at: { roleId: it.id, item }, text })),
+  cv: [{ roleId: it.id }],
+  // "CV · {org}" (design update 14: "CV · Dhee's", "CV · The Solar Labs", "CV · Zelthy"; Aswin, 2026-11-27).
+  label: `CV · ${orgShort(it)}`,
   href: "/about",
   tags: ROLE_IDS[it.id]?.tags,
 });

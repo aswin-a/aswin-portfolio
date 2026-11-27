@@ -16,7 +16,6 @@ export const ASK_QUESTIONS = {
   hardware: "Has he led a hardware launch?",
   whysafe: "Why are safeguards the centrepiece?",
   failed: "What failed first?",
-  isce: "Is this CloudEagle's product?",
   health: "What's his healthcare experience?",
   now: "What's he building now?",
 } as const;
@@ -40,7 +39,7 @@ export const ASK_BY_PAGE: Record<AskPage, string[]> = {
   work: [
     "Which AI agents has he built?",
     "How does the integration builder keep AI out of production?",
-    "Is the integration builder CloudEagle's product?",
+    ASK_QUESTIONS.whysafe,
     ASK_QUESTIONS.llm,
   ],
   // The posts: safeguards, integrations as agent experience, the approval step.

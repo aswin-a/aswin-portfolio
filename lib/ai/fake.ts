@@ -3,6 +3,8 @@ import { ASK_QUESTIONS, CTX_QUESTION, gapQuestion } from "@/lib/ask/copy";
 import { ASK_ANSWERS } from "@/lib/ask/fixtures";
 import { HERO_SAMPLES, heroSummary } from "@/lib/fit-check/copy";
 import { BREAK_REPLIES, HERO_BAD, HERO_FIT } from "@/lib/fit-check/fixtures";
+import { isHighlighted, parseCvHash } from "@/lib/cv-link";
+import { KB, kbEntry } from "@/lib/kb/snapshot";
 import type { AskOutput, EvidenceCard, JdParse } from "./schemas";
 import { ASK_SYSTEM, EVIDENCE_MAP_SYSTEM, JD_PARSE_SYSTEM } from "./prompts";
 
@@ -56,10 +58,31 @@ function jdParse(user: string): JdParse {
   };
 }
 
+/**
+ * The design's `#cv=` deep links → a KB id and its cited `L` numbers, so the fake cites the same CV
+ * lines the design links to and the real guards rebuild the link (design update 14). The id is the
+ * entry that sits exactly at the first target (a Zelthy area, or a whole role).
+ */
+function cvFocus(href: string) {
+  return href.startsWith("/about#") ? parseCvHash(href.slice(href.indexOf("#") + 1)) : null;
+}
+function idForCvHref(href: string): string | undefined {
+  const t = cvFocus(href)?.targets[0];
+  if (!t) return undefined;
+  return KB.find((e) => (e.scope === "roles" || e.scope === "projects") && e.cv.length === 1 && e.cv[0].roleId === t.id && (e.cv[0].group ?? null) === t.group)?.id;
+}
+function linesForCvHref(id: string, href: string): number[] {
+  const f = cvFocus(href);
+  const e = kbEntry(id);
+  if (!f || !e) return [];
+  return e.lines.flatMap((l, i) =>
+    l.at.item !== undefined && f.targets.some((t) => t.id === l.at.roleId) && isHighlighted(f.targets.filter((t) => t.id === l.at.roleId && t.items.length > 0), l.at.group ?? null, l.at.item) ? [i + 1] : [],
+  );
+}
+
 /** Fixture hrefs → KB ids (content/kb). */
 const SOURCE_IDS: Record<string, string> = {
-  "/about": "platform-api",
-  "/work/integration-builder": "cloudeagle",
+  "/work/integration-builder": "integration-builder",
   "/work/job-search-agent": "job-search-agent",
   "/work/instagram-agent": "dhees-instagram-agent",
 };
@@ -79,7 +102,10 @@ function evidenceMap(user: string): { cards: EvidenceCard[] } {
   return {
     cards: reqs.map((req): EvidenceCard => {
       const m = all.find((x) => x.req === req);
-      if (m) return { type: "match", req, evidence: m.evidence, sourceId: SOURCE_IDS[m.href] ?? "unknown-source" };
+      if (m) {
+        const sourceId = idForCvHref(m.href) ?? SOURCE_IDS[m.href] ?? "unknown-source";
+        return { type: "match", req, evidence: m.evidence, sourceId, lines: linesForCvHref(sourceId, m.href) };
+      }
       const g = gaps.find((x) => x.req === req);
       return {
         type: "gap",
@@ -94,17 +120,15 @@ function evidenceMap(user: string): { cards: EvidenceCard[] } {
 
 /** KB ids for the design's Ask source chips, by label then href (see content/kb/facts.ts). */
 const ASK_SOURCE_IDS: Record<string, string> = {
-  "About · career": "fact-focus",
   "Case studies": "fact-ai-work",
-  "Case study · CloudEagle concept": "cloudeagle",
-  "Case study · Safeguards": "cloudeagle",
-  "Case study · v2 & lessons": "cloudeagle",
+  "Case study · Integration builder": "integration-builder",
+  "Case study · Safeguards": "integration-builder",
+  "Case study · v2 & lessons": "integration-builder",
   "Your fit check": "memory",
 };
 
 /** Questions whose design answer cites a specific KB entry rather than a page. */
 const SOURCES_BY_QUESTION: Partial<Record<keyof typeof ASK_QUESTIONS, string[]>> = {
-  win: ["fact-platform-win"],
   health: ["healthcare-integrations"],
 };
 
@@ -118,12 +142,12 @@ function fromMemory(q: string, memory: string): AskOutput | null {
       return { req, closest, close };
     });
   if (q === CTX_QUESTION) {
-    return { kind: "fit", text: `Ask how he would ramp up on: ${gaps.map((g) => g.req).join("; ")}. Each case study also ends with questions to ask him.`, sourceIds: ["memory", "fact-ai-work"], guard: "none" };
+    return { kind: "fit", text: `Ask how he would ramp up on: ${gaps.map((g) => g.req).join("; ")}. Each case study also ends with questions to ask him.`, sourceIds: ["memory", "fact-ai-work"], sourceLines: [], guard: "none" };
   }
   const g = gaps.find((x) => gapQuestion(x.req) === q);
   if (!g) return null;
   const none = /^Not something Aswin has done/.test(g.closest);
-  return { kind: none ? "none" : "gap", text: g.closest + (g.close ? ` ${g.close}` : ""), sourceIds: ["memory", "fact-focus"], guard: none ? "guard.not_done" : "guard.gap_stated" };
+  return { kind: none ? "none" : "gap", text: g.closest + (g.close ? ` ${g.close}` : ""), sourceLines: [], sourceIds: ["memory", "fact-focus"], guard: none ? "guard.not_done" : "guard.gap_stated" };
 }
 
 function ask(user: string): AskOutput {
@@ -132,15 +156,21 @@ function ask(user: string): AskOutput {
   const ctx = memory ? fromMemory(q, memory) : null;
   if (ctx) return ctx;
   const attack = BREAK_REPLIES[q];
-  if (attack) return { kind: attack.kind, text: attack.text, sourceIds: attack.kind === "none" ? ["fact-focus"] : attack.kind === "conflict" ? ["fact-llm-experience"] : [], guard: attack.guard as AskOutput["guard"] };
+  if (attack) return { kind: attack.kind, text: attack.text, sourceIds: attack.kind === "none" ? ["fact-focus"] : attack.kind === "conflict" ? ["fact-llm-experience"] : [], sourceLines: [], guard: attack.guard as AskOutput["guard"] };
   const id = (Object.keys(ASK_QUESTIONS) as (keyof typeof ASK_QUESTIONS)[]).find((k) => ASK_QUESTIONS[k] === q);
   if (!id) {
-    return { kind: "unknown", text: ASK_ANSWERS.unknown.text, sourceIds: [], guard: "none" };
+    return { kind: "unknown", text: ASK_ANSWERS.unknown.text, sourceIds: [], sourceLines: [], guard: "none" };
   }
   const f = ASK_ANSWERS[id];
   const guard = (f.guard ?? (f.kind === "gap" ? "guard.gap_stated" : "none")) as AskOutput["guard"];
-  const sourceIds = SOURCES_BY_QUESTION[id] ?? [...new Set(f.sources.map((s) => ASK_SOURCE_IDS[s.label]).filter((x): x is string => !!x))];
-  return { kind: f.kind, text: f.text, sourceIds, guard };
+  const sourceIds =
+    SOURCES_BY_QUESTION[id] ?? [...new Set(f.sources.map((s) => idForCvHref(s.href) ?? ASK_SOURCE_IDS[s.label]).filter((x): x is string => !!x))];
+  // The CV lines the design's source links highlight, per cited entry.
+  const sourceLines = sourceIds.flatMap((sid) => {
+    const lines = [...new Set(f.sources.flatMap((s) => linesForCvHref(sid, s.href)))];
+    return lines.length ? [{ id: sid, lines }] : [];
+  });
+  return { kind: f.kind, text: f.text, sourceIds, sourceLines, guard };
 }
 
 export function fakeModel(): MockLanguageModelV4 {

@@ -175,7 +175,7 @@ class Component extends DCLogic {
       showIntro: !s.introSeen && !x,
       askCtx: s.askCtx,
       hood: [
-        { name: 'agents', status: 'case study', proof: 'My job-search agent runs 4 steps and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html', hiddenStudy: true },
+        { name: 'agents', status: 'case study', proof: 'My job-search agent runs 7 Agent Skills under one orchestrator and stops for my approval before it applies.', cta: 'Read the job-search study →', href: 'Work.dc.html', hiddenStudy: true },
         { name: 'skills', status: 'GitHub', proof: 'I wrote a Claude Skill that scores JD fit against my master resume.', cta: 'View the skill →', href: '#' },
         { name: 'tools', status: 'live here', proof: 'The fit check calls three tools: fetch_url, jd.parse and kb.search.', cta: 'See the calls in X-ray →', live: true, to: '#top' },
         { name: 'orchestration', status: 'live here', proof: 'A fixed pipeline with one branch and one retry. The job-search agent picks its own tools.', cta: 'Open X-ray →', live: true, to: '#top' },
@@ -210,7 +210,7 @@ class Component extends DCLogic {
           built: 'The pipeline, the knowledge base built from my master resume, the guardrails and the eval set.',
           flow: [['Paste a JD or a link'], ['fetch_url, only for links'], ['Parse requirements, search the record'], ['Guardrails check every claim'], ['Cited verdict, gaps included']],
           tags: ['tools', 'guardrails', 'evals'], primary: 'Try it above ↑', primaryHref: '#fit-h', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },
-        { num: '03', status: 'CONCEPT', name: 'AI integration builder for long-tail apps', pitch: 'Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.',
+        { num: '03', status: 'CONCEPT', name: 'AI integration builder for long-tail apps', pitch: 'Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed.',
           built: '[e.g. the spec, Figma flows and the clickable prototype]',
           flow: [['Paste the app’s API docs'], ['AI drafts the connector'], ['Policy checks: scopes, secrets, allow-list'], ['A person approves the diff', 'person decides'], ['Deploy']],
           tags: ['integrations', 'guardrails'], primary: 'Run it locally', primaryHref: '#', secondary: 'Read the case study →', secondaryHref: 'Work.dc.html' },

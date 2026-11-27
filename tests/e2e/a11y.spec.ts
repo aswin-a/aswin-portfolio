@@ -259,7 +259,7 @@ test.describe("artboard a11y attributes", () => {
       '[aria-labelledby="contact-h"]',
     ],
     "/log": ['[role="group"][aria-label="Filter posts"]', '[aria-labelledby="contact-h"]'],
-    "/about": ['[aria-labelledby="exp-h"]', '[aria-labelledby="skills-h"]', '[aria-labelledby="cert-h"]', 'input[aria-label="Ask your own question about Aswin\'s experience"]'],
+    "/about": ['[aria-labelledby="exp-h"]', '[aria-labelledby="skills-h"]', 'input[aria-label="Ask your own question about Aswin\'s experience"]'],
     [`/work/${CASE_STUDY_SLUGS[2]}`]: [
       '[aria-label="Case study sections"]',
       '[role="group"][aria-label="Compare"]',

@@ -54,7 +54,13 @@ export function Footer() {
       </section>
       <footer className="border-t border-rule px-6 py-7">
         <div className="mx-auto flex max-w-[1040px] flex-wrap justify-between gap-3 font-mono text-[12px] text-muted">
-          <span>This site is an AI product. Turn on X-ray to see how it works.</span>
+          <span className="inline-flex flex-wrap items-center gap-x-[14px] gap-y-1">
+            <span>This site is an AI product. Turn on X-ray to see how it works.</span>
+            {/* FOOT_REPO (Footer.dc.html, design update 15). */}
+            <a href={siteMeta.siteRepo} className="inline-flex min-h-8 items-center text-accent no-underline">
+              This site’s code on GitHub →
+            </a>
+          </span>
           <span>
             {updated} · © 2026 Aswin · {siteMeta.domain}
           </span>

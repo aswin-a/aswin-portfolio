@@ -32,13 +32,14 @@ const LIMITS = {
  * What a guard step reports: "pass" when it changed nothing, otherwise what it changed, so the
  * X-ray never says "pass" while the result shows fewer matches than evidence.map did.
  */
-export function guardStepDetail(matchesBefore: number, matchesAfter: number, fired: number): string {
-  if (fired === 0) return "pass";
+export function guardStepDetail(matchesBefore: number, matchesAfter: number, fired: number, droppedLines = 0): string {
+  if (fired === 0 && droppedLines === 0) return "pass";
   const lost = matchesBefore - matchesAfter;
   const other = fired - lost;
   const parts: string[] = [];
   if (lost > 0) parts.push(`${lost} ${lost === 1 ? "match → gap" : "matches → gaps"}`);
   if (other > 0) parts.push(`${other} ${other === 1 ? "gap" : "gaps"} reworded`);
+  if (droppedLines > 0) parts.push(`${droppedLines} line ${droppedLines === 1 ? "ref" : "refs"} dropped`);
   return parts.join(" · ");
 }
 
@@ -264,7 +265,7 @@ export async function* runFit(req: FitRun, ctx: RunContext, rec: RunRecord, deps
     yield step("guard.citations", "running");
     const g1 = await timed(async () => guardCitations(requirements, cards, sources));
     rec.guardFired.push(...g1.value.fired);
-    yield step("guard.citations", "done", guardStepDetail(matchCount(cards), matchCount(g1.value), g1.value.fired.length), g1.ms);
+    yield step("guard.citations", "done", guardStepDetail(matchCount(cards), matchCount(g1.value), g1.value.fired.length, g1.value.droppedLines), g1.ms);
 
     // 6. guard.honesty
     yield step("guard.honesty", "running");

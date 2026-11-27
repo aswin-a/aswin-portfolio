@@ -1,4 +1,5 @@
 import { siteMeta } from "@/content/site-meta";
+import { cvAt, cvHref } from "@/lib/cv-link";
 import type { BreakReply, ResultEvent } from "./types";
 
 /**
@@ -6,8 +7,8 @@ import type { BreakReply, ResultEvent } from "./types";
  * word. Replayed only by the AI_FAKE test model (lib/ai/fake.ts), which production refuses;
  * real results come from `/api/run` (SPEC §7).
  *
- * Prototype links are mapped to routes: About.dc.html → /about, Work.dc.html → the matching
- * case study.
+ * Prototype links are mapped to routes: About.dc.html → /about, its `#cv=` deep links generated from
+ * the same CV lines by locator (design update 15), Work.dc.html → the matching case study.
  */
 
 type ResultBody = Pick<ResultEvent, "verdict" | "note" | "matches" | "gaps">;
@@ -16,8 +17,8 @@ export const HERO_FIT: ResultBody = {
   verdict: "Strong on 4 of 6 requirements.",
   note: "Each match links to the role or project behind it. Gaps are listed, not hidden.",
   matches: [
-    { req: "Own a public API and partner integrations", evidence: "Platform PM for APIs and integrations, including healthcare integrations.", source: "Role · About", href: "/about" },
-    { req: "Ship AI agent features with clear guardrails", evidence: "Designed an AI integration builder with safeguards as the centrepiece (CloudEagle.ai take-home concept).", source: "Case study · CloudEagle concept", href: "/work/integration-builder" },
+    { req: "Own a public API and partner integrations", evidence: "Platform PM for APIs and integrations, including healthcare integrations.", source: "CV · Zelthy · integrations", href: cvHref(cvAt("zelthy", "integrations", [1, 2]), "Own a public API and partner integrations") },
+    { req: "Ship AI agent features with clear guardrails", evidence: "Designed an AI integration builder with safeguards as the centrepiece.", source: "Case study · Integration builder", href: "/work/integration-builder" },
     { req: "Design human-in-the-loop workflows", evidence: "Built a job-search agent that never applies to a role without explicit approval.", source: "Case study · Job-search agent", href: "/work/job-search-agent" },
     { req: "Work with business stakeholders on adoption", evidence: "Ran Dhee's, a fresh dog-food brand, and built an Instagram competitor agent for it.", source: "Case study · Dhee's agent", href: "/work/instagram-agent" },
   ],
@@ -39,7 +40,7 @@ export const HERO_BAD: ResultBody = {
   verdict: "Not a strong fit: 1 of 5 requirements.",
   note: "Better you hear it from this site than in round two.",
   matches: [
-    { req: "Lead cross-functional product teams", evidence: "Senior PM working across platform, engineering and business teams.", source: "Role · About", href: "/about" },
+    { req: "Lead cross-functional product teams", evidence: "Senior PM working across platform, engineering and business teams.", source: "CV · Zelthy · team leadership", href: cvHref([...cvAt("zelthy", "leadership"), ...cvAt("zelthy", "client-ops", [1])], "Lead cross-functional product teams") },
   ],
   gaps: [
     { req: "Hardware roadmaps from prototype to mass production", closest: "Not something Aswin has done.", close: "" },

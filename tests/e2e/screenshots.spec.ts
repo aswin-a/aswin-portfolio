@@ -17,7 +17,7 @@ const BASELINES = new Set([
   "home-1440-xray",
   "home-390-xray",
   ...["empty", "result", "badfit", "error", "limited", "budget"].flatMap((s) => [`hero-${s}-1440`, `hero-${s}-390`]),
-  ...["start", "answer", "todo", "refuse", "none", "clarify"].flatMap((s) => [`ask-${s}-1440`, `ask-${s}-390`]),
+  ...["start", "answer", "cv", "refuse", "none", "clarify"].flatMap((s) => [`ask-${s}-1440`, `ask-${s}-390`]),
   ...["idle", "invalid", "sent", "error", "limited"].flatMap((s) => [`contact-${s}-1440`, `contact-${s}-390`]),
   "about-group-open-1440",
   "about-group-open-390",
@@ -74,7 +74,8 @@ const ASK_STATES: [string, string | null][] = [
   ["start", null],
   ["thinking", null],
   ["answer", "Has he worked on APIs?"],
-  ["todo", "What's his biggest platform win?"],
+  // A CV-sourced answer (design update 14); no design answer shows a todo box any more.
+  ["cv", "What's his healthcare experience?"],
   ["refuse", "prompt injection"],
   ["none", "something he hasn't done"],
   ["clarify", "ambiguous ask"],
@@ -97,8 +98,10 @@ for (const [name, width, height] of SIZES) {
         } else if (pick) {
           // Ask has no Break my AI chips (Aswin, 2026-11-23), so attacks are typed.
           const attack = ASK_ATTACKS.find(([, chip]) => chip === pick);
-          if (attack) {
-            await dialog.getByRole("textbox").fill(ASK_QUESTIONS[attack[0]]);
+          // The healthcare question isn't a suggestion on home, so it is typed too.
+          const typed = attack ? ASK_QUESTIONS[attack[0]] : pick === ASK_QUESTIONS.health ? pick : null;
+          if (typed) {
+            await dialog.getByRole("textbox").fill(typed);
             await page.keyboard.press("Enter");
           } else {
             await dialog.getByRole("button", { name: pick }).first().click();
@@ -162,13 +165,13 @@ for (const [name, width, height] of SIZES) {
   test(`screen about-group-open-${name}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/about");
-    await page.getByRole("button", { name: /^Core platform and integrations/ }).click();
+    await page.getByRole("button", { name: /^Identity, Integrations and Data Sync/ }).click();
     await snap(page, `about-group-open-${name}`, page, true);
   });
   test(`screen ask-topic-${name}`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto("/about");
-    await page.getByRole("main").locator("ol > li").nth(5).getByRole("button", { name: "Ask about this role →" }).click();
+    await page.getByRole("main").locator("ol > li").nth(6).getByRole("button", { name: "Ask about this role →" }).click();
     await page.getByRole("dialog", { name: "Ask my work" }).getByText(/^ASKING ABOUT/).waitFor();
     await snap(page, `ask-topic-${name}`);
   });

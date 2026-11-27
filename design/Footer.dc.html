@@ -25,8 +25,8 @@
 <span style="font-family: {{t.mono}}; font-size: 12px; line-height: 1.6; color: {{t.muted}}">{{phone}} · calls {{hours}} · WhatsApp anytime{{waNote}}</span>
 </div>
 <div style="display: flex; gap: 8px 18px; flex-wrap: wrap">
-<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">LinkedIn [link]</a>
-<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">GitHub [link]</a>
+<a href="https://linkedin.com/in/aswin-a-pm" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">LinkedIn</a>
+<a href="https://github.com/aswin-a" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">GitHub</a>
 <a href="About.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; font-size: 15px">CV</a>
 </div>
 </div>
@@ -83,13 +83,14 @@
 </section>
 <footer style="border-top: 1px solid {{t.rule}}; padding: 28px 24px">
 <div style="max-width: 1040px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">
-<span>This site is an AI product. Turn on X-ray to see how it works.</span>
-<span>Updated [date, set on deploy] · © 2026 Aswin · [domain]</span>
+<span style="display: inline-flex; align-items: center; gap: 4px 14px; flex-wrap: wrap"><span>This site is an AI product. Turn on X-ray to see how it works.</span><a href="{{repoHref}}" style="display: inline-flex; align-items: center; min-height: 32px; color: {{t.accent}}; text-decoration: none">This site’s code on GitHub →</a></span>
+<span>Updated [date, set on deploy] · © 2026 Aswin · aswin-a.com</span>
 </div>
 </footer>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"text","default":""},"initial":{"editor":"enum","options":["idle","invalid","sending","sent","error","limited"],"default":"idle"},"limitMins":{"editor":"number","default":23},"still":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":640}}'>
+var FOOT_REPO = 'https://github.com/aswin-a/aswin-portfolio';
 var FOOT_PHONE = '+91 [number]';
 var FOOT_PHONE_DIGITS = '91XXXXXXXXXX';
 var FOOT_HOURS = '[Mon–Fri, 10am–7pm IST]';
@@ -155,6 +156,7 @@ class Component extends DCLogic {
     var line = lines[st] && !(st === 'invalid' && nBad === 0) ? lines[st] : null;
     var sending = st === 'sending', limited = st === 'limited';
     return {
+      repoHref: FOOT_REPO,
       phone: FOOT_PHONE, hours: FOOT_HOURS,
       telHref: 'tel:+' + FOOT_PHONE_DIGITS,
       lineWaHref: 'https://wa.me/' + FOOT_PHONE_DIGITS + '?text=' + encodeURIComponent((s.form.role ? 'Hi Aswin, I found your portfolio. I’m hiring for a ' + s.form.role + ' role.' : 'Hi Aswin, I found your portfolio.') + (s.form.msg.trim() ? '\n\n' + s.form.msg.trim() : '')),

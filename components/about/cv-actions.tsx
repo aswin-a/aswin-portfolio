@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSite } from "@/components/xray-provider";
-import type { CvGroup, CvTopic } from "@/content/cv";
+import type { CvTopic } from "@/content/cv";
 import { ASK_MAX_CHARS } from "@/lib/ask/types";
 import { cvGeneral } from "@/lib/cv";
 
@@ -97,48 +97,38 @@ export function AskAboutRole({ topic }: { topic: CvTopic }) {
   );
 }
 
-/** Zelthy's area cards: each opens on its own and then spans the full row. */
-export function CvGroups({ groups }: { groups: CvGroup[] }) {
-  const [open, setOpen] = useState<Record<number, boolean>>({});
+/**
+ * A card's action row, plus a project's "Everything I did" (About.dc.html, design update 15): with a
+ * `full` list, "See all N points ↓" / "Hide details ↑" opens a top-ruled list above the row.
+ */
+export function CvActions({ full, children }: { full?: string[]; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const points = full ?? [];
   return (
-    <div className="flex flex-col gap-[10px] pt-[6px]">
-      <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">Pick an area to see everything I did</span>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[10px]">
-        {groups.map((g, i) => {
-          const isOpen = !!open[i];
-          return (
-            <div
-              key={g.name}
-              className={`flex flex-col rounded-[10px] border bg-bg ${isOpen ? "col-[1/-1] border-accent" : "border-rule"}`}
-            >
-              <button
-                type="button"
-                aria-expanded={isOpen}
-                onClick={() => setOpen((o) => ({ ...o, [i]: !o[i] }))}
-                className="flex w-full cursor-pointer items-start justify-between gap-3 border-0 bg-transparent px-4 py-[14px] text-left font-sans text-ink"
-              >
-                <span className="flex flex-col gap-1">
-                  <span className="text-[15px] font-semibold">{g.name}</span>
-                  <span className="text-[14px] leading-[1.5] text-muted">{g.summary}</span>
-                  <span className="font-mono text-[12px] text-accent">
-                    {isOpen ? `Hide ${g.items.length} points ↑` : `See all ${g.items.length} points ↓`}
-                  </span>
-                </span>
-                <span aria-hidden="true" className="font-mono text-[16px] leading-[1.2] text-muted">
-                  {isOpen ? "−" : "+"}
-                </span>
-              </button>
-              {isOpen && (
-                <ul className="m-0 flex list-disc flex-col gap-[6px] pt-0 pr-4 pb-4 pl-9 text-[14px] leading-[1.55]">
-                  {g.items.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
+    <>
+      {points.length > 0 && open && (
+        <div className="flex flex-col gap-2 border-t border-rule pt-3">
+          <span className="font-mono text-[11px] tracking-[0.06em] text-muted uppercase">Everything I did</span>
+          <ul className="m-0 flex flex-col gap-[6px] pl-5 text-[14px] leading-[1.55]">
+            {points.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-[6px]">
+        {points.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            className="min-h-10 cursor-pointer border-0 bg-transparent px-0 py-1 font-mono text-[13px] text-accent"
+          >
+            {open ? "Hide details ↑" : `See all ${points.length} points ↓`}
+          </button>
+        )}
+        {children}
       </div>
-    </div>
+    </>
   );
 }

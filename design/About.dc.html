@@ -27,14 +27,14 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px 48px; flex-wrap: wrap">
 <div style="flex: 1 1 480px; display: flex; flex-direction: column; gap: 8px; max-width: 760px">
 <h1 style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: clamp(32px, 4vw, 46px); line-height: 1.1; letter-spacing: -0.015em">Aswin A</h1>
-<p style="margin: 0; font-size: 18px; font-weight: 500">Senior Product Manager · Platforms, integrations and agentic AI products</p>
-<p style="margin: 0; font-size: 15px; color: {{t.muted}}">Chennai, India · <a href="https://linkedin.com/in/aswin-a-pm" style="color: {{t.accent}}">LinkedIn</a></p>
-<p style="margin: 8px 0 0; max-width: 760px; font-family: {{t.serif}}; font-size: 21px; line-height: 1.5">I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM, and five as a founder across two startups. I own platforms end to end, from APIs and integrations to identity and workflow engines, and now I build AI agents on the same foundations.</p>
+<p style="margin: 0; font-size: 18px; font-weight: 500">Senior Product Manager · Platforms and Agentic AI · Enterprise SaaS</p>
+<p style="margin: 0; font-size: 15px; color: {{t.muted}}">Chennai, Tamil Nadu, India · <a href="https://linkedin.com/in/aswin-a-pm" style="color: {{t.accent}}">LinkedIn</a> · <a href="https://github.com/aswin-a" style="color: {{t.accent}}">GitHub</a> · <a href="https://aswin-a.com" style="color: {{t.accent}}">aswin-a.com</a></p>
+<p style="margin: 8px 0 0; max-width: 760px; font-family: {{t.serif}}; font-size: 21px; line-height: 1.5">I’ve spent nine years across product and technology: four as a product manager at Zelthy, rising from Associate PM to Senior PM on a multi-tenant B2B SaaS platform, and about five as a founder across two startups. I own platforms end to end, from the workflow engine, RBAC and SSO to the connector framework and release gates. In 2026 I specified and built agentic and LLM products with Claude Code from my own PRDs and specs.</p>
 </div>
 <div style="display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 260px; max-width: 100%">
-<a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 15px; font-weight: 600; text-decoration: none">Download PDF</a>
+<a href="/aswin-a-cv.pdf" download style="display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: {{t.btnBg}}; color: {{t.btnInk}}; font-size: 15px; font-weight: 600; text-decoration: none">Download PDF</a>
 <button type="button" onClick="{{copyText}}" style="min-height: 48px; padding: 10px 18px; border-radius: 10px; border: 1px solid {{t.rule}}; background: {{t.paper}}; color: {{t.ink}}; font-family: {{t.sans}}; font-size: 15px; cursor: pointer">{{copyLabel}}</button>
-<span style="font-family: {{t.mono}}; font-size: 12px; text-align: center; color: {{t.muted}}">Synced from my master resume · [date]</span>
+<span style="font-family: {{t.mono}}; font-size: 12px; text-align: center; color: {{t.muted}}">Synced from my master resume · 27 Nov 2026</span>
 </div>
 </div>
 </div>
@@ -68,7 +68,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <section aria-labelledby="exp-h" style="display: flex; flex-direction: column; gap: 20px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap">
 <h2 id="exp-h" style="margin: 0; font-family: {{t.serif}}; font-weight: 400; font-size: 36px">Experience</h2>
-<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">solid: roles · dashed, indented: side projects</span>
+<span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">solid: roles · dashed, indented: agentic AI builds and side projects</span>
 </div>
 <ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
 <sc-for list="{{items}}" as="it" hint-placeholder-count="7">
@@ -76,10 +76,16 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <div style="display: {{wideDisplay}}; flex-direction: column; align-items: flex-end; padding-top: 22px; font-family: {{t.mono}}; font-size: 12px; line-height: 1.5; text-align: right; color: {{t.muted}}">{{it.dates}}</div>
 <div style="position: relative; padding: 10px 0 10px {{it.indent}}; border-left: 2px solid {{t.rule}}">
 <span aria-hidden="true" style="position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; border-radius: 999px; background: {{it.dotBg}}; border: 2px solid {{it.dotBorder}}"></span>
-<article style="display: flex; flex-direction: column; gap: 10px; margin-left: 22px; padding: 20px 22px; background: {{it.cardBg}}; border: {{it.cardBorder}}; border-radius: 14px">
+<article id="{{it.anchor}}" style="scroll-margin-top: 96px; display: flex; flex-direction: column; gap: 10px; margin-left: 22px; padding: 20px 22px; background: {{it.cardBg}}; border: {{it.cardBorder}}; border-radius: 14px">
+<sc-if value="{{it.focused}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 10px; background: {{t.accentTint}}; border: 1px solid {{t.accent}}">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; color: {{t.accent}}">FROM YOUR FIT CHECK</span><span style="font-size: 15px; line-height: 1.45">{{focusReq}}</span><span style="font-size: 13px; color: {{t.muted}}">The points that back it up are highlighted below.</span></span>
+<button type="button" onClick="{{clearFocus}}" aria-label="Clear highlight" style="flex: none; min-height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid {{t.accent}}; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 12px; cursor: pointer">Clear ✕</button>
+</div>
+</sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px">
 <sc-if value="{{narrow}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.muted}}">{{it.dates}}</span></sc-if>
-<sc-if value="{{it.isProject}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Side project</span></sc-if>
+<sc-if value="{{it.isProject}}" hint-placeholder-val="{{ false }}"><span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">{{it.kind}}</span></sc-if>
 <h3 style="margin: 0; font-size: {{it.titleSize}}; font-weight: 600; line-height: 1.3">{{it.title}}</h3>
 <p style="margin: 0; font-size: 15px; color: {{t.muted}}">{{it.org}}</p>
 <sc-if value="{{it.hasLadder}}" hint-placeholder-val="{{ false }}"><p style="margin: 4px 0 0; font-family: {{t.mono}}; font-size: 12px; line-height: 1.6; color: {{t.muted}}">{{it.ladder}}</p></sc-if>
@@ -87,7 +93,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <sc-if value="{{it.hasScope}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-size: 15px; line-height: 1.55">{{it.scope}}</p></sc-if>
 <sc-if value="{{it.hasHighlights}}" hint-placeholder-val="{{ true }}">
 <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5">
-<sc-for list="{{it.highlights}}" as="h" hint-placeholder-count="3"><li>{{h}}</li></sc-for>
+<sc-for list="{{it.highlights}}" as="h" hint-placeholder-count="3"><li style="padding: {{h.pad}}; margin: {{h.mar}}; border-radius: 6px; background: {{h.bg}}; box-shadow: {{h.bar}}">{{h.text}}</li></sc-for>
 </ul>
 </sc-if>
 <sc-if value="{{it.hasGroups}}" hint-placeholder-val="{{ false }}">
@@ -95,7 +101,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Pick an area to see everything I did</span>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px">
 <sc-for list="{{it.groups}}" as="g" hint-placeholder-count="7">
-<div style="grid-column: {{g.span}}; display: flex; flex-direction: column; border: 1px solid {{g.border}}; border-radius: 10px; background: {{t.bg}}">
+<div id="{{g.anchor}}" style="scroll-margin-top: 96px; grid-column: {{g.span}}; display: flex; flex-direction: column; border: {{g.borderW}} solid {{g.border}}; border-radius: 10px; background: {{t.bg}}">
 <button type="button" onClick="{{g.toggle}}" aria-expanded="{{g.open}}" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%; padding: 14px 16px; border: 0; background: transparent; color: {{t.ink}}; font-family: {{t.sans}}; text-align: left; cursor: pointer">
 <span style="display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 15px; font-weight: 600">{{g.name}}</span>
@@ -106,7 +112,7 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </button>
 <sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
 <ul style="margin: 0; padding: 0 16px 16px 36px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.55">
-<sc-for list="{{g.items}}" as="gi" hint-placeholder-count="4"><li>{{gi}}</li></sc-for>
+<sc-for list="{{g.items}}" as="gi" hint-placeholder-count="4"><li style="padding: {{gi.pad}}; margin: {{gi.mar}}; border-radius: 6px; background: {{gi.bg}}; box-shadow: {{gi.bar}}">{{gi.text}}</li></sc-for>
 </ul>
 </sc-if>
 </div>
@@ -114,7 +120,16 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </div>
 </div>
 </sc-if>
+<sc-if value="{{it.fullOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid {{t.rule}}">
+<span style="font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Everything I did</span>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.55">
+<sc-for list="{{it.full}}" as="fp" hint-placeholder-count="5"><li>{{fp}}</li></sc-for>
+</ul>
+</div>
+</sc-if>
 <div style="display: flex; gap: 6px 20px; flex-wrap: wrap; align-items: center">
+<sc-if value="{{it.hasFull}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{it.toggleFull}}" aria-expanded="{{it.fullOpen}}" style="min-height: 40px; padding: 4px 0; border: 0; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">{{it.fullLabel}}</button></sc-if>
 
 <sc-if value="{{it.hasQa}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{it.ask}}" style="min-height: 40px; padding: 4px 0; border: 0; background: transparent; color: {{t.accent}}; font-family: {{t.mono}}; font-size: 13px; cursor: pointer">Ask about this role →</button></sc-if>
 <sc-if value="{{it.hasLink}}" hint-placeholder-val="{{ false }}"><a href="{{it.href}}" style="display: inline-flex; align-items: center; min-height: 40px; font-family: {{t.mono}}; font-size: 13px; color: {{t.accent}}; text-decoration: none">{{it.link}}</a></sc-if>
@@ -138,13 +153,6 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 </sc-for>
 </div>
 </section>
-
-<section aria-labelledby="cert-h" style="display: flex; flex-direction: column; gap: 12px">
-<h2 id="cert-h" style="margin: 0; font-family: {{t.mono}}; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}; font-weight: 500">Certificates</h2>
-<div style="display: flex; gap: 10px; flex-wrap: wrap">
-<a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px; border: 1px solid {{t.rule}}; border-radius: 8px; background: {{t.paper}}; text-decoration: none; font-size: 14px">[Professional AI certificate · once earned] <span style="font-family: {{t.mono}}; font-size: 12px; color: {{t.accent}}">verify ↗</span></a>
-</div>
-</section>
 </main>
 
 <dc-import name="Footer" hint-size="100%,640px"></dc-import>
@@ -152,158 +160,380 @@ a:focus-visible,button:focus-visible{outline:2px solid #4F7FC0;outline-offset:2p
 <dc-import name="Ask" open="{{askOpen}}" xray="{{xray}}" page="about" topic="{{askTopic}}" auto-ask="{{autoAsk}}" on-close="{{closeAsk}}" hint-size="0px,0px"></dc-import>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":4600}}'>
+<script type="text/x-dc" data-dc-script data-props='{"startInXray":{"editor":"boolean","default":false},"previewFocus":{"editor":"text","default":""},"$preview":{"width":1440,"height":4600}}'>
 var ABOUT_FONTS = { serif: "'Newsreader', Georgia, serif", sans: "'IBM Plex Sans', system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, Menlo, monospace" };
 function aboutTokens(x) {
   var c = { bg: '#F6F3EC', paper: '#FFFDF8', ink: '#1B1A17', muted: '#5C574E', rule: '#E2DCD0', accent: '#1F4C86', accentTint: '#E8EEF6', btnBg: '#1B1A17', btnInk: '#FFFDF8' };
   c.serif = ABOUT_FONTS.serif; c.sans = ABOUT_FONTS.sans; c.mono = ABOUT_FONTS.mono;
   return c;
 }
-var CV_STATS = [
-  ['9 years', 'across product and technology; 2 startups founded'],
-  ['125% growth', 'in B2B product revenue over 3 years at Zelthy'],
-  ['17 packages', 'shipped in 8 months; 95% adoption, 80% faster to deploy'],
-  ['1M API calls a day', 'at peak, across 100+ tenants and 25,000 users']
-];
-var CV_GENERAL = { label: 'My experience', qa: [
-  { q: 'What did he own at Zelthy?', a: 'Core platform capabilities end to end: RBAC with attribute-based access, authentication including SAML SSO with Azure AD, the workflow engine, data models, app lifecycle management, audit trails and messaging, built as separate packages with their own pricing.' },
-  { q: 'Has he managed integrations at scale?', a: 'Yes. At Zelthy he led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, built a connector framework used across 50+ tenants, and ran a daily two-way batch sync over client SOAP APIs handling millions of rows.' },
-  { q: 'Has he led a team?', a: 'Yes. At Zelthy he led and mentored 5 product managers and 2 interns, hired 3 of the PMs and ran the 1:1s and reviews behind 4 promotions. At The Solar Labs he led a team of 8 developers.' }
-] };
+var CV_STATS = [["9 years", "across product and technology; 2 startups founded"], ["125% growth", "in B2B product revenue over 3 years at Zelthy"], ["17 packages", "shipped in 8 months; 95% adoption, 80% faster to deploy"], ["1M API calls a day", "at peak, across 100+ tenants and 25,000 users"]];
+var CV_GENERAL = {
+ "label": "My experience",
+ "qa": [
+  {
+   "q": "What did he own at Zelthy?",
+   "a": "Core platform capabilities end to end: the workflow engine, RBAC and SSO, data models, app lifecycle, the connector framework and release gates, designed as independent packages with pricing for each."
+  },
+  {
+   "q": "Has he managed integrations at scale?",
+   "a": "Yes. At Zelthy he built a connector framework used across 50+ tenants, led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, and led a daily two-way batch sync over client SOAP APIs handling millions of rows."
+  },
+  {
+   "q": "Has he led a team?",
+   "a": "Yes. At Zelthy he led and mentored 5 product managers and 2 interns, hired 3 of the PMs and ran the 1:1s and feedback reviews that drove 4 promotions. At The Solar Labs he led a team of 8 developers."
+  }
+ ]
+};
 var CV_ITEMS = [
-  { id: 'site', lane: 'project', dates: 'Nov 2026', title: 'Job-fit AI on this site', org: 'Side project · live on the home page',
-    scope: 'Paste a job description and get a cited verdict: what fits, with proof, and what doesn’t. A fixed pipeline over a knowledge base built from this CV.',
-    highlights: [], link: 'Try it on the home page →', href: 'Main.dc.html' },
-  { id: 'jsa', lane: 'project', dates: 'Oct 2026', title: 'AI job-search agent', org: 'Side project · Claude',
-    scope: 'An agent workflow that searches and scores LinkedIn jobs, maps my resume to each role and tracks applications, with an approval gate before anything is submitted.',
-    highlights: ['Orchestrated four agents: fit scoring, ideal resume, tailored resume, and applying after approval', 'Connected Drive and Chrome through MCP connectors and wrote a custom Claude Skill for job-fit scoring', 'Used to prepare 20+ applications; fit scores checked against LinkedIn’s match score'],
-    link: 'View recorded run →', href: '#'  },
-  { id: 'ig', lane: 'project', dates: 'Sep 2026', title: 'Instagram content intelligence agent', org: 'Side project · for Dhee’s',
-    scope: 'Reads what competing pet-food brands post, finds what performs and what’s trending, and suggests what Dhee’s should post next.', highlights: [], link: 'View recorded run →', href: '#' },
-  { id: 'web', lane: 'project', dates: '[date]', title: 'Dhee’s website', org: 'Side project · for Dhee’s · Astro, TypeScript, Cloudflare',
-    scope: 'Designed and built the company’s single-page site with Cursor and v0: recipes, prices, delivery areas and free-sample requests, with ordering over WhatsApp.',
-    highlights: ['Built on Astro and TypeScript, set up for Cloudflare Workers; 23 commits on GitHub', 'Local SEO with geo tags, neighbourhood-level descriptions and social cards; first page of search results for fresh dog food in Chennai', 'Five recipes with ingredients, calories, macros and per-kg prices; about 22 Chennai areas served'],
-    link: 'Visit dhees.com ↗', href: 'https://dhees.com', link2: 'View the code on GitHub ↗', href2: 'https://github.com/aswin-dhees/dpc-website' },
-  { id: 'dhees', lane: 'work', dates: 'Oct 2024 – Sep 2026', title: 'Founder and Product Lead', org: 'Dhee’s Pet Company · Chennai',
-    scope: 'Founded and ran a made-to-order fresh dog food business; built its product, operating systems and go-to-market from zero.',
-    highlights: [
-      'Owned 5 SKUs, recipes, marketing and sales; about 20 customers and 20 orders a month',
-      'Ran customer interviews, worked out margin per pack and changed pricing twice',
-      'Sized the Chennai market and wrote the market requirements document',
-      'Extended ERPNext with custom records for pets, owners and pack sizes',
-      'Generated production plans from sales orders automatically, saving about 1 hour a day',
-      'Got a label printer working on Linux with no vendor driver',
-      'Ran purchasing, inventory, delivery routing and invoicing in ERPNext',
-      'Built the website with Cursor and v0; first page of search results for fresh dog food in Chennai',
-      'Ran Google and Meta ads; narrower targeting improved lead quality'
-    ],
-    qa: [
-      { q: 'What did he build to run the business?', a: 'He set up ERPNext with custom records for pets, owners and pack sizes, scripted it so production plans come straight from sales orders (saving about an hour a day), got a label printer working on Linux without a vendor driver, and ran purchasing, inventory and delivery scheduling in it.' },
-      { q: 'How did he find customers?', a: 'Local SEO took the website, built with Cursor and v0 on Astro, to the first page of results for fresh dog food in Chennai. He ran Google Search and Meta ads, and narrowing targeting by locality and gender improved lead quality. It served about 20 customers and 20 orders a month.' },
-      { q: 'How did he decide pricing?', a: 'He calculated margin per pack and iterated pricing twice, using margin, competitor pricing and input from customer interviews.' }
-    ] },
-  { id: 'zelthy', lane: 'work', dates: 'Sep 2020 – Sep 2024', title: 'Senior Product Manager', org: 'Zelthy · Bangalore (remote)',
-    ladder: 'Senior PM, Oct 2022 – Sep 2024 · PM, Dec 2020 – Sep 2022 · Associate PM, Sep – Nov 2020',
-    scope: 'Multi-tenant B2B SaaS low-code platform at a 50-person startup: 100+ tenants, 25,000 users, 1M API calls a day at peak. Healthcare and pharma clients in Singapore, Malaysia, Vietnam, Hong Kong and Australia.',
-    highlights: [],
-    groups: [
-      { name: 'Core platform and integrations', summary: 'Owned RBAC/ABAC, SSO, the workflow engine and app lifecycle. 10+ integrations and a connector framework across 50+ tenants.', items: [
-        'Owned the product lifecycle and defined vision, strategy and roadmap for core platform capabilities: RBAC, authentication, workflow engine, data models, app lifecycle management, audit trails and messaging, designed as independent, customizable packages with pricing for each.',
-        'Decomposed platform components into reusable modules and contributed to multi-tenancy design; wrote technical requirements and data models for modules such as the workflow engine; owned app lifecycle management (versioning, promotion from dev to staging to production, and rollback).',
-        'Resolved a multi-tenant trade-off (data duplication versus per-app field flexibility) by proposing a shared directory app and persuading the CEO and CTO to build it; it now powers about 15 apps.',
-        'Delivered RBAC with attribute-based access control (row and column filters) so tenant admins across 100+ tenants self-manage users, roles and permissions; built an approval-based user provisioning workflow.',
-        'Delivered SAML SSO with Azure AD for 10+ enterprise clients; specified OTP login, MFA, password policies, session timeout and single-session login; audit trails logged every login, action and view.',
-        'Enabled tenants and app builders to define custom fields, foreign keys and one-to-many child tables, each extending a base model with built-in workflow, RBAC/ABAC, export and API support.',
-        'Ran API design reviews with engineers on REST endpoints, webhooks, authentication (API keys, OAuth) and request and response formats; tested APIs hands-on in Postman.',
-        'Led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, including inbound webhooks.',
-        'Built a connector framework of reusable connectors enabled and configured from one dashboard, replacing one-off per-app integrations; used across 50+ tenants.',
-        'Led a daily two-way batch data sync over client SOAP APIs handling millions of rows, with reconciliation and alerts for failed transfers.',
-        'Evaluated HL7 and FHIR for interoperability and chose a FHIR converter per package (design stage).',
-        'Migrated client master data (HCPs, hospitals, clinics) from Excel into apps, with cleaning, mapping, de-duplication and validation rules.'
-      ] },
-      { name: 'Product delivery, roadmap and metrics', summary: '17 packages in 8 months with 95% adoption. 80% of roadmap commitments on time. 30+ customer interviews.', items: [
-        'Delivered 17 software packages in 8 months (CRM, Appointment Scheduling, Messaging, CMS for Patient Education Programs); 95% of new apps adopted them and time to deploy fell 80%.',
-        'Updated the product vision and new-features roadmap, contributing to 125% growth in B2B product revenue over 3 years.',
-        'Wrote 150+ user stories per quarter with business requirements and acceptance criteria; managed roadmap, backlog and releases in Jira with traceability to test cases.',
-        'Prioritized with RICE, client input and adoption, defect and time-to-deploy metrics across 3 teams; delivered 80% of roadmap commitments on time.',
-        'Ran 30+ customer interviews, 5+ competitor analyses and 10+ vendor evaluations; discovery drove the move to code-based development (platform v3).',
-        'Split a D2C app into two phases to resolve a scope-versus-schedule trade-off; phase 1 launched on time while coordinating with the client’s SAP team.',
-        'Largest program: 4 engineers, 2 countries, 2 years, delivered on the committed date; launched a client program in 3 countries and rolled out a template in 5.',
-        'Worked with design to deliver 70+ designs on a shared UI component library and design system.'
-      ] },
-      { name: 'Releases, reliability and compliance', summary: 'Release gates and staged releases. 99.5% uptime commitment met. GDPR, HIPAA and SOC2.', items: [
-        'Defined the path to production: release criteria, release gates and staged releases across dev, staging and production with client UAT sign-off.',
-        'Defined support SLAs (4-hour first response, 6-hour triage) with a 99.5% uptime commitment, measured and met; monitored API errors in Sentry and wrote incident post-mortems.',
-        'Owned bug triage, integration alerts and incident handling; coordinated Play Store and App Store releases.',
-        'Specified security, privacy and regulatory requirements to meet GDPR, HIPAA and SOC2 with 100% compliance; wrote IQ, OQ and PQ validation documents; met data residency by hosting in Singapore and Australia.'
-      ] },
-      { name: 'Data, ML and AI', summary: 'ML OCR in production at 95% accuracy with human review. LLM prototypes. 10+ Power BI dashboards.', items: [
-        'Wrote requirements for ML-based OCR of patient prescriptions and bills, shipped to production: vendors evaluated on about 100 labelled documents; results under 90% confidence go to human review (about 10%); accuracy held at 95%, saving about 5 minutes per document.',
-        'Ideated and launched platform v3, moving to code-based development built for AI coding, cutting internal development time from 2 months to as little as 2 weeks.',
-        'Prototyped LLM features (not shipped): GPT-generated app configurations as JSON (about 70% worked without fixes), a chat-to-app proof of concept with LangChain, and a RAG assistant over product documentation.',
-        'Built batch pipelines into a data lake and delivered 10+ Power BI dashboards over millions of records.',
-        'Advised against sending patient data to LLMs because of security and privacy risks.'
-      ] },
-      { name: 'Commercial and go-to-market', summary: 'Moved pricing to usage-based. 2 RFP wins of about USD 100K each. Templates beta added USD 200K+ in revenue.', items: [
-        'Initiated the shift from seat-based to usage-based pricing and persuaded sales leadership to adopt it; used in 2 key enterprise deals and multiple RFPs.',
-        'Supported CEO-led sales with presales, pricing and RFP preparation; contributed to 2 enterprise RFP wins averaging about USD 100K.',
-        'Piloted configurable app templates as a beta with about 20 client business users; 6 apps deployed, saving clients USD 150K+ and adding USD 200K+ in revenue.',
-        'Managed 20+ enterprise solution projects valued at USD 500K+ across India and Southeast Asia.',
-        'Built an open-source developer community on Discord (50+ members) after the platform core was open-sourced as Zango; authored product documentation that saved 500 hours of developer time.'
-      ] },
-      { name: 'Client engagement and delivery', summary: '8+ enterprise clients, up to VP level. Teams of 20+. Scope creep down 80%+.', items: [
-        'Engagement manager for 8+ global enterprise clients, working with executives up to VP level; ran up to 5 client projects in parallel.',
-        'Established Agile Scrum delivery in Jira, reducing scope creep by 80%+, cutting turnaround time by 30% and increasing development efficiency by 40%.',
-        'Headed project teams of 20+ and tracked project financials; 80% of projects completed on time and within budget.',
-        'Delivered native Android and iOS apps for 100+ field staff and 1,000+ SMS notifications a day; most apps were multi-language.',
-        'Recovered an unhappy client engagement by working through the issues on site in Thailand.'
-      ] },
-      { name: 'Team leadership', summary: 'Led 5 PMs and 2 interns. Hired 3, drove 4 promotions. Utilization up 20%.', items: [
-        'Led and mentored 5 product managers and 2 interns; hired 3 of the PMs and drove 4 promotions; coached the PMs to use ChatGPT for PRDs and documentation.',
-        'Ran the PM operating rhythm (weekly product reviews, PRD reviews, quarterly roadmap reviews) and quarterly resource planning, improving utilization by 20%.'
-      ] }
-    ],
-    qa: [
-      { q: 'What did he own on the platform?', a: 'Core platform capabilities end to end: RBAC with attribute-based access, authentication including SAML SSO with Azure AD, the workflow engine, data models, app lifecycle management, audit trails and messaging, built as separate packages with their own pricing.' },
-      { q: 'How big was the integration work?', a: 'He led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, built a connector framework used across 50+ tenants, and ran a daily two-way batch sync over client SOAP APIs handling millions of rows.' },
-      { q: 'What did he ship with ML or AI?', a: 'ML-based OCR for prescriptions and bills, in production: 95% accuracy, with results under 90% confidence (about 10%) sent to human review, saving about 5 minutes per document. LLM features were prototyped but not shipped.' }
-    ] },
-  { id: 'solar', lane: 'work', dates: 'May 2017 – Jun 2020', title: 'Co-Founder, Product and Technology', org: 'The Solar Labs · Delhi',
-    scope: 'B2B SaaS solar design software for solar installers and EPC firms.',
-    highlights: [
-      'Co-founded the company and led product and technology from day one; INR 50L+ in revenue',
-      'Built 3D solar design software from satellite imagery; wrote frontend and Python backend code',
-      'Shipped 50+ ease-of-use features, cutting proposal creation time by 90%',
-      'Onboarded and supported 400+ customers',
-      'Hired and led 8 developers, interviewing 100+ candidates'
-    ],
-    qa: [
-      { q: 'What did he build?', a: '3D modelling software that used satellite imagery to model roofs, place and optimise solar panels and estimate generation, with breakeven analysis in customer proposals. He wrote production frontend and Python backend code for about 3 years.' },
-      { q: 'What was the impact?', a: 'INR 50L+ in revenue, 400+ customers onboarded and supported, and proposal creation time cut by 90% through 50+ ease-of-use features. He also led a team of 8 developers.' }
-    ] },
-  { id: 'edu', lane: 'edu', dates: 'Jun 2013 – May 2017', title: 'B.Tech, Computer Science and Engineering', org: 'IIT Mandi',
-    scope: '', highlights: [] }
+ {
+  "id": "site",
+  "lane": "project",
+  "dates": "Nov 2026",
+  "title": "AI Fit-Check Product for Recruiters",
+  "org": "Live on aswin-a.com",
+  "scope": "A recruiter pastes a JD or job link and gets a cited fit check with up to 10 matches and gaps, with no scores or percentages.",
+  "highlights": [
+   "Wrote the PRD, build spec and coding-agent rules; Claude Code wrote the code (176 commits)",
+   "Honesty enforced by deterministic guards in code, not prompts; a public Promptfoo eval suite runs in CI on every push",
+   "Lighthouse mobile scores of 100 for accessibility, best practices and SEO, and 94-96 for performance"
+  ],
+  "full": [
+   "Wrote the PRD, build spec (SPEC.md) and AI coding-agent rules (CLAUDE.md) and iterated requirements with Claude Code, which wrote the code (176 commits), to ship a live AI product: a recruiter pastes a JD or job link and gets a cited fit check with up to 10 matches and gaps, with no scores or percentages. Stack: Next.js 16, React 19, TypeScript, Vercel AI SDK, Claude.",
+   "Designed a fixed, streamed pipeline (link fetch, JD parse, knowledge-base search, evidence mapping, two citation and honesty guards, verdict) over a typed knowledge base of roles, projects, facts and a not-done list, and chose deterministic keyword and tag retrieval over embeddings or a vector database so every result is auditable; when a job site blocks the link reader, the run stops before any model call and asks for pasted text.",
+   "Enforced honesty with deterministic guards in code rather than prompts: claims without a source become gaps, verdict counts must match the cards shown and not-done topics never appear as matches; user text is wrapped and treated as data, and the model has no state-changing tools.",
+   "Set production guardrails and cost controls: Zod validation, Cloudflare Turnstile, per-visitor rate limits, a monthly budget cap (Upstash Redis) and an output-token limit; privacy by design, with JDs and questions never stored and only run metrics (steps, tokens, cost, latency) logged to Supabase.",
+   "Built a public Promptfoo eval suite that runs sample JDs and every red-team prompt injection through the real pipeline (valid output, no uncited matches, no strong verdict for a poor fit, no not-done topic shown as a match, refused injections); CI runs it on every push with a deterministic fake model, a separate real-model workflow opens a pull request with updated results, and offline eval results are kept separate from live usage.",
+   "Added AI transparency features: an X-ray mode with real run traces (timings, tokens, cost), a Break my AI red-team panel against the live guardrails, and Ask my work Q&A with source citations and session memory with a Forget this control.",
+   "Reached Lighthouse mobile scores of 100 for accessibility, best practices and SEO on every route and 94-96 for performance; WCAG AA contrast verified by a unit test; Vitest unit tests and Playwright visual tests."
+  ],
+  "link": "Try it on the home page →",
+  "href": "Main.dc.html#fit-h",
+  "link2": "github.com/aswin-a/aswin-portfolio ↗",
+  "href2": "https://github.com/aswin-a/aswin-portfolio"
+ },
+ {
+  "id": "builder",
+  "lane": "project",
+  "dates": "Nov 2026",
+  "title": "AI Connector Builder for SaaS APIs",
+  "org": "Prototype",
+  "scope": "AI turns a SaaS app's API docs into a schema-validated, read-only declarative connector that a non-developer IT admin completes by answering 1-3 questions.",
+  "highlights": [
+   "A control plane that never holds credentials; an egress guard allows only GET and HEAD and caps a run at 25 requests",
+   "Layered prompt-injection safeguards and a bounded test-and-fix loop with model routing (Sonnet, then Opus)",
+   "A live Calendly run passed the loop with 0 safety violations, at an estimated USD 0.10-0.30 per connector build"
+  ],
+  "full": [
+   "Specified and iterated with Claude Code, which wrote the code (Python standard library, Anthropic API), a prototype in which AI turns a SaaS app's API docs into a schema-validated, read-only declarative connector (no generated code) that a non-developer IT admin completes by answering 1-3 questions, connecting a token and approving sample records; wrote the PRD with a production target of 15-20 long-tail APIs and a release gate of at least 80% loop pass and 0 safety violations.",
+   "Split the design into a control plane that never holds credentials and a data plane that handles auth, pagination, retries and logging; an egress guard allows only GET and HEAD, locks the host and caps a run at 25 requests; the engine runs 8 checks of its own, including that the token works, every page is read once and no secrets appear in logs or in anything sent to the AI.",
+   "Layered prompt-injection safeguards: same-domain doc fetch with SHA-256 snapshot pinning and refused off-domain redirects, docs wrapped as untrusted, a regex plus Claude Haiku scan before drafting, a no-tool JSON-only model and a hard validator gate (chosen because strict structured outputs could not compile the schema).",
+   "Designed a bounded test-and-fix loop with model routing (Sonnet for attempts 1-2, Opus for the final attempt, at most 3), redacted data shapes only and deterministic diffs with meaning changes flagged for human confirmation, then a go-live gate of sample records, attestation and shadow mode until 3 clean syncs and owner trust, with auto-pause on a drop of more than 20% in people.",
+   "Built an eval harness with hand-labelled golden connectors for Calendly and Okta (field accuracy across 14 key locations, first-pass rate, loop pass rate, attempts, safety violations, cost, time) and 19 offline unit tests; a live Calendly run passed the loop with 0 safety violations, at an estimated USD 0.10-0.30 per connector build."
+  ],
+  "link": "github.com/aswin-a/ai-integration-builder ↗",
+  "href": "https://github.com/aswin-a/ai-integration-builder"
+ },
+ {
+  "id": "jsa",
+  "lane": "project",
+  "dates": "Oct – Nov 2026",
+  "title": "Agentic Job-Search and Apply Assistant",
+  "org": "Claude agent · Agent Skills · MCP connectors",
+  "scope": "A multi-step Claude agent with an orchestrator prompt and 7 Agent Skills, one per stage, connected to Google Drive, Docs, Sheets and Chrome through MCP connectors.",
+  "highlights": [
+   "A custom Skill scores job fit against the master resume and JD",
+   "A two-key human approval gate that page text cannot open",
+   "Used to prepare 20+ applications; fit scores compared with LinkedIn's match score as an informal quality check"
+  ],
+  "full": [
+   "Designed and published a multi-step Claude agent with an orchestrator prompt and 7 Agent Skills, one per stage (job search, ideal resume, tailored resume, cover letter, apply, tracker sync, HR outreach), including a custom Skill that scores job fit against the master resume and JD; connected it to Google Drive, Docs, Sheets and Chrome through MCP connectors.",
+   "Designed the context rules (source-of-truth documents, token limits) and state in Google Drive and a tracker sheet with a data contract per column and thread-per-job handoffs.",
+   "Built a two-key human approval gate (an exact approval line, then SUBMIT after a field-by-field review) that page text cannot open, with a prompt-injection test case; CI checks privacy, skill and link lint and resume format; documented known weaknesses in a design review; used it to prepare 20+ applications and compared its fit scores with LinkedIn's match score as an informal quality check."
+  ],
+  "link": "github.com/aswin-a/linkedin-job-search-agent ↗",
+  "href": "https://github.com/aswin-a/linkedin-job-search-agent"
+ },
+ {
+  "id": "ig",
+  "lane": "project",
+  "dates": "2026",
+  "title": "Instagram Content-Intelligence Agent for a Pet Food Brand",
+  "org": "Built, not yet validated",
+  "scope": "A Claude Project with 4 Agent Skills that browses Instagram read-only and produces one report of competitor posts, trends and content ideas; a person approves and posts, and the agent never posts.",
+  "highlights": [
+   "Sourced, normalized metrics: each post compared with its own account's median within one format",
+   "A claims-check gate, because a food brand cannot make health claims",
+   "Seeded eval cases and an idea rubric written (not yet run)"
+  ],
+  "full": [
+   "Designed a Claude content-intelligence agent: a Claude Project with a system prompt, brand docs and 4 Agent Skills (competitor analysis, trend scouting, content ideation, claims check) that browses Instagram read-only through Claude in Chrome and produces one report (top and bottom competitor posts, patterns, phone-shootable trends rated by difficulty, 10 content ideas, competitor gaps, risk flags) plus CSV records; a person approves and posts, and the agent never posts.",
+   "Defined sourced, normalized metrics: each post compared with its own account's median within one format, outliers at 2x that median, values that are not visible marked not available rather than estimated, every record carrying its source URL, and patterns requiring at least 2 accounts or 3 posts; Python scripts compute medians and outliers from CSV and check the repo for frontmatter, link and schema drift.",
+   "Added a claims-check gate so the agent's own ideas reach the report only after they pass, are rewritten or are dropped, with risk flags on competitor claims, because a food brand cannot make health claims; captions, comments and bios are treated as data, not instructions; the agent never likes, follows, comments, DMs or posts, and stops at CAPTCHAs and login walls; wrote seeded eval cases and an idea rubric (not yet run)."
+  ],
+  "link": "github.com/aswin-a/instagram-content-intelligence-agent ↗",
+  "href": "https://github.com/aswin-a/instagram-content-intelligence-agent"
+ },
+ {
+  "id": "web",
+  "lane": "project",
+  "dates": "Oct 2024 – Sep 2026",
+  "title": "Dhee’s website",
+  "org": "Built for Dhee’s · Astro 6, Tailwind CSS 4, Cloudflare Pages",
+  "scope": "A single landing page (hero, products, testimonials, service areas and contact), built with Cursor and v0 and deployed to Cloudflare Pages with Wrangler.",
+  "highlights": [
+   "One data file feeds both the page and JSON-LD structured data, so local SEO markup stays in sync",
+   "First page of search results for fresh dog food in Chennai",
+   "Orders and enquiries over WhatsApp, with a contact form that opens a pre-filled message"
+  ],
+  "link": "Visit dhees.com ↗",
+  "href": "https://dhees.com",
+  "link2": "github.com/aswin-a/dpc-website ↗",
+  "href2": "https://github.com/aswin-a/dpc-website"
+ },
+ {
+  "id": "dhees",
+  "lane": "work",
+  "dates": "Oct 2024 – Sep 2026",
+  "title": "Founder and Product Lead",
+  "org": "Dhee’s Pet Company · Chennai",
+  "scope": "Founded and ran a made-to-order fresh pet food business for cats and dogs; built its product, operating systems and go-to-market from zero.",
+  "highlights": [
+   "Owned 5 SKUs, recipes, marketing and sales; about 20 customers and 20 orders a month",
+   "Sized the Chennai market and wrote the market requirements document",
+   "Ran customer interviews, worked out margin per pack and changed pricing twice",
+   "Extended ERPNext with custom records for pets, owners and pack sizes",
+   "Generated production plans from sales orders automatically, saving about 1 hour a day",
+   "Built pack and carton labels, and got a label printer working on Linux with no vendor driver",
+   "Ran purchasing, inventory, delivery routing and invoicing in ERPNext",
+   "Built the website (dhees.com) with Cursor and v0; first page of search results for fresh dog food in Chennai",
+   "Kept local SEO in sync from one data file; orders and enquiries over WhatsApp",
+   "Ran Google and Meta ads (INR 15,000 over one month); narrower targeting improved lead quality"
+  ],
+  "qa": [
+   {
+    "q": "What did he build to run the business?",
+    "a": "He set up ERPNext with custom records for pets, owners and pack sizes, scripted it so production plans come straight from sales orders (saving about an hour a day), got a label printer working on Linux without a vendor driver, and ran purchasing, inventory and delivery scheduling in it."
+   },
+   {
+    "q": "How did he find customers?",
+    "a": "Local SEO took the website, built with Cursor and v0 on Astro, to the first page of results for fresh dog food in Chennai. He ran Google Search and Meta ads, and narrowing targeting by locality and gender improved lead quality. It served about 20 customers and 20 orders a month."
+   },
+   {
+    "q": "How did he decide pricing?",
+    "a": "He calculated margin per pack and iterated pricing twice, using margin, competitor pricing and input from customer interviews."
+   }
+  ]
+ },
+ {
+  "id": "zelthy",
+  "lane": "work",
+  "dates": "Sep 2020 – Sep 2024",
+  "title": "Senior Product Manager",
+  "org": "Zelthy (Multi-Tenant SaaS Low-Code Platform) · Bangalore (remote)",
+  "ladder": "Senior Product Manager, Oct 2022 – Sep 2024 · Product Manager, Dec 2020 – Sep 2022 · Associate Product Manager, Sep 2020 – Nov 2020",
+  "scope": "About 50-person startup. Platform served 100+ tenants, 25,000 users and 1M API calls/day at peak, with healthcare and pharma clients that were regional arms of global enterprises in Singapore, Malaysia, Vietnam, Hong Kong and Australia.",
+  "highlights": [],
+  "groups": [
+   {
+    "name": "Core Platform",
+    "summary": "Owned the workflow engine, data models and app lifecycle as priced packages. A shared directory app now powers about 15 apps.",
+    "items": [
+     "Owned the product lifecycle and defined vision, strategy and roadmap for core platform capabilities: workflow engine, RBAC, authentication, data models, app lifecycle management, audit trails and messaging, designed as independent, customizable packages with pricing for each.",
+     "Specified the workflow engine's condition-based rules evaluated at runtime and multi-level approvals routed by role and condition, used in apps such as contract management with contract and approval flows; decomposed components into reusable modules, contributed to multi-tenancy design and gave engineering data models and schema designs.",
+     "Resolved a multi-tenant trade-off (data duplication versus per-app field flexibility) by proposing a shared directory app and persuading the CEO and CTO to build it; it now powers about 15 apps.",
+     "Enabled tenants and app builders to define custom fields, foreign keys and one-to-many child tables on a base model with built-in workflow, RBAC/ABAC, export and API support; owned app lifecycle management (versioning, dev-to-staging-to-production promotion, rollback); long-running tasks such as report exports ran as background jobs."
+    ]
+   },
+   {
+    "name": "Identity, Integrations and Data Sync",
+    "summary": "RBAC/ABAC and SSO for 100+ tenants. A connector framework across 50+ tenants, 10+ integrations and a SOAP sync of millions of rows.",
+    "items": [
+     "Delivered RBAC with attribute-based row and column filters so tenant admins across 100+ tenants self-manage users, roles and permissions; delivered SAML SSO with Azure AD for 10+ enterprise clients and OIDC login; specified MFA, OTP login, password policies, a 1-hour session timeout, single-session login, IP allowlisting, approval-based user provisioning and audit trails of every login, action and view.",
+     "Built a connector framework of reusable connectors enabled and configured from one dashboard, replacing one-off per-app integrations, used across 50+ tenants; led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, including inbound webhooks; ran API design reviews on REST endpoints, webhooks, authentication (API keys, OAuth) and request and response formats, testing APIs in Postman.",
+     "Led a daily two-way batch sync over client SOAP APIs handling millions of rows, with reconciliation and alerts for failed transfers, and caught a missed item-update path in the SKU sync before release; evaluated HL7 and FHIR and chose a FHIR converter per package (design stage).",
+     "Migrated client master data (HCPs, hospitals, clinics) from Excel into apps, cleaning data, mapping columns to fields, de-duplicating, sequencing imports by foreign-key dependencies and defining validation rules."
+    ]
+   },
+   {
+    "name": "AI, ML and Data",
+    "summary": "ML OCR in production at 95% accuracy with human review. Platform v3 built for AI coding. LLM prototypes and 10+ Power BI dashboards.",
+    "items": [
+     "Wrote requirements for ML-based OCR of patient prescriptions and bills in patient reimbursement apps, shipped to production: evaluated vendors on price and accuracy with about 100 labelled documents; results under 90% confidence go to human review (about 10%); accuracy held at 95%; auto-fills 20+ documents a day, saving about 5 minutes per document and replacing a manual process that ran at 10-12 documents an hour.",
+     "Ideated and launched platform v3, moving from UI-based configuration to code-based development built for AI coding while keeping full customizability, cutting internal development time from 2 months to as little as 2 weeks (up to 75%); v3 rebuilt RBAC and the workflow engine and ran alongside the previous version for backward compatibility.",
+     "Prototyped LLM features (not shipped): ChatGPT-generated app configurations as JSON, reaching about 70% working without fixes after diagnosing wrong-field-type failures and fixing them with GPT-4, prompts with good and bad examples and a JSON schema; compared GPT-4 and GPT-3.5 on output quality and selected GPT-4.",
+     "Built a chat-to-app proof of concept with LLMs and LangChain (prompts, JSON output schema, generated apps checked against previously built ones) and a RAG assistant over the platform's product documentation (both not shipped); created technical training videos with AI-assisted scripts and voiceovers.",
+     "Built batch pipelines from apps into a data lake and delivered 10+ Power BI dashboards over millions of records for managers and regional leads; most client apps had built-in reports for client admins; advised against sending patient data to LLMs because of privacy risk; coached 5 PMs to use ChatGPT for PRDs and documentation."
+    ]
+   },
+   {
+    "name": "Product Delivery and Roadmap",
+    "summary": "17 packages in 8 months with 95% adoption. 125% growth in B2B product revenue. 80% of roadmap commitments on time.",
+    "items": [
+     "Delivered 17 software packages in 8 months (CRM, Appointment Scheduling, Messaging, CMS for Patient Education Programs with creator and approver roles, drafts and scheduling); 95% of new apps adopted them and time to deploy fell 80%.",
+     "Updated the product vision and new-features roadmap, contributing to 125% growth in B2B product revenue over 3 years; ran 30+ customer interviews, 5+ competitor analyses and 10+ vendor evaluations, and discovery drove the move to platform v3.",
+     "Prioritized with RICE, client input and adoption, defect and time-to-deploy metrics across 3 teams with quarterly planning, sizing features in story points against capacity; wrote 150+ user stories per quarter with acceptance criteria and Jira traceability to test cases; delivered 80% of roadmap commitments on time.",
+     "Resolved engineering feasibility and timeline pushback by proposing alternative technical or product approaches; split a D2C patient-ordering app into two phases (order lifecycle and core flows first, SAP integration later) so phase 1 launched on time; largest program: 4 engineers, 2 countries, 2 years, delivered on the committed date; launched a client program in 3 countries and rolled out a template in 5.",
+     "Delivered native Android and iOS apps with GPS and push notifications for 100+ field staff and 1,000+ SMS notifications a day; most client apps were multi-language (English plus Thai, Vietnamese or Malay); worked with design to deliver 70+ designs on a shared UI component library and design system, creating wireframes for design discussions."
+    ]
+   },
+   {
+    "name": "Releases, Reliability and Compliance",
+    "summary": "Release gates and staged releases, a 99.5% uptime SLA met, and GDPR, HIPAA and SOC2 with penetration testing passed.",
+    "items": [
+     "Defined the path to production: release criteria, release gates and staged releases across dev, staging and production with client UAT sign-off; set up the QA process; coordinated Play Store and App Store releases; owned bug triage, integration alerts, incident handling and release notes.",
+     "Defined support SLAs in contracts with a 99.5% uptime commitment, measured and met; monitored API errors with Sentry and wrote incident post-mortems for clients.",
+     "Specified security, privacy and regulatory requirements to meet GDPR, HIPAA and SOC2 with 100% compliance; the platform passed penetration testing; wrote IQ, OQ and PQ validation documents, checked vendors against HIPAA and met data residency by hosting client data in Singapore and Australia."
+    ]
+   },
+   {
+    "name": "Commercial, Go-to-Market and Developer Adoption",
+    "summary": "Moved pricing to usage-based. 2 enterprise RFP wins of about USD 100K each. Templates beta added USD 200K+ in revenue. Docs that saved 500 hours.",
+    "items": [
+     "Initiated the shift from seat-based to usage-based pricing, designed the meters and tiers from market analysis, customer value and competitor benchmarks, and persuaded sales leadership to adopt it; adopted in 2 key enterprise deals and multiple RFPs.",
+     "Supported CEO-led sales with presales, the sales deck, pricing and RFP preparation, answering security and compliance sections; contributed to 2 enterprise RFP wins averaging about USD 100K; created quotations, effort estimates and project charters, and created and reviewed client contracts.",
+     "Piloted configurable app templates as a beta with about 20 client business users; after adding training and documentation, clients built apps without support; 6 apps deployed, saving clients USD 150K+ and adding USD 200K+ in revenue.",
+     "Wrote product positioning, messaging and launch plans; for the v3 launch, wrote customer release notes and created demo videos; wrote launch communications and supported rollouts for 10+ clients.",
+     "Authored the platform's product documentation used by every team and developer building on it, saving 500 hours of developer time; built an open-source developer community on Discord (50+ members) after the core was open-sourced as Zango, onboarded external developers and wrote the zango.dev getting-started guide."
+    ]
+   },
+   {
+    "name": "Team Leadership",
+    "summary": "Led 5 PMs and 2 interns; hired 3 and drove 4 promotions. Utilization up 20%.",
+    "items": [
+     "Led and mentored 5 product managers and 2 interns; hired 3 of the PMs and ran 1:1s and feedback reviews that drove 4 promotions; led recruitment, training and mentoring of 10+ team members and conducted performance reviews with the CEO.",
+     "Ran the PM operating rhythm (weekly product reviews, PRD reviews, quarterly roadmap reviews) and quarterly resource planning that improved utilization by 20%; administered Jira and built automations and workflows; ran internal product updates and training."
+    ]
+   },
+   {
+    "name": "Client Engagement and Delivery Operations",
+    "summary": "8+ enterprise clients up to VP level. 20+ projects worth USD 500K+. Scope creep down 80%+.",
+    "items": [
+     "Engagement manager for 8+ global enterprise clients, working with executives up to VP level, running up to 5 projects in parallel with monthly steering meetings; handled escalations, including recovering an unhappy client engagement on site in Thailand with a plan of quick wins and long-term fixes; advised pharma and distribution clients on their digital products.",
+     "Managed 20+ enterprise solution projects valued at USD 500K+ and created solutions for 60+ web and mobile proposals; headed project teams of 20+ BAs, PMs, engineers, designers and QAs, with 80% of projects completed on time and within budget; tracked risks, dependencies and project financials and reported delivery metrics to the CEO.",
+     "Established Agile Scrum delivery on Jira (1-week sprints, biweekly releases, change management, scope control), reducing scope creep by 80%+, cutting turnaround time by 30% and increasing development efficiency by 40%; standardized project documents and set up support in Jira; ran 10+ client projects in Rocketlane."
+    ]
+   }
+  ],
+  "qa": [
+   {
+    "q": "What did he own on the platform?",
+    "a": "Core platform capabilities end to end: the workflow engine, RBAC and authentication, data models, app lifecycle management, audit trails and messaging, designed as independent, customizable packages with pricing for each. He also built the connector framework and defined the release gates."
+   },
+   {
+    "q": "How big was the integration work?",
+    "a": "He led integration of 10+ third-party services (Zoom, Twilio, DocuSign, SAP, Power BI, Azure AD) and client EHR systems, built a connector framework used across 50+ tenants, and ran a daily two-way batch sync over client SOAP APIs handling millions of rows."
+   },
+   {
+    "q": "What did he ship with ML or AI?",
+    "a": "ML-based OCR for prescriptions and bills, in production: 95% accuracy, with results under 90% confidence (about 10%) sent to human review, saving about 5 minutes per document. LLM features were prototyped but not shipped."
+   }
+  ]
+ },
+ {
+  "id": "solar",
+  "lane": "work",
+  "dates": "May 2017 – Jun 2020",
+  "title": "Co-Founder, Product and Technology",
+  "org": "The Solar Labs · Delhi",
+  "scope": "B2B SaaS solar design software for solar installers and EPC firms.",
+  "highlights": [
+   "Co-founded the company and led product and technology from day one; INR 50L+ in revenue",
+   "Built 3D solar design software from satellite imagery; wrote frontend and Python backend code for about 3 years",
+   "Shipped 50+ ease-of-use features, cutting proposal creation time by 90%",
+   "Onboarded and supported 400+ customers; shadowed users and added an onboarding flow",
+   "Hired and led 8 developers, interviewing 100+ candidates"
+  ],
+  "qa": [
+   {
+    "q": "What did he build?",
+    "a": "3D modelling software that used satellite imagery to model roofs, place and optimise solar panels and estimate generation, with breakeven analysis in customer proposals. He wrote production frontend and Python backend code for about 3 years."
+   },
+   {
+    "q": "What was the impact?",
+    "a": "INR 50L+ in revenue, 400+ customers onboarded and supported, and proposal creation time cut by 90% through 50+ ease-of-use features. He also led a team of 8 developers."
+   }
+  ]
+ },
+ {
+  "id": "edu",
+  "lane": "edu",
+  "dates": "Jun 2013 – May 2017",
+  "title": "B.Tech, Computer Science and Engineering",
+  "org": "IIT Mandi",
+  "scope": "",
+  "highlights": []
+ }
 ];
 var CV_SKILLS = [
-  ['Product management', 'Vision and strategy, discovery to launch, 0-to-1, platform PM, roadmaps, RICE, PRDs, success metrics, customer interviews, market sizing, usage-based pricing, go-to-market, staged releases'],
-  ['Platform, APIs and integrations', 'Multi-tenant SaaS, REST and SOAP APIs, webhooks, API keys and OAuth, connector frameworks, batch sync and reconciliation, workflow engines, data models, app lifecycle, data migration, EHR integrations, HL7 and FHIR'],
-  ['Identity, security and compliance', 'IAM, RBAC, ABAC, SAML SSO (Azure AD), MFA, audit trails, GDPR, HIPAA, SOC2, IQ/OQ/PQ validation, data residency'],
-  ['Release and reliability', 'Release gates, UAT, SLAs, 99.5% uptime, Sentry, incident post-mortems, Scrum and Kanban, risk and dependency management, project financials'],
-  ['Data and AI', 'ML OCR, human-in-the-loop review, LLMs, LangChain, RAG (prototype), AI agents, prompt and output schema design, model evaluation, responsible AI, data lakes, Power BI, SQL'],
-  ['Leadership', 'Hiring, mentoring, performance reviews, stakeholder management, steering committees, presales and RFPs, distributed teams'],
-  ['Tools', 'Jira, Confluence, Postman, Figma, Claude, Claude Code, Cursor, v0, ChatGPT, Python, JavaScript, SQL, Django, Vue.js, React, ERPNext']
+ [
+  "Agentic AI and LLM Products",
+  "AI Agents, Agent Skills, Multi-Step Agent Workflows, Orchestrator Prompts, Context Engineering (Source-of-Truth Documents, Token Limits), Human-in-the-Loop Approval Gates, LLM Evals (Promptfoo, Golden Sets, Evals in CI), Red-Teaming, Guardrails, Prompt-Injection Defence, Model Routing (Claude Haiku, Sonnet, Opus), Model Selection, Token and Cost Budgeting, LLM Tracing and Observability, Structured-Output Validation (Zod, JSON Schema), Retrieval Design, RAG (prototype), MCP Connectors (configured), Responsible AI, Privacy by Design, ML OCR, Prototyping with AI, AI-Assisted Development, Anthropic API, Vercel AI SDK, Claude in Chrome, LangChain"
+ ],
+ [
+  "Platform Product Management",
+  "Multi-Tenant SaaS, Modular Platform Architecture, Control Plane and Data Plane Design, Workflow Engine (Rules, Multi-Level Approvals), Data Models and Schema Design, Custom Fields and Objects, App Lifecycle Management, Connector Framework, REST APIs, SOAP APIs, Webhooks, API Authentication (API Keys, OAuth), API Design Reviews, Third-Party Integrations, EHR Integrations, HL7 and FHIR (evaluated), Batch Data Sync and Reconciliation, Background Jobs (Celery), Notifications and Messaging (Email, SMS, WhatsApp, Voice), Data Migration and Validation, Design Systems, Developer Documentation, Open-Source Developer Community"
+ ],
+ [
+  "Product Management",
+  "Product Vision and Strategy, Product Lifecycle (Discovery to Launch to Iteration), 0-to-1 Product Development, PRDs and Specs, Roadmap Planning, Prioritization (RICE), Epics, User Stories, Acceptance Criteria, Backlog Management, Trade-off Decisions, Success Metrics, Customer Discovery and Interviews, User Shadowing, Personas and Journey Maps, Competitive Analysis, Market Sizing, Market Segmentation, Market Requirements Document (MRD), Pricing Strategy (Usage-Based Pricing), Go-to-Market, Product Positioning, Launch Planning, Pilot and Beta Programs, Staged Releases"
+ ],
+ [
+  "Identity, Security and Compliance",
+  "IAM, RBAC, ABAC, SAML SSO (Azure AD), OIDC, MFA and OTP Login, Session and Password Policies, IP Allowlisting, User Provisioning, Audit Trails, Penetration Testing, GDPR, HIPAA, SOC2, Validated Systems (IQ, OQ, PQ), Vendor Compliance Reviews, Data Residency"
+ ],
+ [
+  "Release, Reliability and Delivery",
+  "Path to Production, Release Gates, Shadow Mode, UAT, Release Notes, App Store Releases, SLAs, 99.5% Uptime, Error Monitoring (Sentry), Incident Post-Mortems, Bug Triage, QA Process, Agile (Scrum, Kanban), Story-Point Sizing, Program and Project Management, Risk and Dependency Management, Change Management, Scope Control, Resource Planning, Project Financials, Project Documents (Charter, BRD, SRS, FRS, Release Document)"
+ ],
+ [
+  "Leadership and Commercial",
+  "People Management, Hiring, Mentoring and Coaching, Performance Reviews, AI Enablement, Stakeholder Management, Executive Communication, Steering Committees, Client Engagement, Escalation Management, Presales, RFPs, Solutioning and Estimation, Contracts, Distributed and Global Teams"
+ ],
+ [
+  "Tools and Tech",
+  "Claude, Claude Code, ChatGPT, Cursor, GitHub Copilot, v0, Next.js, React, TypeScript, Astro, Tailwind CSS, Python, JavaScript, SQL (Postgres, MySQL), Django, Vue.js, Supabase, Upstash Redis, Cloudflare, Vercel, GitHub Actions, Vitest, Playwright, Jira (admin, automations), Confluence, Rocketlane, Slack, Postman, Sentry, Power BI, Figma, Draw.io, Tango, MS Excel, Trello, Asana, Notion, Zoho CRM, Zoho Projects, ERPNext and Frappe, Google Analytics, Google Search Console, Local SEO (JSON-LD), Google Ads, Meta Ads, Docker (basic), AWS, GCP and Oracle Cloud (familiar)"
+ ]
 ];
-
+// Deep links from the fit check and Ask my work:
+//   About.dc.html#cv=zelthy.0.6-9+zelthy.6&req=Own%20a%20public%20API
+//   target = roleId[.groupIndex][.itemList]; itemList = 3 | 3-5 | 3,7 ; several targets joined by '+'
+//   For roles without area tiles (Dhee's, Solar Labs), use roleId..itemList (empty group).
+function cvParseHash(h) {
+  var m = /cv=([^&]+)/.exec(h);
+  if (!m) return null;
+  var r = /req=([^&]+)/.exec(h);
+  var targets = decodeURIComponent(m[1]).split('+').map((part) => {
+    var bits = part.split('.');
+    var items = [];
+    (bits[2] || '').split(',').forEach((seg) => {
+      if (!seg) return;
+      var ab = seg.split('-').map((n) => parseInt(n, 10));
+      for (var k = ab[0]; k <= (ab.length > 1 ? ab[1] : ab[0]); k++) items.push(k);
+    });
+    return { id: bits[0], group: bits[1] === undefined || bits[1] === '' ? null : parseInt(bits[1], 10), items: items };
+  }).filter((tg) => CV_ITEMS.some((it) => it.id === tg.id));
+  if (!targets.length) return null;
+  return { targets: targets, req: r ? decodeURIComponent(r[1]) : '' };
+}
 function cvPlainText() {
-  var out = ['Aswin A', 'Senior Product Manager · Platforms, integrations and agentic AI products', 'Chennai, India · linkedin.com/in/aswin-a-pm', '', 'EXPERIENCE'];
-  CV_ITEMS.forEach((it) => {
-    out.push('', it.title + ' — ' + it.org + ' (' + it.dates + ')');
-    if (it.scope) out.push(it.scope);
-    (it.groups || []).forEach((g) => g.items.forEach((x) => out.push('- ' + x)));
-    if (!it.groups) (it.highlights || []).forEach((x) => out.push('- ' + x));
-  });
+  var out = ['Aswin A', 'Senior Product Manager · Platforms and Agentic AI · Enterprise SaaS', 'Chennai, Tamil Nadu, India · linkedin.com/in/aswin-a-pm · github.com/aswin-a · aswin-a.com'];
+  var section = (title, lane) => {
+    out.push('', title);
+    CV_ITEMS.filter((it) => lane.indexOf(it.lane) >= 0).forEach((it) => {
+      out.push('', it.title + ' — ' + it.org + ' (' + it.dates + ')');
+      if (it.ladder) out.push(it.ladder);
+      if (it.scope) out.push(it.scope);
+      if (it.full) it.full.forEach((x) => out.push('- ' + x));
+      else if (it.groups) it.groups.forEach((g) => { out.push(g.name); g.items.forEach((x) => out.push('- ' + x)); });
+      else (it.highlights || []).forEach((x) => out.push('- ' + x));
+    });
+  };
+  section('AGENTIC AI PRODUCT BUILDS', ['project']);
+  section('EXPERIENCE', ['work']);
+  section('EDUCATION', ['edu']);
   out.push('', 'SKILLS');
-  CV_SKILLS.forEach((s) => out.push(s[0] + ': ' + s[1]));
+  CV_SKILLS.forEach((sk) => out.push(sk[0] + ': ' + sk[1]));
   return out.join('\n');
 }
 class Component extends DCLogic {
@@ -311,10 +541,25 @@ class Component extends DCLogic {
   componentDidMount() {
     this.onResize = () => { var n = window.innerWidth < 640; if (n !== this.state.narrow) this.setState({ narrow: n }); };
     if (typeof window !== 'undefined') window.addEventListener('resize', this.onResize);
+    this.onHash = () => this.readHash();
+    if (typeof window !== 'undefined') { window.addEventListener('hashchange', this.onHash); this.readHash(); }
   }
-  componentWillUnmount() { if (typeof window !== 'undefined') window.removeEventListener('resize', this.onResize); }
+  componentWillUnmount() { if (typeof window !== 'undefined') { window.removeEventListener('resize', this.onResize); window.removeEventListener('hashchange', this.onHash); } }
   componentDidUpdate(prev) {
     if (prev.startInXray !== this.props.startInXray) this.setState({ xray: !!this.props.startInXray });
+  }
+  readHash() {
+    if (typeof window === 'undefined' || !window.location) return;
+    var preview = this.props.previewFocus || '';
+    var f = cvParseHash(preview || window.location.hash || '');
+    if (!f) return;
+    var o = Object.assign({}, this.state.open);
+    f.targets.forEach((tg) => { if (tg.group !== null) o[tg.id + ':' + tg.group] = true; });
+    this.setState({ focus: f, open: o });
+    var first = f.targets[0];
+    var anchor = first.group !== null ? 'cv-' + first.id + '-g' + first.group : 'cv-' + first.id;
+    if (preview) return;
+    setTimeout(() => { var el = document.getElementById(anchor); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
   }
   openTopic(topic, q) { this.setState({ askOpen: true, askTopic: topic, autoAsk: q || '' }); }
   renderVals() {
@@ -328,27 +573,37 @@ class Component extends DCLogic {
       ownQ: s.ownQ,
       onOwnQ: (e) => this.setState({ ownQ: e.target.value }),
       askOwn: (e) => { if (e && e.preventDefault) e.preventDefault(); var q = this.state.ownQ.trim(); this.setState({ ownQ: '' }); this.openTopic(CV_GENERAL, q); },
+      focusReq: s.focus && s.focus.req ? s.focus.req : 'Evidence for this requirement',
+      clearFocus: () => { this.setState({ focus: null }); try { if (window.history && window.history.replaceState) window.history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {} },
       items: CV_ITEMS.map((it) => {
         var project = it.lane === 'project', edu = it.lane === 'edu';
+        var fts = s.focus ? s.focus.targets.filter((tg) => tg.id === it.id) : [];
+        var isHl = (gIdx, iIdx) => fts.some((tg) => tg.group === gIdx && (tg.items.length === 0 ? gIdx !== null : tg.items.indexOf(iIdx) >= 0));
+        var pt = (text, on) => ({ text: text, bg: on ? t.accentTint : 'transparent', bar: on ? 'inset 3px 0 0 ' + t.accent : 'none', pad: on ? '4px 8px 4px 10px' : '0', mar: on ? '0 -8px 0 -10px' : '0' });
         return {
+          anchor: 'cv-' + it.id, focused: fts.length > 0,
           dates: it.dates, title: it.title, org: it.org, scope: it.scope, hasScope: !!it.scope,
           ladder: it.ladder || '', hasLadder: !!it.ladder,
-          highlights: it.highlights || [], hasHighlights: !!(it.highlights && it.highlights.length),
+          highlights: (it.highlights || []).map((h, hi) => pt(h, fts.some((tg) => tg.group === null && tg.items.indexOf(hi) >= 0))), hasHighlights: !!(it.highlights && it.highlights.length),
           hasGroups: !!it.groups,
           groups: (it.groups || []).map((g, gi) => {
             var key = it.id + ':' + gi, gOpen = !!s.open[key];
-            return { name: g.name, summary: g.summary || '', items: g.items, open: gOpen,
-              sign: gOpen ? '−' : '+', span: gOpen ? '1 / -1' : 'auto', border: gOpen ? t.accent : t.rule,
+            var gFocus = fts.some((tg) => tg.group === gi);
+            return { anchor: 'cv-' + it.id + '-g' + gi, name: g.name, summary: g.summary || '', items: g.items.map((x, xi) => pt(x, gFocus && isHl(gi, xi))), open: gOpen,
+              sign: gOpen ? '−' : '+', span: gOpen ? '1 / -1' : 'auto', border: gOpen || gFocus ? t.accent : t.rule, borderW: gFocus ? '2px' : '1px',
               countLabel: gOpen ? 'Hide ' + g.items.length + ' points ↑' : 'See all ' + g.items.length + ' points ↓',
               toggle: () => { var o = Object.assign({}, this.state.open); o[key] = !o[key]; this.setState({ open: o }); } };
           }),
+          hasFull: !!(it.full && it.full.length), full: it.full || [], fullOpen: !!s.open[it.id + ':full'],
+          fullLabel: s.open[it.id + ':full'] ? 'Hide details ↑' : 'See all ' + (it.full || []).length + ' points ↓',
+          toggleFull: () => { var o = Object.assign({}, this.state.open); o[it.id + ':full'] = !o[it.id + ':full']; this.setState({ open: o }); },
           hasQa: !!it.qa, ask: () => this.openTopic({ label: it.title + ' · ' + it.org.split(' · ')[0], qa: it.qa || [] }),
           hasLink: !!it.href, link: it.link || '', href: it.href || '#', hasLink2: !!it.href2, link2: it.link2 || '', href2: it.href2 || '#',
-          isProject: project,
+          isProject: project, kind: it.id === 'web' ? 'Side project' : 'Agentic AI build',
           indent: project ? (narrow ? '16px' : '40px') : '0px',
           titleSize: project || edu ? '17px' : '20px',
           cardBg: project ? 'transparent' : t.paper,
-          cardBorder: project ? '1.5px dashed ' + t.rule : '1px solid ' + t.rule,
+          cardBorder: fts.length ? '2px solid ' + t.accent : (project ? '1.5px dashed ' + t.rule : '1px solid ' + t.rule),
           dotBg: project ? t.bg : (edu ? t.paper : t.ink),
           dotBorder: project ? t.muted : t.ink
         };

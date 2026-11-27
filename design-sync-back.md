@@ -1,6 +1,6 @@
 # Code → design sync-back list
 
-Places where the built site differs from the Claude Design prototype, as of 2026-11-26. Each one was checked against the current `/design` files. Sources: SPEC.md, the `(Aswin, date)` notes in the code and the commit history. Apply these in Claude Design so the next export matches the code.
+Places where the built site differs from the Claude Design prototype, as of 2026-11-27. Each one was checked against the current `/design` files. Sources: SPEC.md, the `(Aswin, date)` notes in the code and the commit history. Apply these in Claude Design so the next export matches the code.
 
 ## Global / Nav (`Nav.dc.html`, `Mobile.dc.html`, `MobileNavStates.dc.html`)
 
@@ -36,7 +36,7 @@ Places where the built site differs from the Claude Design prototype, as of 2026
 17. **No "Break my AI" chips in Ask.** Attack questions still get their guarded answers when someone types them.
 18. **New `ASK_BY_PAGE` questions:**
     - **home:** Has he worked on APIs? · How does the fit check avoid making things up? · Has he shipped LLM features at a company? · What's his biggest platform win?
-    - **work:** Which AI agents has he built? · How does the integration builder keep AI out of production? · Is the integration builder CloudEagle's product? · Has he shipped LLM features at a company?
+    - **work:** Which AI agents has he built? · How does the integration builder keep AI out of production? · Why are safeguards the centrepiece? · Has he shipped LLM features at a company?
     - **log:** Why does the job-search agent wait for approval? · How do his platform skills carry over to AI agents? · What's he building now?
     - **about:** What's his healthcare experience? · What's his biggest platform win? · What did he build as a founder? · Has he worked with enterprise clients?
 19. **Swipe down to close the phone sheet.** You drag from the grab handle or the input row. Past 25% of the sheet's height, or with a quick flick, it closes; otherwise it springs back.
@@ -75,6 +75,13 @@ Places where the built site differs from the Claude Design prototype, as of 2026
 
 29. **`/work` (the index page):** built as the home "Products I've built" section on its own page, with its own h1.
 30. **`/log/[slug]` (a single post):** a serif title, a mono meta line and an 880 px column.
+
+## Everywhere
+
+31. **The integration builder is shown as Aswin's own concept** (Aswin, 2026-11-27): no company name, no take-home or permission wording. The breadcrumb is `03 · AI INTEGRATION BUILDER`, CONTEXT is "Concept and working prototype", the disclaimer pill is gone, the pitches end at "…nothing reaches production unreviewed.", the source chip is "Case study · Integration builder", the work page's third Ask question is "Why are safeguards the centrepiece?", and the repo is `github.com/aswin-a/ai-integration-builder`. The local `/design` files already have this; apply it in Claude Design so the next export doesn't bring the old wording back.
+
+32. **The CV PDF is Aswin's own export** (Aswin, 2026-11-27): `/aswin-a-cv.pdf` is the file he supplied, not generated from `content/cv.ts` at build time as update 15 suggests.
+33. **`#cv=` links use stable area ids, not positions** (Aswin, 2026-11-27): `zelthy.integrations.1-2`, not `zelthy.1.1-2`. Points are still numbered within an area, and roles without areas stay `dhees..1,4`. Update the hrefs in `Main.dc.html`, `Ask.dc.html` and `CVFromProof.dc.html` to match.
 
 ## Not needed in the prototype
 

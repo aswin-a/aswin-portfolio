@@ -69,8 +69,8 @@ export const products: Product[] = [
     slug: "integration-builder",
     status: "CONCEPT",
     name: "AI integration builder",
-    pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed. A CloudEagle.ai take-home, shared with permission.",
-    phonePitch: "AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed. A CloudEagle.ai take-home.",
+    pitch: "Lets AI draft connectors for the long tail of SaaS apps, with safeguards so nothing reaches production unreviewed.",
+    phonePitch: "AI drafts connectors for long-tail SaaS apps, and nothing reaches production unreviewed.",
     built: "The product spec and design notes, the six-step admin flow and screens, the safeguard rules, and the working prototype.", // Aswin, 2026-11-24
     flow: [
       { text: "Paste the app’s API docs" },
@@ -80,7 +80,7 @@ export const products: Product[] = [
       { text: "Deploy" },
     ],
     tags: ["integrations", "guardrails"],
-    primary: { label: "Run it locally", href: "https://github.com/aswin-a/cloudeagle-ai-integration-builder" }, // Aswin, 2026-11-24
+    primary: { label: "Run it locally", href: "https://github.com/aswin-a/ai-integration-builder" }, // Aswin, 2026-11-24
     secondary: { label: "Read the case study →", href: "/work/integration-builder" },
   },
   {
